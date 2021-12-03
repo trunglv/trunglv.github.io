@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>A count number of cart items on a checkout sidebar is not updated | Trung Luu</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="A count number of cart items on a checkout sidebar is not updated" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Today, 21 Nov 2021. Magento 2.4.3" />
+<meta property="og:description" content="Today, 21 Nov 2021. Magento 2.4.3" />
+<link rel="canonical" href="http://localhost:4000/magento2/2021/11/02/count-number-of-cart-items-on-a-checkout-sidebar-is-not-updated.html" />
+<meta property="og:url" content="http://localhost:4000/magento2/2021/11/02/count-number-of-cart-items-on-a-checkout-sidebar-is-not-updated.html" />
+<meta property="og:site_name" content="Trung Luu" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-11-02T14:09:12+07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A count number of cart items on a checkout sidebar is not updated" />
+<script type="application/ld+json">
+{"headline":"A count number of cart items on a checkout sidebar is not updated","dateModified":"2021-11-02T14:09:12+07:00","datePublished":"2021-11-02T14:09:12+07:00","url":"http://localhost:4000/magento2/2021/11/02/count-number-of-cart-items-on-a-checkout-sidebar-is-not-updated.html","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/magento2/2021/11/02/count-number-of-cart-items-on-a-checkout-sidebar-is-not-updated.html"},"description":"Today, 21 Nov 2021. Magento 2.4.3","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Trung Luu" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Trung Luu</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">A count number of cart items on a checkout sidebar is not updated</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2021-11-02T14:09:12+07:00" itemprop="datePublished">Nov 2, 2021
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>Today, 21 Nov 2021. Magento 2.4.3</p>
+
+<p>The issue is: When a customer applies a coupon code to add a new item on a checkout page, everything works perfectly, regardless of the count number of cart items on a checkout sidebar that is not updated.
+<img src="/assets/posts/nov/cart_number_items.jpg" alt="My helpful screenshot" /></p>
+
+<h2 id="problem-solving">Problem-solving:</h2>
+<p>A problem is the count value is not calculated on Observable Object ( KnockoutJS object).</p>
+
+<p>Check files:</p>
+
+<p>JS Component
+vendor/magento/module-checkout/view/frontend/web/js/view/summary/cart-items.js</p>
+
+<p>Template
+vendor/magento/module-checkout/view/frontend/web/template/summary/cart-items.html</p>
+
+<p>The count number is got from a function getCartSummaryItemsCount of a view component Magento_Checkout/view/summary/cart-items.</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="cm">/**
+         * Returns cart items qty
+         *
+         * @returns {Number}
+         */</span>
+        <span class="nx">getItemsQty</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">totals</span><span class="p">[</span><span class="dl">'</span><span class="s1">items_qty</span><span class="dl">'</span><span class="p">]);</span>
+        <span class="p">},</span>
+
+        <span class="cm">/**
+         * Returns count of cart line items
+         *
+         * @returns {Number}
+         */</span>
+        <span class="nx">getCartLineItemsCount</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">totals</span><span class="p">.</span><span class="nx">getItems</span><span class="p">()().</span><span class="nx">length</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+        <span class="p">},</span>
+<span class="nx">But</span> <span class="nx">you</span> <span class="nx">can</span> <span class="nx">see</span> <span class="nx">a</span> <span class="nx">property</span> <span class="err">“</span><span class="nx">totals</span><span class="err">”</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">an</span> <span class="nx">observable</span> <span class="nx">object</span><span class="p">.</span>
+
+ <span class="k">return</span> <span class="nx">Component</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+        <span class="na">defaults</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">template</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Magento_Checkout/summary/cart-items</span><span class="dl">'</span>
+        <span class="p">},</span>
+        <span class="na">totals</span><span class="p">:</span> <span class="nx">totals</span><span class="p">.</span><span class="nx">totals</span><span class="p">(),</span>
+<span class="nx">A</span> <span class="nx">solution</span> <span class="na">is</span><span class="p">:</span> <span class="nx">Find</span> <span class="nx">a</span> <span class="nx">text</span> <span class="cm">/*FIXED HERE*/</span> <span class="nx">to</span> <span class="nx">know</span> <span class="nx">what</span> <span class="nx">I</span> <span class="nx">did</span> <span class="nx">fix</span> <span class="nx">it</span><span class="o">!</span>
+<span class="cm">/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */</span>
+
+<span class="nx">define</span><span class="p">([</span>
+    <span class="dl">'</span><span class="s1">ko</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">Magento_Checkout/js/model/totals</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">uiComponent</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">Magento_Checkout/js/model/step-navigator</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">Magento_Checkout/js/model/quote</span><span class="dl">'</span>
+<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">ko</span><span class="p">,</span> <span class="nx">totals</span><span class="p">,</span> <span class="nx">Component</span><span class="p">,</span> <span class="nx">stepNavigator</span><span class="p">,</span> <span class="nx">quote</span><span class="p">)</span> <span class="p">{</span>
+    <span class="dl">'</span><span class="s1">use strict</span><span class="dl">'</span><span class="p">;</span>
+
+    <span class="kd">var</span> <span class="nx">useQty</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">checkoutConfig</span><span class="p">.</span><span class="nx">useQty</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">Component</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+        <span class="na">defaults</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">template</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Magento_Checkout/summary/cart-items</span><span class="dl">'</span>
+        <span class="p">},</span>
+        <span class="cm">/*-------- FIXED HERE ---------- */</span>
+        <span class="cm">/* previous : totals: totals.totals() =&gt; remove "()" to keep a observable object */</span>  
+        <span class="na">totals</span><span class="p">:</span> <span class="nx">totals</span><span class="p">.</span><span class="nx">totals</span><span class="p">,</span>
+        <span class="cm">/*---------END- FIXED HERE -------*/</span>
+        <span class="na">items</span><span class="p">:</span> <span class="nx">ko</span><span class="p">.</span><span class="nx">observable</span><span class="p">([]),</span>
+        <span class="na">maxCartItemsToDisplay</span><span class="p">:</span> <span class="nb">window</span><span class="p">.</span><span class="nx">checkoutConfig</span><span class="p">.</span><span class="nx">maxCartItemsToDisplay</span><span class="p">,</span>
+        <span class="na">cartUrl</span><span class="p">:</span> <span class="nb">window</span><span class="p">.</span><span class="nx">checkoutConfig</span><span class="p">.</span><span class="nx">cartUrl</span><span class="p">,</span>
+
+        <span class="cm">/**
+         * @deprecated Please use observable property (this.items())
+         */</span>
+        <span class="na">getItems</span><span class="p">:</span> <span class="nx">totals</span><span class="p">.</span><span class="nx">getItems</span><span class="p">(),</span>
+
+        <span class="cm">/**
+         * Returns cart items qty
+         *
+         * @returns {Number}
+         */</span>
+        <span class="na">getItemsQty</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="cm">/*------ FIXED HERE -------*/</span>
+            <span class="cm">/* previous : return parseFloat(this.totals['items_qty']); */</span> 
+            <span class="k">return</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">totals</span><span class="p">()[</span><span class="dl">'</span><span class="s1">items_qty</span><span class="dl">'</span><span class="p">]);</span>
+            <span class="cm">/*------ END - FIXED HERE -------*/</span>
+        <span class="p">},</span>
+
+        <span class="cm">/**
+         * Returns count of cart line items
+         *
+         * @returns {Number}
+         */</span>
+        <span class="na">getCartLineItemsCount</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">totals</span><span class="p">.</span><span class="nx">getItems</span><span class="p">()().</span><span class="nx">length</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+        <span class="p">},</span>
+
+        <span class="cm">/**
+         * Returns shopping cart items summary (includes config settings)
+         *
+         * @returns {Number}
+         */</span>
+        <span class="na">getCartSummaryItemsCount</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            
+            <span class="k">return</span> <span class="nx">useQty</span> <span class="p">?</span> <span class="k">this</span><span class="p">.</span><span class="nx">getItemsQty</span><span class="p">()</span> <span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">getCartLineItemsCount</span><span class="p">();</span>
+        <span class="p">},</span>
+
+        <span class="cm">/**
+         * @inheritdoc
+         */</span>
+        <span class="na">initialize</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_super</span><span class="p">();</span>
+            <span class="c1">// Set initial items to observable field</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">setItems</span><span class="p">(</span><span class="nx">totals</span><span class="p">.</span><span class="nx">getItems</span><span class="p">()());</span>
+            <span class="c1">// Subscribe for items data changes and refresh items in view</span>
+            <span class="nx">totals</span><span class="p">.</span><span class="nx">getItems</span><span class="p">().</span><span class="nx">subscribe</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">items</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">setItems</span><span class="p">(</span><span class="nx">items</span><span class="p">);</span>
+            <span class="p">}.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+        <span class="p">},</span>
+
+        <span class="cm">/**
+         * Set items to observable field
+         *
+         * @param {Object} items
+         */</span>
+        <span class="na">setItems</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">items</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">items</span> <span class="o">&amp;&amp;</span> <span class="nx">items</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">items</span> <span class="o">=</span> <span class="nx">items</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="o">-</span><span class="k">this</span><span class="p">.</span><span class="nx">maxCartItemsToDisplay</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span>
+            <span class="p">}</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">items</span><span class="p">(</span><span class="nx">items</span><span class="p">);</span>
+        <span class="p">},</span>
+
+        <span class="cm">/**
+         * Returns bool value for items block state (expanded or not)
+         *
+         * @returns {*|Boolean}
+         */</span>
+        <span class="na">isItemsBlockExpanded</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">quote</span><span class="p">.</span><span class="nx">isVirtual</span><span class="p">()</span> <span class="o">||</span> <span class="nx">stepNavigator</span><span class="p">.</span><span class="nx">isProcessed</span><span class="p">(</span><span class="dl">'</span><span class="s1">shipping</span><span class="dl">'</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+<span class="p">});</span></code></pre></figure>
+
+  </div><a class="u-url" href="/magento2/2021/11/02/count-number-of-cart-items-on-a-checkout-sidebar-is-not-updated.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Trung Luu</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Trung Luu</li><li><a class="u-email" href="mailto:luuvantrung@gmail.com">luuvantrung@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/trunglv"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">trunglv</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Hi everyone, This is my personal Github page aim to share some open-source projects and a technical bog.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
