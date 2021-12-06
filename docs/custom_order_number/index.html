@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Betagento | Hi everyone, This is my personal Github page aim to share some open-source projects and a technical bog.</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="Betagento" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Hi everyone, This is my personal Github page aim to share some open-source projects and a technical bog." />
+<meta property="og:description" content="Hi everyone, This is my personal Github page aim to share some open-source projects and a technical bog." />
+<link rel="canonical" href="https://trunglv.github.io/custom_order_number/" />
+<meta property="og:url" content="https://trunglv.github.io/custom_order_number/" />
+<meta property="og:site_name" content="Betagento" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Betagento" />
+<script type="application/ld+json">
+{"headline":"Betagento","url":"https://trunglv.github.io/custom_order_number/","@type":"WebPage","description":"Hi everyone, This is my personal Github page aim to share some open-source projects and a technical bog.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://trunglv.github.io/feed.xml" title="Betagento" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Betagento</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <h1 id="betagento">Betagento</h1>
+<h2 id="magento2---custom-order-number">Magento2 - Custom Order Number</h2>
+
+<h3 id="overview">Overview:</h3>
+<p>I implement this extension to help you manage an order number more flexibly. The default order number functionality of Magento is just a simple one; it just manages increment numbers by store scope, and you can do more with my extension.</p>
+
+<p>For example, you would like to make an order number like this: DE-B2B-04-00023. Which: DE is country code, B2B is a customer group, and 04 is a month when a customer is placing an order. So please read more detail on how to do it with my extension.</p>
+
+<h3 id="key-features">Key features:</h3>
+<ul>
+  <li>use easy-to-use expression to define an order number, example:  <code class="language-plaintext highlighter-rouge">{website_code}-{customer.customer_group}-{month}-{SEQUENCE_NUMBER}</code></li>
+  <li>Work for Orders, Invoices, and Shipments as well</li>
+</ul>
+
+<h3 id="how-to-use-it">How to use it:</h3>
+<h4 id="configuration">Configuration</h4>
+<p>Go to Store » Configuration » Betagento » Custom Order Number</p>
+
+<p><img src="https://user-images.githubusercontent.com/820411/144455147-dbf0ef01-4250-4887-b414-1ef13ac89bb5.png" alt="image" /></p>
+
+<p><img src="https://user-images.githubusercontent.com/820411/144455202-8f7098b4-cf97-41a1-8b00-69f503c7c7b2.png" alt="image" /></p>
+
+<p><img src="https://user-images.githubusercontent.com/820411/144455233-98211803-f867-4c1e-be92-1654725b844d.png" alt="image" /></p>
+
+<h4 id="1-patternexpression--where-to-define-a-format-of-a-order-numebr">1. Pattern/Expression : Where to define a format of a order numebr</h4>
+<p>Variables already supported:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{SEQUENCE_NUMBER} : Sequence Number (0000xxx)
+{date} : Date number 
+{month} : Month number 
+{year} : Year number
+{website_code} : Website code
+{customer_group} : Customer Group
+</code></pre></div></div>
+<p>Shipping Address attributes</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>billing_company : Company
+billing_country_id : Country ID (DE,DK)
+billing_postcode : Country ID (DE,DK)
+</code></pre></div></div>
+<p>Shipping Address attributes</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{shipping_country_id} : Country 
+{shipping_postcode} : Post code
+</code></pre></div></div>
+
+<p>If you want more, pls contact me (Trung) [“luuvantrung@gmail.com”]</p>
+
+<h4 id="2-zero-padding-">2. Zero Padding :</h4>
+<p>Number zero is padded before a counter, default is 9</p>
+
+<h4 id="3-use-sequence-per-wesbite-scope-">3. Use Sequence Per Wesbite Scope :</h4>
+<p>Sequence number will calculate by website scope not store scope.</p>
+
+<h3 id="support">Support</h3>
+<p>You want to adjust it or to add more features is possible – so if you are interested, pls contact me. Again via (Trung) [“luuvantrung@gmail.com”]</p>
+
+<p>Issues : You can post an issues on a given private repository if you are allowed.</p>
+
+<p>Free to fix any bugs/issues of all verions of the extension (For all of a functionality term, a coding standard term, security term). Regardless, you need to pay me a coffee.</p>
+
+<h2 id="about-betagento">About Betagento:</h2>
+<p>My name is Luu Van Trung. Betagento is my personal bussiness to provide Magento extensions and services.</p>
+
+<h2 id="purchase-process">Purchase process:</h2>
+
+<ul>
+  <li>
+    <p>Send me money via a Paypal link below - or send email (luuvantrung@gmail.com), skype: beta.trunglv to request a purchase or demo:</p>
+  </li>
+  <li>
+    <p>I will send you a access into private repository with opensource code and installation guide.</p>
+  </li>
+</ul>
+
+<div id="smart-button-container">
+      <div style="text-align: center;">
+        <div id="paypal-button-container"></div>
+      </div>
+    </div>
+<script src="https://www.paypal.com/sdk/js?client-id=AT7GE-inDnrag6My-dYCd6_QIWOEAJadIH1C6Js02WGcctKVUWtwCOY4KEaxmifTRUf1xrbLHjMn9znv&amp;enable-funding=venmo&amp;currency=USD" data-sdk-integration-source="button-factory"></script>
+
+<script>
+    function initPayPalButton() {
+      paypal.Buttons({
+        style: {
+          shape: 'rect',
+          color: 'gold',
+          layout: 'vertical',
+          label: 'buynow',
+          
+        },
+
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{"description":"Magento2 - Custom Order Number Extension","amount":{"currency_code":"USD","value":49}}]
+          });
+        },
+
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(orderData) {
+            
+            // Full available details
+            console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+
+            // Show a success message within this page, e.g.
+            const element = document.getElementById('paypal-button-container');
+            element.innerHTML = '';
+            element.innerHTML = '<h3>Thank you for your payment!</h3>';
+
+            // Or go to another URL:  actions.redirect('thank_you.html');
+            
+          });
+        },
+
+        onError: function(err) {
+          console.log(err);
+        }
+      }).render('#paypal-button-container');
+    }
+    initPayPalButton();
+  </script>
+
+<!--  
+<p>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6DNEKNWFVXKKA" 
+target="_blank">
+<img src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_buynowCC_LG.gif" alt="PayPal this" 
+title="PayPal – The safer, easier way to pay online!" border="0" />
+</a>
+</p>
+-->
+
+<ul>
+  <li>Don’t worry – drop messages to me and video call is welcome!</li>
+</ul>
+
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Betagento</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Betagento</li><li><a class="u-email" href="mailto:luuvantrung@gmail.com">luuvantrung@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/trunglv"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">trunglv</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Hi everyone, This is my personal Github page aim to share some open-source projects and a technical bog.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
