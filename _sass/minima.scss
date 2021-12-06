@@ -21,7 +21,7 @@ $grey-color-dark:  darken($grey-color, 25%) !default;
 $table-text-align: left !default;
 
 // Width of the content area
-$content-width:    800px !default;
+$content-width:    1204px !default;
 
 $on-palm:          600px !default;
 $on-laptop:        800px !default;
@@ -49,3 +49,35 @@ $on-laptop:        800px !default;
   "minima/layout",
   "minima/syntax-highlighting"
 ;
+
+h1, h2, h3, h4{
+   font-weight: 700;
+   width: 100%;
+   border-bottom: 10px #333;
+   color: #995210;
+   
+}
+h1{
+  font-size: 27px;
+}
+h2{
+  font-size: 24px;
+}
+h3{
+  font-size: 20px;
+}
+.extensions-grid {
+  .extension{
+    text-align: center;
+    .thumbnail{
+      text-align: center;
+      svg{
+        margin: auto;
+      }
+    }
+    .product-title {
+      padding: 10px;
+      font-weight: 700;
+    }
+  }
+}
