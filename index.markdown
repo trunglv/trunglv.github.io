@@ -5,10 +5,11 @@
 layout: home
 ---
 ## What is Betagento?
-===> It's just a name similar to @Magento. A slogan here is : Think small - Do simple.
+===> It's just a name similar to @Magento. A slogan here is : ***Think small - Do simple.***
+
 <div style="background: #f5f4f3; border: 1px solid #000; padding: 40px; ">
-I'm Trung Luu - I have been working on Magento more 7 years. It's my blog and my small business page for Magento/Adobe Commercers.
-I have registed a my business to my Goverment and a Paypal Business as well, so please don't worry to make a payment here. I would love to get in touch with you before you would decide to buy my extension.
+I'm Trung Luu - I have been working on Magento for more than 7 years. It's my blog and my small business page for Magento/Adobe Commerce.
+I have registered my business to my Government and a Paypal Business, so please don't worry about making a payment here. I would love to get in touch with you before you decide to buy my extension.
 </div>
 
 ## Magento2 Extensions
