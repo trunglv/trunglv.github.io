@@ -1,0 +1,13 @@
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+vendor
+CNAME
+_includes
+_layouts
+_sass
+_site
+about.markdown
+index.markdown
+Gemfile
+Gemfile.lock
