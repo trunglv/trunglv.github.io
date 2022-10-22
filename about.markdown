@@ -4,15 +4,14 @@ title: About
 permalink: /about/
 ---
 
-### Some of my opensource projects I contribute on the Github
-#### > Magento2 
--   [Magento2 CLI Development and Debug tool](https://github.com/trunglv/mage2_dev){:target="_blank"}
--   [CMS Block Ui Component](https://github.com/trunglv/magento2_cms_ui_component){:target="_blank"}
 
-#### Magento1 
-- [Onestepcheckout extension](https://github.com/trunglv/OneStepCheckout){:target="_blank"}
-- [Shipping And Payment Filter](https://github.com/trunglv/ShippingPaymentFilter){:target="_blank"}
+<div style="background: #f5f4f3; border: 1px solid #000; padding: 40px; ">
+I'm Trung Luu - I have been working on Software Industry for more than 10 years. It's my blog and my small business page.
+</div>
 
+#### What I can do:
+##### 1. Magento Development (Develop new website, module development, maintainance )
+##### 2. Build/Manage a team working on Magento project
 
 ## Business Information:
 #### Name : BETAGENTO LIMITED LIBIATILY COMPANY
