@@ -617,6 +617,10 @@ a:hover {
     padding: 48px 0 32px;
   }
 
+  .card-grid {
+    gap: 28px;
+  }
+
   .post-nav {
     flex-direction: column;
   }
