@@ -1,0 +1,13 @@
+---
+layout: default
+---
+<article class="wrapper page extension-page">
+  <p class="ext-page-category">{{ page.category }}</p>
+  <h1 class="page-title">{{ page.title }}</h1>
+  {% if page.github %}
+  <p><a class="ext-page-github" href="{{ page.github }}" target="_blank" rel="noopener">View on GitHub &rarr;</a></p>
+  {% endif %}
+  <div class="page-content">
+    {{ content }}
+  </div>
+</article>

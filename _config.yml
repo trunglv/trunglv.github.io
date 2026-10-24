@@ -1,55 +1,64 @@
-# Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
-#
-# If you need help with YAML syntax, here are some quick references for you: 
-# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
-# https://learnxinyminutes.com/docs/yaml/
-#
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
-
 title: Betagento
 email: luuvantrung@gmail.com
-description: >- # this means to ignore newlines until "baseurl:"
-  Hi everyone, This is my personal Github page aim to share some open-source projects and a technical bog.
-baseurl: "/" # the subpath of your site, e.g. /blog
-url: "https://www.betagento.com" 
-#twitter_username: jekyllrb
-github_username:  trunglv
+description: >-
+  Magento 2 development, extensions, and a technical blog by Trung Luu.
+  Think small. Do simple.
+tagline: Think small. Do simple.
+baseurl: ""
+url: "https://www.betagento.com"
+github_username: trunglv
 
-# Build settings
-theme: minima
+author:
+  name: Trung Luu
+  email: luuvantrung@gmail.com
+
+permalink: /:categories/:year/:month/:day/:title/
+
+markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge
+
 plugins:
   - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
 
+collections:
+  extensions:
+    output: true
+    permalink: /extensions/:path/
 
-# Exclude from processing.
-# The following items will not be processed, by default.
-# Any item listed under the `exclude:` key here will be automatically added to
-# the internal "default list".
-#
-# Excluded items can be processed by explicitly listing the directories or
-# their entries' file path in the `include:` list.
-#
-# exclude:
-#   - .sass-cache/
-#   - .jekyll-cache/
-#   - gemfiles/
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules/
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      lang: en
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: page
+      lang: en
+  - scope:
+      path: ""
+      type: extensions
+    values:
+      layout: extension
+      lang: en
+  - scope:
+      path: "vi"
+    values:
+      lang: vi
 
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - node_modules
+  - README.md
+  - docs/package.json
+  - docs/package-lock.json
+  - docs/tailwind.config.js
+  - _posts_backup

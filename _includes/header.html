@@ -1,0 +1,26 @@
+{% comment %}Locale-aware header. page.lang defaults to "en" via _config.yml.{% endcomment %}
+{% assign lang = page.lang | default: "en" %}
+{% assign t = site.data.i18n[lang] %}
+{% assign brand_url = "/" %}
+{% if lang == "vi" %}{% assign brand_url = "/vi/" %}{% endif %}
+<header class="site-header">
+  <div class="wrapper site-header-inner">
+    <a class="site-brand" href="{{ brand_url | relative_url }}">
+      <img class="site-brand-mark" src="{{ "/assets/images/logo.svg" | relative_url }}" alt="Betagento logo" width="32" height="32">
+      <span class="site-brand-name">Betagento</span>
+    </a>
+    <nav class="site-nav">
+      {% if lang == "vi" %}
+      <a href="{{ "/vi/#about" | relative_url }}">{{ t.nav_about }}</a>
+      <a href="{{ "/vi/extensions/" | relative_url }}">{{ t.nav_extensions }}</a>
+      <a href="{{ "/vi/blog/" | relative_url }}">{{ t.nav_blog }}</a>
+      {% else %}
+      <a href="{{ "/#about" | relative_url }}">{{ t.nav_about }}</a>
+      <a href="{{ "/extensions/" | relative_url }}">{{ t.nav_extensions }}</a>
+      <a href="{{ "/blog/" | relative_url }}">{{ t.nav_blog }}</a>
+      {% endif %}
+      <a href="{{ "/feed.xml" | relative_url }}">{{ t.nav_rss }}</a>
+      <a class="site-lang-switch" href="{{ t.lang_switch_url | relative_url }}">{{ t.lang_switch_label }}</a>
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,34 @@
+---
+layout: default
+---
+<article class="wrapper post">
+  <header class="post-header">
+    <p class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time>
+      {% if page.categories.size > 0 %}
+      <span class="post-categories">
+        {% for category in page.categories %}<span class="post-category">{{ category }}</span>{% endfor %}
+      </span>
+      {% endif %}
+    </p>
+    <h1 class="post-title">{{ page.title }}</h1>
+  </header>
+  <div class="post-content">
+    {{ content }}
+  </div>
+</article>
+
+<nav class="wrapper post-nav">
+  {% if page.previous %}
+  <a class="post-nav-link post-nav-prev" href="{{ page.previous.url | relative_url }}">
+    <span class="post-nav-label">&larr; Previous</span>
+    <span class="post-nav-title">{{ page.previous.title }}</span>
+  </a>
+  {% endif %}
+  {% if page.next %}
+  <a class="post-nav-link post-nav-next" href="{{ page.next.url | relative_url }}">
+    <span class="post-nav-label">Next &rarr;</span>
+    <span class="post-nav-title">{{ page.next.title }}</span>
+  </a>
+  {% endif %}
+</nav>

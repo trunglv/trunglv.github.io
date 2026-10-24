@@ -1,0 +1,76 @@
+---
+layout: default
+---
+{% assign lang = page.lang | default: "en" %}
+{% assign t = site.data.i18n[lang] %}
+{% if lang == "vi" %}
+{% assign extensions_url = "/vi/extensions/" %}
+{% assign blog_url = "/vi/blog/" %}
+{% else %}
+{% assign extensions_url = "/extensions/" %}
+{% assign blog_url = "/blog/" %}
+{% endif %}
+
+<section class="hero">
+  <div class="wrapper">
+    <p class="hero-eyebrow">{{ t.hero_eyebrow }}</p>
+    <h1 class="hero-title">{{ t.hero_title }}</h1>
+    <p class="hero-subtitle">{{ site.description }}</p>
+  </div>
+</section>
+
+<div class="wrapper">
+  {{ content }}
+
+  <section class="section" id="about">
+    <h2 class="section-title">{{ t.section_about }}</h2>
+    <div class="about-content">
+      {% if lang == "vi" %}
+        {% include about-content.vi.html %}
+      {% else %}
+        {% include about-content.html %}
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="section" id="extensions">
+    <div class="section-header">
+      <h2 class="section-title">{{ t.section_extensions }}</h2>
+      <a class="section-link" href="{{ extensions_url | relative_url }}">{{ t.view_all }}</a>
+    </div>
+    <div class="card-grid">
+      {% assign exts = site.extensions | where: "featured", true | sort: "order" %}
+      {% for ext in exts %}
+      <a class="ext-card" href="{{ ext.url | relative_url }}">
+        <div class="ext-card-top">
+          <span class="ext-card-badge">{{ t.open_source }}</span>
+        </div>
+        <div class="ext-card-body">
+          <p class="ext-card-category">{{ ext.category }}</p>
+          <h3 class="ext-card-name">{{ ext.title }}</h3>
+          <p class="ext-card-summary">{{ ext.summary }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">{{ t.section_blog }}</h2>
+      <a class="section-link" href="{{ blog_url | relative_url }}">{{ t.view_all }}</a>
+    </div>
+    <ul class="post-list">
+      {% for post in site.posts limit:6 %}
+      <li class="post-list-item">
+        <a href="{{ post.url | relative_url }}">
+          <span class="post-list-title">{{ post.title }}</span>
+          <time class="post-list-date" datetime="{{ post.date | date_to_xmlschema }}">
+            {{ post.date | date: "%b %-d, %Y" }}
+          </time>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>

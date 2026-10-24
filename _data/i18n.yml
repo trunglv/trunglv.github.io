@@ -1,0 +1,33 @@
+en:
+  nav_about: About
+  nav_extensions: Magento Extensions
+  nav_blog: Blog
+  nav_rss: RSS
+  hero_eyebrow: Betagento
+  hero_title: Think small. Do simple.
+  section_about: About
+  section_extensions: Magento Extensions
+  section_blog: Latest from the blog
+  view_all: "View all →"
+  open_source: Open Source
+  extensions_intro: All extensions below are free and open-source.
+  blog_empty: No posts yet. Check back soon.
+  lang_switch_label: Tiếng Việt
+  lang_switch_url: /vi/
+
+vi:
+  nav_about: Giới thiệu
+  nav_extensions: Tiện ích Magento
+  nav_blog: Bài viết
+  nav_rss: RSS
+  hero_eyebrow: Betagento
+  hero_title: Nghĩ nhỏ. Làm đơn giản.
+  section_about: Giới thiệu
+  section_extensions: Tiện ích Magento
+  section_blog: Bài viết mới nhất
+  view_all: "Xem tất cả →"
+  open_source: Mã nguồn mở
+  extensions_intro: Tất cả tiện ích dưới đây đều miễn phí và mã nguồn mở.
+  blog_empty: Chưa có bài viết nào. Quay lại sau nhé.
+  lang_switch_label: English
+  lang_switch_url: /
