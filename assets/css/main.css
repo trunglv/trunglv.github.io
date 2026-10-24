@@ -89,6 +89,12 @@ a:hover {
   border-radius: 8px;
 }
 
+.site-header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .site-nav {
   display: flex;
   align-items: center;
@@ -120,10 +126,26 @@ a:hover {
 }
 
 .site-lang-switch {
-  padding: 3px 10px;
-  border: 1px solid var(--color-border);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
   border-radius: 999px;
-  font-size: 0.82rem !important;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.site-lang-switch:hover {
+  text-decoration: none;
+  background: var(--color-bg-subtle);
+  color: var(--color-text);
+}
+
+.site-lang-switch svg {
+  flex-shrink: 0;
 }
 
 /* Hero */
@@ -490,6 +512,12 @@ a:hover {
     flex-wrap: wrap;
   }
 
+  .site-header-right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
   .nav-toggle {
     display: block;
   }
@@ -512,16 +540,6 @@ a:hover {
     width: 100%;
     padding: 12px 0;
     border-top: 1px solid var(--color-border);
-  }
-
-  .site-lang-switch {
-    margin-top: 12px;
-    margin-bottom: 12px;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    width: auto;
-    display: inline-block;
-    padding: 3px 10px;
   }
 
   .hero {
