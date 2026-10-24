@@ -440,9 +440,32 @@ a:hover {
 }
 
 .about-signature {
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid var(--color-border);
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  margin-top: 36px;
+  padding: 24px;
+  background: var(--color-bg-subtle);
+  border-radius: var(--radius);
+}
+
+.about-signature-avatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-navy);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+}
+
+.about-signature-text {
+  min-width: 0;
 }
 
 .about-signature-name {
@@ -454,9 +477,11 @@ a:hover {
 
 .about-signature-role {
   margin: 0 0 10px;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   color: var(--color-accent);
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .about-signature-body {
