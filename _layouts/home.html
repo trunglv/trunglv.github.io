@@ -32,6 +32,7 @@ layout: default
     </div>
   </section>
 
+  {% if lang != "vi" %}
   <section class="section" id="extensions">
     <div class="section-header">
       <h2 class="section-title">{{ t.section_extensions }}</h2>
@@ -53,6 +54,7 @@ layout: default
       {% endfor %}
     </div>
   </section>
+  {% endif %}
 
   <section class="section">
     <div class="section-header">
