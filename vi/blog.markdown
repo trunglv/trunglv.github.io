@@ -5,8 +5,6 @@ permalink: /vi/blog/
 lang: vi
 ---
 
-<p>Các bài viết hiện chỉ có bằng tiếng Anh.</p>
-
 <div class="archive">
   {% assign posts_by_year = site.posts | where: "lang", "vi" | group_by_exp: "post", "post.date | date: '%Y'" %}
   {% if posts_by_year.size == 0 %}
