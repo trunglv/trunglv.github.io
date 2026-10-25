@@ -1,5 +1,6 @@
 ---
-title: "Claude và ChatGPT: model và công cụ mới"
+title: "Claude và ChatGPT: model và công cụ mới trong tuần 43 của năm 2026"
+slug: "claude-va-chatgpt-model-va-cong-cu-moi"
 date: 2026-10-25 09:05:00 +0700
 categories: [ai]
 lang: vi

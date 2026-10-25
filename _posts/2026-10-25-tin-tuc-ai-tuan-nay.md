@@ -1,5 +1,6 @@
 ---
-title: "Tin AI tuần này: OpenAI rời internet trực tiếp, Meta ra mắt Muse Wonder"
+title: "Cập nhật về models trong tuần 43"
+slug: "tin-tuc-ai-tuan-nay"
 date: 2026-10-25 09:00:00 +0700
 categories: [ai]
 lang: vi
@@ -31,8 +32,10 @@ Dessa hiện chưa mở cho công chúng. Block đang mời các nhà nghiên c�
 
 Nguồn: [TechCrunch](https://techcrunch.com/2026/10/24/blocks-new-voice-model-sounds-eerily-human/)
 
-## DeepSeek công bố DeepInfer, phần mềm tăng hiệu suất chạy mô hình
+## Meta mở trọng số Muse Spark Open, chạy được trên máy Mac
 
-Ngày 20/10, DeepSeek giới thiệu DeepInfer, phần mềm mà hãng dùng để chạy mô hình nhanh hơn và sử dụng tài nguyên tính toán hiệu quả hơn. Theo Bloomberg, DeepSeek mở mã nguồn công cụ này, điều có thể giúp doanh nghiệp giảm chi phí vận hành AI. Chi tiết kỹ thuật như hiệu năng đo được và giấy phép chưa được kiểm chứng trong bản nháp này.
+Ngày 15/10, Meta giới thiệu Muse Spark Open, một mô hình mở trọng số (open-weight) với 816 tỷ tham số và cửa sổ ngữ cảnh 1 triệu token. Mô hình có khả năng đa phương thức gốc, và được nhắm đến các tác vụ lập trình phức tạp và agent.
 
-Nguồn: [Bloomberg](https://www.bloomberg.com/news/articles/2026-10-20/deepseek-unveils-open-source-tool-to-help-cut-ai-operating-costs)
+Mô hình được thiết kế để chạy cục bộ trên máy Apple. Theo Engadget được TechCrunch trích dẫn, mô hình cần ít nhất 1 TB RAM. Meta khuyến nghị Mac Studio với chip M5 Ultra. Mô hình hiện đã có qua nhiều nền tảng API, nhưng bài báo không nêu tên nền tảng hay điều khoản giấy phép. Các đánh giá hiệu năng là do Meta công bố, chưa có con số benchmark cụ thể trong bài.
+
+Nguồn: [TechCrunch](https://techcrunch.com/2026/10/15/meta-launches-an-open-weight-model-that-runs-on-macs/)
