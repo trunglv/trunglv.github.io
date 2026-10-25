@@ -5,7 +5,7 @@ permalink: /blog/
 ---
 
 <div class="archive">
-  {% assign posts_by_year = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+  {% assign posts_by_year = site.posts | where: "lang", "en" | group_by_exp: "post", "post.date | date: '%Y'" %}
   {% if posts_by_year.size == 0 %}
   <p>{{ site.data.i18n.en.blog_empty }}</p>
   {% endif %}

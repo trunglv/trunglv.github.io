@@ -61,7 +61,8 @@ layout: default
       <a class="section-link" href="{{ blog_url | relative_url }}">{{ t.view_all }}</a>
     </div>
     <ul class="post-list">
-      {% for post in site.posts limit:6 %}
+      {% assign blog_posts = site.posts | where: "lang", lang %}
+      {% for post in blog_posts limit:6 %}
       <li class="post-list-item">
         <a href="{{ post.url | relative_url }}">
           <span class="post-list-title">{{ post.title }}</span>
