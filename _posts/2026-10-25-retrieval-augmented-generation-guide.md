@@ -7,6 +7,20 @@ lang: en
 
 Large language models know a lot, but they do not know your documents, your product catalog, or yesterday's policy change. They also make things up when they are unsure. Retrieval-Augmented Generation (RAG) fixes both problems by fetching relevant text at question time and giving it to the model as context. This guide explains how RAG works, walks through a small example, and lists the practices that separate a demo from a system people trust.
 
+## At a glance
+
+| Stage | What happens | Best practice |
+|---|---|---|
+| 1. Chunk | Split documents into small, focused pieces | Split by headings first; aim for 300 to 800 tokens; keep the section title with each chunk |
+| 2. Embed | An embedding model turns each chunk into a vector | Use the same model for documents and questions; choose a multilingual model for Vietnamese |
+| 3. Store | Save the vectors with the chunk text and metadata | Store source, date and access group; record the model name and version |
+| 4. Retrieve | Embed the question and find the closest chunks | Combine vector and keyword search; rerank; filter by user permissions |
+| 5. Prompt | Put the top chunks and the question into the prompt | Number the sources; allow "I don't know"; treat sources as data, not instructions |
+| 6. Generate | The LLM writes the answer from the sources | Require citations; check that every cited source was retrieved |
+| 7. Evaluate | Measure retrieval and answers on real questions | Build a test set early; change one thing at a time |
+
+Each stage is explained below. The guide first covers what RAG is and the key terms, then how to build a small working system, then the practices that make it reliable.
+
 ## What RAG is
 
 RAG has two phases.
@@ -14,7 +28,7 @@ RAG has two phases.
 1. **Indexing (offline):** split your documents into chunks, turn each chunk into a vector (an embedding), and store the vectors with their text and metadata.
 2. **Answering (online):** turn the user's question into a vector, find the most similar chunks, and place them in the prompt next to the question. The model answers using that context.
 
-The model does not learn your data. It reads the retrieved text each time. That is why RAG is usually cheaper and easier to update than fine-tuning: when a document changes, you re-index it.
+The model does not learn your data. It reads the retrieved text each time. That is why RAG is usually cheaper and easier to update than fine-tuning (retraining the model on your own data): when a document changes, you re-index it.
 
 {% include llm-rag-diagram.html %}
 
@@ -22,7 +36,7 @@ The model does not learn your data. It reads the retrieved text each time. That 
 
 ## Key terms: chunk and vector, with an example
 
-Two words come up constantly in RAG. Here is what they mean, using one short document.
+Two words come up constantly in RAG. Here is what they mean, using one short document. The same document is used in every example in this guide.
 
 **Chunk:** a piece of a document that is small enough to fit in a prompt and specific enough to answer one kind of question. Chunks are the units that get searched and returned.
 
@@ -32,16 +46,16 @@ Two words come up constantly in RAG. Here is what they mean, using one short doc
 
 Imagine a file called `returns-policy.md` with this text:
 
-> **Returns policy.** Customers may return most items within 30 days of delivery. Items must be unused and in their original packaging. Electronics have a 15-day window and must include all accessories. Sale items are final and cannot be returned.
+> Customers may return most items within 30 days of delivery. Electronics have a 15-day window and must include all accessories. Sale items are final and cannot be returned.
 
 ### Step 1: split it into chunks
 
-A simple rule is to split by sentence and group sentences up to a size limit. This gives three chunks:
+The simplest rule is to split by sentence. For this short document, that gives three chunks, one per sentence:
 
 | Chunk | Text | Index |
 |---|---|---|
-| A | Returns policy. Customers may return most items within 30 days of delivery. | 0 |
-| B | Items must be unused and in their original packaging. Electronics have a 15-day window and must include all accessories. | 1 |
+| A | Customers may return most items within 30 days of delivery. | 0 |
+| B | Electronics have a 15-day window and must include all accessories. | 1 |
 | C | Sale items are final and cannot be returned. | 2 |
 
 Each chunk keeps some context with it. In a real system, chunk B would also carry the document name and section, for example "returns-policy.md, Returns policy", so the model knows where the sentence came from.
@@ -87,34 +101,102 @@ The minimal example is the prompt that the application builds once the relevant 
 > Answer using only the sources below. Cite sources as [n]. If the sources do not contain the answer, say you do not know.
 >
 > Sources:
-> [1] Electronics have a 15-day return window and must include all accessories.
+> [1] Electronics have a 15-day window and must include all accessories.
 > [2] Customers may return most items within 30 days of delivery.
 >
 > Question: Can I return a TV after 20 days?
 
 Three things in this prompt matter more than they look. It tells the model to answer only from the sources. Each source has a number, so the answer can cite it. And it gives the model an explicit way to say "I don't know," which prevents most made-up answers.
 
-## A worked example: a returns policy assistant
+## Build a simple RAG step by step
 
-Suppose a different online store, one that allows electronics returns within 30 days, wants a chatbot that answers questions about its returns policy, which changes twice a year.
+This section explains how to build a working RAG system from a small project with local files. It needs no database server. You can run the embedding model and the LLM on your own computer, or call them through an API.
 
-- **Documents:** the policy pages, plus the FAQ, exported as Markdown. Each file has metadata: region, effective date, and product category.
+### The process
+
+{% include rag-algorithm-flowchart.html %}
+
+The process has two parts. Part 1 runs once, or whenever your documents change, and writes an index to disk. Part 2 runs on every question and reads that index.
+
+### Step 1: prepare the project
+
+Create one folder for the project. Inside it, create a folder for your documents, and a folder that the indexing step will fill with the index files. Put your text file in the documents folder.
+
+For the example, use the same returns policy as above, with each sentence as its own paragraph, separated by blank lines:
+
+- Customers may return most items within 30 days of delivery.
+- Electronics have a 15-day window and must include all accessories.
+- Sale items are final and cannot be returned.
+
+Each paragraph will become one chunk.
+
+Next, choose two models. The first is an embedding model, which turns text into vectors. The second is an LLM, which writes the answer. Install both with the tools you prefer. You can run them on your own computer or call them through an API. For English content, a small English embedding model is enough. For Vietnamese content, choose a multilingual model such as bge-m3 or a multilingual E5 model, and test it on your own Vietnamese questions before you rely on it.
+
+### Step 2: index the documents
+
+Indexing runs once, or whenever the documents change. It has five parts:
+
+1. **Read** each file in the documents folder.
+2. **Split** each file into chunks. For this short file, one chunk per paragraph is enough. For real documents, split by headings first, then by size, as described in the chunking section below.
+3. **Embed** each chunk. Send the text of each chunk to the embedding model, which returns one vector per chunk. Send chunks in batches, because batching is much faster than one request per chunk.
+4. **Store** the results. Save the vectors in one file, and save each chunk's text and metadata (document, section, chunk number) in a second file, one record per chunk. Row *i* of the vectors must belong to record *i* of the chunks file.
+5. **Record the model name and version** next to the index. If you change the model later, you must re-embed every chunk, and the record tells you when that is needed.
+
+For the example file, the result is three chunks, three vectors, and two files in the index folder.
+
+### Step 3: answer a question
+
+Answering runs on every question. It has six parts:
+
+1. **Embed the question** with the same embedding model used for indexing. This gives a vector for the question.
+2. **Compare** the question vector with every stored chunk vector, and score how close each one is.
+3. **Check the threshold.** If even the best score is below a minimum you choose, stop and reply that the answer is not in the sources. Tune this minimum with your evaluation set.
+4. **Keep the top chunks.** For this tiny example, keep two. In practice, start with three to six, as discussed in the retrieval section below.
+5. **Build the prompt** from those chunks, using the template in the minimal example above: the instructions, the numbered sources, and the question.
+6. **Ask the LLM** for the answer. The LLM reads only the prompt. It does not search the index.
+
+The application returns the answer with the citation numbers, so the user can check each source.
+
+### What you should see
+
+The retrieval step scores the three chunks against the question. The electronics chunk (B) should rank first, because the question is about a TV and the chunk talks about electronics. The 30-day chunk (A) comes second, and the sale-items chunk (C) is left out. The prompt then contains B and A as sources [1] and [2], exactly as in the minimal example above, and the model should reply with something like:
+
+> No. Electronics have a 15-day window [1].
+
+If the answer is wrong, check the retrieval step before changing the prompt. Look at the top chunks for the question and confirm the electronics chunk is among them. Most problems start there.
+
+### What this simple version leaves out
+
+This setup is a good starting point, and it has clear limits:
+
+- **Scale:** the whole index sits in memory, and every question compares against every chunk. That is fine for thousands of chunks, not millions.
+- **Updates:** indexing rebuilds everything. A production system re-embeds only changed chunks.
+- **Access control:** there is no per-user filter. Add one before you connect real private data.
+- **Quality:** no hybrid search, no reranking, and no evaluation set.
+
+The rest of this guide covers each of these. When you need them, move the index into a vector database such as pgvector or Qdrant, and keep the same process. Run the database and the application as separate services, and the change touches only the storage part.
+
+## A worked example: the returns assistant in production
+
+Now suppose the same store grows. It sells in several countries, updates its policy twice a year, and has an FAQ. It wants a chatbot that answers returns questions across all of that.
+
+- **Documents:** the policy pages for each country, plus the FAQ, exported as Markdown. Each file has metadata: region, effective date, and product category.
 - **Chunking:** split by heading first, then by size. A section called "Electronics returns" becomes one chunk, not a fragment cut in the middle of a sentence.
 - **Question:** "Can I return a laptop I bought in Germany 40 days ago?"
-- **Retrieval:** filter by region = Germany and by the current effective date, then search for "returns laptop" within that subset.
+- **Retrieval:** filter by region = Germany and by the current effective date, then search within that subset.
 - **Prompt:** the top chunks, with the question, and the instruction to cite sources.
-- **Answer:** "No. Electronics can be returned within 30 days of delivery [2]." The citation lets a support agent check the source in one click.
+- **Answer:** "No. Electronics have a 15-day window [1]." The citation lets a support agent check the source in one click.
 
-The metadata filter is the key step. Without it, the model may cite last year's 60-day policy for German customers, and sound confident about it.
+The metadata filter is the key step. Without it, the model may cite last year's 60-day policy, or the policy for another country, and sound confident about it.
 
 ## Chunking
 
-Chunking has the largest effect on answer quality, and it is the step most often skipped.
+Chunking has the largest effect on answer quality, and it is the step most teams give the least thought.
 
 **Practices:**
 
 - **Split on structure first.** Headings, sections, list items, and code blocks are natural boundaries. Split by size only when a section is too large.
-- **Start around 300 to 800 tokens per chunk,** with 10% to 20% overlap. Tune this with your evaluation set, not by feel.
+- **Start around 300 to 800 tokens per chunk** (a token is roughly three-quarters of a word in English), with 10% to 20% overlap. Tune this with your evaluation set, not by feel.
 - **Keep context with each chunk.** Prefix every chunk with its document title and section path, for example "Returns policy > Electronics > Laptops". A bare sentence like "This does not apply to sale items" is useless without knowing what "this" refers to.
 - **Keep tables whole.** A table split across chunks loses its column headers.
 
@@ -129,7 +211,7 @@ The embedding model turns text into vectors so that similar meanings land close 
 - **Plan for re-indexing.** Keep the source document ID and a content fingerprint per chunk so you can update only what changed.
 - **Version your index.** When you change the chunking or the model, build a new index next to the old one and compare before switching.
 
-## Retrieval: beyond "top 4 by similarity"
+## Retrieval: beyond simple similarity search
 
 Pure vector search misses exact matches such as product codes, error messages, or names. Keyword search catches them but misses paraphrases. Production systems usually combine both.
 
@@ -161,7 +243,7 @@ Without an evaluation set, you cannot tell whether a change helped. Build one ea
 
 **What to measure:**
 
-- **Retrieval quality:** recall at k (did the right chunk appear in the top k?) and MRR (how high did it rank?). Measure retrieval separately from generation, so you know which part to fix.
+- **Retrieval quality:** recall at k (did the right chunk appear in the top k?) and MRR, mean reciprocal rank (how high did it rank?). Measure retrieval separately from generation, so you know which part to fix.
 - **Answer faithfulness:** does every claim in the answer appear in the cited sources? Automated checks and LLM-as-judge methods help, but spot-check them by hand.
 - **Abstention:** on questions the corpus cannot answer, does the system say so?
 - **Latency and cost** per question, since hybrid search and reranking add both.
@@ -182,75 +264,6 @@ Run this evaluation on every change to chunking, the embedding model, the prompt
 ## Security and access control
 
 Enforce permissions where data is retrieved, not where it is displayed. If a user cannot read a document in your document system, the retrieval step must never return its chunks to that user. Store an access group on each chunk and apply it as a filter on every search. Log which chunks were used for each answer, so you can audit what the model saw.
-
-## Build a simple RAG step by step
-
-This section explains how to build a working RAG system from a small project with local files. It needs no database server. You can run the embedding model and the LLM on your own computer, or call them through an API.
-
-### The process
-
-{% include rag-algorithm-flowchart.html %}
-
-The process has two parts. Part 1 runs once, or whenever your documents change, and writes an index to disk. Part 2 runs on every question and reads that index.
-
-### Step 1: prepare the project
-
-Create one folder for the project. Inside it, create a folder for your documents, and a folder that the indexing step will fill with the index files. Put your text file in the documents folder.
-
-For the example, the document is a short returns policy with four paragraphs, separated by blank lines:
-
-- Customers may return most items within 30 days of delivery.
-- Items must be unused and in their original packaging.
-- Electronics have a 15-day return window and must include all accessories.
-- Sale items are final and cannot be returned.
-
-Each paragraph will become one chunk.
-
-Next, choose two models. The first is an embedding model, which turns text into vectors. The second is an LLM, which writes the answer. Install both with the tools you prefer. You can run them on your own computer or call them through an API. For English content, a small English embedding model is enough. For Vietnamese content, choose a multilingual model such as bge-m3 or a multilingual E5 model, and test it on your own Vietnamese questions before you rely on it.
-
-### Step 2: index the documents
-
-Indexing runs once, or whenever the documents change. It has five parts:
-
-1. **Read** each file in the documents folder.
-2. **Split** each file into chunks. For this short file, one chunk per paragraph is enough. For real documents, split by headings first, then by size, as described in the chunking section above.
-3. **Embed** each chunk. Send the text of each chunk to the embedding model, which returns one vector per chunk. Send chunks in batches, because batching is much faster than one request per chunk.
-4. **Store** the results. Save the vectors in one file, and save each chunk's text and metadata (document, section, chunk number) in a second file, one record per chunk. Row *i* of the vectors must belong to record *i* of the chunks file.
-5. **Record the model name and version** next to the index. If you change the model later, you must re-embed every chunk, and the record tells you when that is needed.
-
-For the example file, the result is four chunks, four vectors, and two files in the index folder.
-
-### Step 3: answer a question
-
-Answering runs on every question. It has six parts:
-
-1. **Embed the question** with the same embedding model used for indexing. This gives a vector for the question.
-2. **Compare** the question vector with every stored chunk vector, and score how close each one is.
-3. **Check the threshold.** If even the best score is below a minimum you choose, stop and reply that the answer is not in the sources. Tune this minimum with your evaluation set.
-4. **Keep the top three chunks** with the highest scores.
-5. **Build the prompt** from those chunks, using the template in the minimal example above: the instructions, the numbered sources, and the question.
-6. **Ask the LLM** for the answer. The LLM reads only the prompt. It does not search the index.
-
-The application returns the answer with the citation numbers, so the user can check each source.
-
-### What you should see
-
-The retrieval step scores the four chunks against the question. The electronics chunk should rank first, because the question is about a TV and the chunk talks about electronics. The prompt then contains that chunk, and the model should reply with something like:
-
-> No. Electronics have a 15-day return window [1].
-
-If the answer is wrong, check the retrieval step before changing the prompt. Look at the top chunks for the question and confirm the electronics chunk is among them. Most problems start there.
-
-### What this simple version leaves out
-
-This setup is a good starting point, and it has clear limits:
-
-- **Scale:** the whole index sits in memory, and every question compares against every chunk. That is fine for thousands of chunks, not millions.
-- **Updates:** indexing rebuilds everything. A production system re-embeds only changed chunks.
-- **Access control:** there is no per-user filter. Add one before you connect real private data.
-- **Quality:** no hybrid search, no reranking, and no evaluation set. Add these as the system grows.
-
-When you need those features, move the index into a vector database such as pgvector or Qdrant, and keep the same process. Run the database and the application as separate services, and the change touches only the storage part.
 
 ## Going beyond basic RAG
 

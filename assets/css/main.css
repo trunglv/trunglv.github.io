@@ -4,6 +4,7 @@
   --color-text: #0e1b3d;
   --color-text-muted: #5b6577;
   --color-border: #e2e6ec;
+  --color-border-strong: #c9d0da;
   --color-navy: #0e1b3d;
   --color-accent: #139e8c;
   --color-accent-contrast: #ffffff;
@@ -21,6 +22,7 @@
     --color-text: #f0f2f6;
     --color-text-muted: #a7afc2;
     --color-border: #243056;
+    --color-border-strong: #3a4878;
     --color-navy: #0e1b3d;
     --color-accent: #22c3ac;
     --color-accent-contrast: #0b1226;
@@ -658,6 +660,32 @@ a:hover {
 
 .contact-direct {
   color: var(--color-text-muted);
+}
+
+.page-content table,
+.post-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.92rem;
+}
+
+.page-content th,
+.page-content td,
+.post-content th,
+.post-content td {
+  border: 1px solid var(--color-border-strong);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.page-content th,
+.post-content th {
+  background: var(--color-bg-subtle);
+  font-weight: 700;
 }
 
 .rag-figure {
