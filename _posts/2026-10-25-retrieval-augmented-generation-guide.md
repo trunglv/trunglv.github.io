@@ -48,7 +48,7 @@ Each chunk keeps some context with it. In a real system, chunk B would also carr
 
 ### Step 2: turn each chunk into a vector
 
-An embedding model converts each chunk into a vector. A real model uses 384 to 3,072 numbers per vector. For illustration, here is chunk B with only 8 numbers: 0.12, -0.53, 0.88, 0.04, -0.31, 0.27, 0.66, -0.09.
+An embedding model converts each chunk into a vector. Real models typically use between 384 and 3,072 numbers per vector. For illustration, here is chunk B with only 8 numbers: 0.12, -0.53, 0.88, 0.04, -0.31, 0.27, 0.66, -0.09.
 
 Each number is one coordinate. No single number means anything by itself. What matters is the whole list: a question about electronics returns produces a vector that lands close to the vector for chunk B, and a question about sale items lands close to the vector for chunk C.
 
@@ -80,7 +80,7 @@ In production, a vector database such as pgvector, Qdrant, or Milvus keeps the s
 
 Keep the raw file. If the policy changes, you re-chunk the new version, re-embed only the changed chunks, and write a new index next to the old one.
 
-## A minimal example
+## A minimal example: the prompt
 
 The minimal example is the prompt that the application builds once the relevant chunks are found. The retrieval step can use any of the approaches described in this guide. The prompt is what makes the answer grounded. It contains three parts: the instructions, the numbered sources, and the question.
 
@@ -96,7 +96,7 @@ Three things in this prompt matter more than they look. It tells the model to an
 
 ## A worked example: a returns policy assistant
 
-Suppose an online store wants a chatbot that answers questions about its returns policy, which changes twice a year.
+Suppose a different online store, one that allows electronics returns within 30 days, wants a chatbot that answers questions about its returns policy, which changes twice a year.
 
 - **Documents:** the policy pages, plus the FAQ, exported as Markdown. Each file has metadata: region, effective date, and product category.
 - **Chunking:** split by heading first, then by size. A section called "Electronics returns" becomes one chunk, not a fragment cut in the middle of a sentence.
@@ -185,7 +185,7 @@ Enforce permissions where data is retrieved, not where it is displayed. If a use
 
 ## Build a simple RAG step by step
 
-This section explains how to build a working RAG system from a small project with local files. It needs no database server, and it runs the embedding model and the LLM on your own computer.
+This section explains how to build a working RAG system from a small project with local files. It needs no database server. You can run the embedding model and the LLM on your own computer, or call them through an API.
 
 ### The process
 
@@ -222,12 +222,14 @@ For the example file, the result is four chunks, four vectors, and two files in 
 
 ### Step 3: answer a question
 
-Answering runs on every question. It has four parts:
+Answering runs on every question. It has six parts:
 
 1. **Embed the question** with the same embedding model used for indexing. This gives a vector for the question.
-2. **Compare** the question vector with every stored chunk vector, and measure how close each one is. Keep the top three chunks with the highest scores.
-3. **Build the prompt** from those chunks, using the template in the minimal example above: the instructions, the numbered sources, and the question.
-4. **Ask the LLM** for the answer. The LLM reads only the prompt. It does not search the index.
+2. **Compare** the question vector with every stored chunk vector, and score how close each one is.
+3. **Check the threshold.** If even the best score is below a minimum you choose, stop and reply that the answer is not in the sources. Tune this minimum with your evaluation set.
+4. **Keep the top three chunks** with the highest scores.
+5. **Build the prompt** from those chunks, using the template in the minimal example above: the instructions, the numbered sources, and the question.
+6. **Ask the LLM** for the answer. The LLM reads only the prompt. It does not search the index.
 
 The application returns the answer with the citation numbers, so the user can check each source.
 
