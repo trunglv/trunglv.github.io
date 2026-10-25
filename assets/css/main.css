@@ -4,7 +4,7 @@
   --color-text: #0e1b3d;
   --color-text-muted: #5b6577;
   --color-border: #e2e6ec;
-  --color-border-strong: #c9d0da;
+  --color-border-strong: #8a94a6;
   --color-navy: #0e1b3d;
   --color-accent: #139e8c;
   --color-accent-contrast: #ffffff;
@@ -22,7 +22,7 @@
     --color-text: #f0f2f6;
     --color-text-muted: #a7afc2;
     --color-border: #243056;
-    --color-border-strong: #3a4878;
+    --color-border-strong: #56648a;
     --color-navy: #0e1b3d;
     --color-accent: #22c3ac;
     --color-accent-contrast: #0b1226;
@@ -817,7 +817,7 @@ a:hover {
   .page-content td {
     display: block;
     border: 0;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border-strong);
   }
 
   .post-content td:last-child,
