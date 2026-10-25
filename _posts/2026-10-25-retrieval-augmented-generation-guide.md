@@ -277,6 +277,144 @@ Run this evaluation on every change to chunking, the embedding model, the prompt
 
 Enforce permissions where data is retrieved, not where it is displayed. If a user cannot read a document in your document system, the retrieval query must never return its chunks to that user. Store an access group on each chunk and apply it as a filter on every search. Log which chunks were used for each answer, so you can audit what the model saw.
 
+## Build a simple RAG step by step
+
+This section builds a working RAG system with two Python scripts and local files. It uses no database server, and it runs the embedding model and the LLM on your machine.
+
+### The process
+
+{% include simple-rag-pipeline.html %}
+
+The process has two parts. Part 1 runs once, or whenever your documents change, and writes an index to disk. Part 2 runs on every question and reads that index.
+
+### Step 1: set up the project
+
+```
+simple-rag/
+├── docs/
+│   └── returns-policy.md
+├── index/              # created by ingest.py
+├── ingest.py
+└── ask.py
+```
+
+Install the dependencies and a local LLM:
+
+```bash
+pip install sentence-transformers numpy ollama
+ollama pull llama3.1
+```
+
+Put this text in `docs/returns-policy.md`. Paragraphs are separated by blank lines, and each paragraph becomes one chunk:
+
+```markdown
+Customers may return most items within 30 days of delivery.
+
+Items must be unused and in their original packaging.
+
+Electronics have a 15-day return window and must include all accessories.
+
+Sale items are final and cannot be returned.
+```
+
+### Step 2: chunk, embed, and save (`ingest.py`)
+
+```python
+import json, pathlib
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer("all-MiniLM-L6-v2")  # 384-dimensional vectors, runs locally
+
+def chunks_from(path):
+    text = pathlib.Path(path).read_text(encoding="utf-8")
+    for i, block in enumerate(text.split("\n\n")):   # one chunk per paragraph
+        if block.strip():
+            yield {"doc": str(path), "chunk_index": i, "text": block.strip()}
+
+rows = [c for p in pathlib.Path("docs").glob("*.md") for c in chunks_from(p)]
+
+# normalize_embeddings=True makes each vector length 1, so a dot product equals cosine similarity
+vectors = model.encode([r["text"] for r in rows], normalize_embeddings=True)
+
+pathlib.Path("index").mkdir(exist_ok=True)
+np.save("index/vectors.npy", vectors.astype("float32"))
+with open("index/chunks.jsonl", "w", encoding="utf-8") as f:
+    for r in rows:
+        f.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+print(f"indexed {len(rows)} chunks")
+```
+
+Run it:
+
+```bash
+python ingest.py
+# indexed 4 chunks
+```
+
+Splitting by paragraph is the simplest rule that works for a short file. For real documents, split by headings first, then by size, as described in the chunking section above.
+
+### Step 3: retrieve and answer (`ask.py`)
+
+```python
+import json
+import numpy as np
+from sentence_transformers import SentenceTransformer
+import ollama
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+vectors = np.load("index/vectors.npy")
+chunks = [json.loads(line) for line in open("index/chunks.jsonl", encoding="utf-8")]
+
+def retrieve(question, k=3):
+    q = model.encode([question], normalize_embeddings=True)[0]
+    scores = vectors @ q                       # dot product of unit vectors = cosine similarity
+    top = np.argsort(-scores)[:k]
+    return [(chunks[i], float(scores[i])) for i in top]
+
+def answer(question):
+    hits = retrieve(question)
+    sources = "\n\n".join(f"[{n + 1}] {c['text']}" for n, (c, _) in enumerate(hits))
+    prompt = (
+        "Answer using only the sources below. Cite them as [n]. "
+        "If the sources do not contain the answer, say you do not know.\n\n"
+        f"Sources:\n{sources}\n\nQuestion: {question}"
+    )
+    reply = ollama.chat(model="llama3.1", messages=[{"role": "user", "content": prompt}])
+    return reply["message"]["content"]
+
+if __name__ == "__main__":
+    print(answer("Can I return a TV after 20 days?"))
+```
+
+Run it:
+
+```bash
+python ask.py
+```
+
+### What you should see
+
+The retriever scores the four chunks against the question. The electronics chunk should rank first, because the question is about a TV and the chunk talks about electronics. The prompt then contains that chunk, and the model should reply with something like:
+
+```
+No. Electronics have a 15-day return window [1].
+```
+
+If the answer is wrong, check the retrieval step before changing the prompt. Print `retrieve("Can I return a TV after 20 days?")` and confirm the electronics chunk is in the top results. Most problems start there.
+
+### What this simple version leaves out
+
+This setup is a good starting point, and it has clear limits:
+
+- **Scale:** the whole index sits in memory, and every question compares against every chunk. That is fine for thousands of chunks, not millions.
+- **Updates:** `ingest.py` rebuilds everything. A production system re-embeds only changed chunks.
+- **Access control:** there is no per-user filter. Add one before you connect real private data.
+- **Quality:** no hybrid search, no reranking, and no evaluation set. Add these as the system grows.
+
+When you need those features, move the index into a vector database such as pgvector or Qdrant, and keep the same pipeline. Run the database and the app as containers, and the change touches only the storage code.
+
 ## Going beyond basic RAG
 
 Once the basics work, consider:
