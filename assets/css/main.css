@@ -336,7 +336,8 @@ a:hover {
 /* Page & post content */
 .page,
 .post {
-  padding: 48px 0;
+  padding-top: 48px;
+  padding-bottom: 48px;
 }
 
 .page-title {
