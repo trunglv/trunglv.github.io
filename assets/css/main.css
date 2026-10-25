@@ -787,6 +787,56 @@ a:hover {
     flex-direction: column;
   }
 
+  .post-content table,
+  .page-content table {
+    display: block;
+    border: 0;
+    overflow-x: visible;
+  }
+
+  .post-content thead,
+  .page-content thead {
+    display: none;
+  }
+
+  .post-content tbody,
+  .page-content tbody {
+    display: block;
+  }
+
+  .post-content tr,
+  .page-content tr {
+    display: block;
+    margin-bottom: 14px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .post-content td,
+  .page-content td {
+    display: block;
+    border: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post-content td:last-child,
+  .page-content td:last-child {
+    border-bottom: 0;
+  }
+
+  .post-content td[data-label]::before,
+  .page-content td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+    margin-bottom: 4px;
+  }
+
   .post-nav-link {
     max-width: 100%;
   }
