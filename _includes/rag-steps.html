@@ -1,0 +1,145 @@
+<div class="rag-steps" id="rag-steps">
+  <style>
+    .rag-steps { border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-card-bg); padding: 22px; margin: 28px 0; }
+    .rag-steps-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .rag-steps-title { font-weight: 700; color: var(--color-text); }
+    .rag-steps-count { font-size: 0.85rem; color: var(--color-text-muted); }
+    .rag-stage { min-height: 260px; }
+    .rag-stage[hidden] { display: none; }
+    .rag-stage h3 { margin: 0 0 10px; font-size: 1.1rem; color: var(--color-text); }
+    .rag-stage p { margin: 0 0 12px; color: var(--color-text-muted); font-size: 0.95rem; }
+    .rag-box { border: 1px solid var(--color-border); border-radius: 10px; padding: 12px 14px; margin: 10px 0; background: var(--color-bg-subtle); font-size: 0.95rem; color: var(--color-text); }
+    .rag-box.hit { border-color: var(--color-accent); background: rgba(19, 158, 140, 0.08); }
+    .rag-box .label { font-weight: 700; color: var(--color-accent); margin-right: 8px; }
+    .rag-mono { font-family: var(--font-mono); font-size: 0.85rem; color: var(--color-text-muted); word-break: break-word; }
+    .rag-bar-row { display: grid; grid-template-columns: 80px 1fr 48px; gap: 10px; align-items: center; margin: 12px 0; font-size: 0.95rem; }
+    .rag-bar { height: 16px; background: var(--color-bg-subtle); border-radius: 999px; overflow: hidden; }
+    .rag-bar span { display: block; height: 100%; width: 0; background: #9aa3b2; border-radius: 999px; transition: width 0.7s ease; }
+    .rag-bar span.top { background: var(--color-accent); }
+    .rag-controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+    .rag-buttons { display: flex; gap: 10px; }
+    .rag-btn { font: inherit; font-weight: 600; padding: 9px 18px; border-radius: 999px; border: 1px solid var(--color-border); background: var(--color-card-bg); color: var(--color-text); cursor: pointer; }
+    .rag-btn.primary { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-accent-contrast); }
+    .rag-btn:disabled { opacity: 0.4; cursor: default; }
+    .rag-dots { display: flex; gap: 6px; }
+    .rag-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--color-border); border: 0; padding: 0; cursor: pointer; }
+    .rag-dot.on { background: var(--color-accent); }
+  </style>
+
+  <div class="rag-steps-head">
+    <span class="rag-steps-title">How RAG works</span>
+    <span class="rag-steps-count" id="rag-count">Step 1 of 6</span>
+  </div>
+
+  <div class="rag-stage" data-step="1">
+    <h3>1. A customer asks a question</h3>
+    <div class="rag-box"><span class="label">Question</span>"Can I return a TV after 20 days?"</div>
+    <p>The question is only text. The model has not seen the returns policy yet.</p>
+  </div>
+
+  <div class="rag-stage" data-step="2" hidden>
+    <h3>2. The question becomes a vector</h3>
+    <div class="rag-box"><span class="label">Question</span>"Can I return a TV after 20 days?"</div>
+    <p>An embedding model turns the question into a list of numbers:</p>
+    <div class="rag-box rag-mono">[0.21, -0.48, 0.77, 0.09, -0.30, 0.35, 0.58, -0.12, ...]</div>
+    <p>Text with similar meaning gets similar numbers, so the question can be compared with stored text.</p>
+  </div>
+
+  <div class="rag-stage" data-step="3" hidden>
+    <h3>3. The policy was already split into chunks</h3>
+    <p>Each chunk was embedded when the index was built.</p>
+    <div class="rag-box"><span class="label">Chunk A</span>Customers may return most items within 30 days of delivery.<div class="rag-mono">vector: [0.14, -0.51, 0.83, ...]</div></div>
+    <div class="rag-box"><span class="label">Chunk B</span>Electronics have a 15-day window and must include all accessories.<div class="rag-mono">vector: [0.12, -0.53, 0.88, ...]</div></div>
+    <div class="rag-box"><span class="label">Chunk C</span>Sale items are final and cannot be returned.<div class="rag-mono">vector: [-0.40, 0.22, -0.11, ...]</div></div>
+  </div>
+
+  <div class="rag-stage" data-step="4" hidden>
+    <h3>4. Compare the question with each chunk</h3>
+    <p>Cosine similarity: higher means closer in meaning. Illustrative scores.</p>
+    <div class="rag-bar-row"><span>Chunk A</span><div class="rag-bar"><span data-w="61" style="--w:61%"></span></div><span>0.61</span></div>
+    <div class="rag-bar-row"><span>Chunk B</span><div class="rag-bar"><span class="top" data-w="82"></span></div><span>0.82</span></div>
+    <div class="rag-bar-row"><span>Chunk C</span><div class="rag-bar"><span data-w="18"></span></div><span>0.18</span></div>
+  </div>
+
+  <div class="rag-stage" data-step="5" hidden>
+    <h3>5. The best match goes into the prompt</h3>
+    <div class="rag-box hit"><span class="label">Top match</span>Chunk B: Electronics have a 15-day window and must include all accessories.</div>
+    <div class="rag-box"><span class="label">Prompt</span>Answer only from the sources below. Cite them as [n].<br>Sources: [1] Electronics have a 15-day window...<br>Question: Can I return a TV after 20 days?</div>
+  </div>
+
+  <div class="rag-stage" data-step="6" hidden>
+    <h3>6. The model answers from the source</h3>
+    <div class="rag-box hit"><span class="label">Answer</span>No. Electronics have a 15-day return window [1].</div>
+    <p>A TV returned on day 20 is outside the window. The citation lets a person check the source in one step.</p>
+  </div>
+
+  <div class="rag-controls">
+    <div class="rag-buttons">
+      <button type="button" class="rag-btn" id="rag-prev">Previous</button>
+      <button type="button" class="rag-btn primary" id="rag-next">Next</button>
+    </div>
+    <div class="rag-dots" id="rag-dots"></div>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.getElementById('rag-steps');
+      if (!root) return;
+      var stages = root.querySelectorAll('.rag-stage');
+      var total = stages.length;
+      var current = 1;
+      var count = document.getElementById('rag-count');
+      var prev = document.getElementById('rag-prev');
+      var next = document.getElementById('rag-next');
+      var dots = document.getElementById('rag-dots');
+
+      for (var i = 1; i <= total; i++) {
+        var dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'rag-dot';
+        dot.setAttribute('aria-label', 'Go to step ' + i);
+        dot.dataset.step = i;
+        dots.appendChild(dot);
+      }
+
+      function animateBars(stage) {
+        var bars = stage.querySelectorAll('.rag-bar span');
+        bars.forEach(function (bar) { bar.style.width = '0%'; });
+        if (stage.dataset.step === '4') {
+          setTimeout(function () {
+            bars.forEach(function (bar) { bar.style.width = bar.dataset.w + '%'; });
+          }, 50);
+        }
+      }
+
+      function show(step) {
+        current = Math.min(Math.max(step, 1), total);
+        stages.forEach(function (s) {
+          var on = Number(s.dataset.step) === current;
+          s.hidden = !on;
+          if (on) animateBars(s);
+        });
+        count.textContent = 'Step ' + current + ' of ' + total;
+        prev.disabled = current === 1;
+        next.textContent = current === total ? 'Start again' : 'Next';
+        dots.querySelectorAll('.rag-dot').forEach(function (d) {
+          d.classList.toggle('on', Number(d.dataset.step) === current);
+        });
+      }
+
+      prev.addEventListener('click', function () { show(current - 1); });
+      next.addEventListener('click', function () {
+        show(current === total ? 1 : current + 1);
+      });
+      dots.addEventListener('click', function (e) {
+        if (e.target.dataset.step) show(Number(e.target.dataset.step));
+      });
+      root.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight') show(current === total ? 1 : current + 1);
+        if (e.key === 'ArrowLeft') show(current - 1);
+      });
+
+      show(1);
+    })();
+  </script>
+</div>

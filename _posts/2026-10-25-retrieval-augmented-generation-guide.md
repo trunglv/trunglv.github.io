@@ -22,7 +22,7 @@ Question ──► embed ──► vector search ──► top-k chunks ──�
 Documents ──► chunk ──► embed ──► vector store      prompt = context + question ──► LLM ──► answer + citations
 ```
 
-![Animated walkthrough of a RAG question: the question becomes a vector, is compared with chunk vectors, the best chunk goes into the prompt, and the model answers with a citation]({{ "/assets/posts/rag/rag-flow.gif" | relative_url }})
+{% include rag-steps.html %}
 
 ## Key terms: chunk and vector, with an example
 
