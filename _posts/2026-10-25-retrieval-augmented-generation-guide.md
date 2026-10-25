@@ -16,12 +16,6 @@ RAG has two phases.
 
 The model does not learn your data. It reads the retrieved text each time. That is why RAG is usually cheaper and easier to update than fine-tuning: when a document changes, you re-index it.
 
-```
-Question ──► embed ──► vector search ──► top-k chunks ──┐
-                                                         ▼
-Documents ──► chunk ──► embed ──► vector store      prompt = context + question ──► LLM ──► answer + citations
-```
-
 {% include llm-rag-diagram.html %}
 
 {% include rag-steps.html %}
@@ -50,18 +44,13 @@ A simple rule is to split by sentence and group sentences up to a size limit. Th
 | B | Items must be unused and in their original packaging. Electronics have a 15-day window and must include all accessories. | 1 |
 | C | Sale items are final and cannot be returned. | 2 |
 
-Each chunk keeps some context with it. In a real system, chunk B would also carry the document name and section, for example `returns-policy.md > Returns policy`, so the model knows where the sentence came from.
+Each chunk keeps some context with it. In a real system, chunk B would also carry the document name and section, for example "returns-policy.md, Returns policy", so the model knows where the sentence came from.
 
 ### Step 2: turn each chunk into a vector
 
-An embedding model converts each chunk into a vector. A real model uses 384 to 3,072 numbers per vector. Here is chunk B with only 8 numbers, for illustration:
+An embedding model converts each chunk into a vector. A real model uses 384 to 3,072 numbers per vector. For illustration, here is chunk B with only 8 numbers: 0.12, -0.53, 0.88, 0.04, -0.31, 0.27, 0.66, -0.09.
 
-```
-Chunk B text:  "Items must be unused ... Electronics have a 15-day window ..."
-Vector B:      [0.12, -0.53, 0.88, 0.04, -0.31, 0.27, 0.66, -0.09]
-```
-
-Each number is one coordinate. No single number means anything by itself. What matters is the whole list: a question about electronics returns produces a vector that lands close to Vector B, and a question about sale items lands close to Vector C.
+Each number is one coordinate. No single number means anything by itself. What matters is the whole list: a question about electronics returns produces a vector that lands close to the vector for chunk B, and a question about sale items lands close to the vector for chunk C.
 
 ### Step 3: search with a question
 
@@ -81,107 +70,38 @@ Note that the question contains "TV", not "electronics", and the document never 
 
 Three kinds of data are kept, and they can be separate files or one database.
 
-1. **The raw document,** unchanged, as the source of truth:
+1. **The raw document,** unchanged, as the source of truth. For example, a file named `returns-policy.md` in a `raw` folder.
 
-```
-data/raw/returns-policy.md
-```
+2. **The chunks,** one record per chunk. Each record holds an ID (for example, `returns-policy#0`), the document name, the section, the chunk number, the text, and metadata such as region and effective date. Store them one record per line in a plain text file, so each line can be read on its own.
 
-2. **The chunks,** one JSON object per line (JSONL). Each line holds the text and metadata for one chunk:
-
-```json
-{"id": "returns-policy#0", "doc": "returns-policy.md", "section": "Returns policy", "chunk_index": 0, "text": "Returns policy. Customers may return most items within 30 days of delivery.", "region": "all", "effective_date": "2026-01-01"}
-{"id": "returns-policy#1", "doc": "returns-policy.md", "section": "Returns policy", "chunk_index": 1, "text": "Items must be unused and in their original packaging. Electronics have a 15-day window and must include all accessories.", "region": "all", "effective_date": "2026-01-01"}
-{"id": "returns-policy#2", "doc": "returns-policy.md", "section": "Returns policy", "chunk_index": 2, "text": "Sale items are final and cannot be returned.", "region": "all", "effective_date": "2026-01-01"}
-```
-
-3. **The vectors,** stored as a matrix where row *i* is the vector for chunk *i*. For three chunks of 384 numbers stored as 32-bit floats, the file is about 4.6 KB:
-
-```
-data/index/vectors.npy     # shape (3, 384), float32
-data/index/chunks.jsonl    # row 0 -> returns-policy#0, row 1 -> returns-policy#1, ...
-```
+3. **The vectors,** stored as a table of numbers where row *i* is the vector for chunk *i*. For three chunks of 384 numbers stored as 32-bit floats, the file is about 4.6 KB. The row order must match the order of the chunk records, so row 0 belongs to the first chunk record, row 1 to the second, and so on.
 
 In production, a vector database such as pgvector, Qdrant, or Milvus keeps the same information. It stores each vector with its ID and metadata, and it builds an index structure so search does not compare the question against every row. The principle stays the same: the text and metadata live in one place, the vectors live with them, and every vector can be traced back to the exact chunk and document it came from.
-
-A small script that produces these files:
-
-```python
-import json, numpy as np
-
-chunks = [
-    {"id": "returns-policy#0", "doc": "returns-policy.md", "section": "Returns policy", "chunk_index": 0,
-     "text": "Returns policy. Customers may return most items within 30 days of delivery.",
-     "region": "all", "effective_date": "2026-01-01"},
-    # ... chunks 1 and 2 as above
-]
-
-vectors = embed([c["text"] for c in chunks])   # shape (3, 384), your embedding model
-
-np.save("data/index/vectors.npy", vectors.astype(np.float32))
-with open("data/index/chunks.jsonl", "w", encoding="utf-8") as f:
-    for c in chunks:
-        f.write(json.dumps(c, ensure_ascii=False) + "\n")
-```
 
 Keep the raw file. If the policy changes, you re-chunk the new version, re-embed only the changed chunks, and write a new index next to the old one.
 
 ## A minimal example
 
-This example uses an in-memory index so you can run it without infrastructure. It shows the moving parts; a production system swaps each piece for a real component.
+The minimal example is the prompt that the application builds once the relevant chunks are found. The retrieval step can use any of the approaches described in this guide. The prompt is what makes the answer grounded. It contains three parts: the instructions, the numbered sources, and the question.
 
-```python
-import numpy as np
+> Answer using only the sources below. Cite sources as [n]. If the sources do not contain the answer, say you do not know.
+>
+> Sources:
+> [1] Electronics have a 15-day return window and must include all accessories.
+> [2] Customers may return most items within 30 days of delivery.
+>
+> Question: Can I return a TV after 20 days?
 
-def chunk(text: str, size: int = 500, overlap: int = 50) -> list[str]:
-    words = text.split()
-    chunks, start = [], 0
-    while start < len(words):
-        chunks.append(" ".join(words[start:start + size]))
-        start += size - overlap
-    return chunks
-
-def embed(texts: list[str]) -> np.ndarray:
-    # Replace with your embedding model (an API or a local model).
-    ...
-
-class Index:
-    def __init__(self):
-        self.texts, self.meta, self.vectors = [], [], []
-
-    def add(self, doc_id: str, text: str):
-        for c in chunk(text):
-            self.texts.append(c)
-            self.meta.append({"doc_id": doc_id})
-        self.vectors = embed(self.texts)  # simplified: re-embed on add
-
-    def search(self, query: str, k: int = 4):
-        q = embed([query])[0]
-        scores = self.vectors @ q / (np.linalg.norm(self.vectors, axis=1) * np.linalg.norm(q))
-        top = np.argsort(-scores)[:k]
-        return [(self.texts[i], self.meta[i], float(scores[i])) for i in top]
-
-def answer(index: Index, question: str, llm) -> str:
-    hits = index.search(question)
-    context = "\n\n".join(f"[{i+1}] {text}" for i, (text, _, _) in enumerate(hits))
-    prompt = (
-        "Answer using only the sources below. Cite sources as [n]. "
-        "If the sources do not contain the answer, say you do not know.\n\n"
-        f"Sources:\n{context}\n\nQuestion: {question}"
-    )
-    return llm(prompt)
-```
-
-Three things in this sketch matter more than they look. The prompt tells the model to answer only from the sources. Each source has a number, so the answer can cite it. And the prompt gives the model an explicit way to say "I don't know," which prevents most made-up answers.
+Three things in this prompt matter more than they look. It tells the model to answer only from the sources. Each source has a number, so the answer can cite it. And it gives the model an explicit way to say "I don't know," which prevents most made-up answers.
 
 ## A worked example: a returns policy assistant
 
 Suppose an online store wants a chatbot that answers questions about its returns policy, which changes twice a year.
 
-- **Documents:** the policy pages, plus the FAQ, exported as Markdown. Each file has metadata: `region`, `effective_date`, `product_category`.
+- **Documents:** the policy pages, plus the FAQ, exported as Markdown. Each file has metadata: region, effective date, and product category.
 - **Chunking:** split by heading first, then by size. A section called "Electronics returns" becomes one chunk, not a fragment cut in the middle of a sentence.
 - **Question:** "Can I return a laptop I bought in Germany 40 days ago?"
-- **Retrieval:** filter by `region = DE` and `effective_date` = the current version, then search for "returns laptop" within that subset.
+- **Retrieval:** filter by region = Germany and by the current effective date, then search for "returns laptop" within that subset.
 - **Prompt:** the top chunks, with the question, and the instruction to cite sources.
 - **Answer:** "No. Electronics can be returned within 30 days of delivery [2]." The citation lets a support agent check the source in one click.
 
@@ -195,7 +115,7 @@ Chunking has the largest effect on answer quality, and it is the step most often
 
 - **Split on structure first.** Headings, sections, list items, and code blocks are natural boundaries. Split by size only when a section is too large.
 - **Start around 300 to 800 tokens per chunk,** with 10% to 20% overlap. Tune this with your evaluation set, not by feel.
-- **Keep context with each chunk.** Prefix every chunk with its document title and section path, for example `Returns policy > Electronics > Laptops`. A bare sentence like "This does not apply to sale items" is useless without knowing what "this" refers to.
+- **Keep context with each chunk.** Prefix every chunk with its document title and section path, for example "Returns policy > Electronics > Laptops". A bare sentence like "This does not apply to sale items" is useless without knowing what "this" refers to.
 - **Keep tables whole.** A table split across chunks loses its column headers.
 
 ## Embeddings and the vector store
@@ -206,42 +126,28 @@ The embedding model turns text into vectors so that similar meanings land close 
 
 - **Embed queries and documents with the same model.** Mixing models silently ruins retrieval.
 - **Store metadata with each vector** (source, date, region, access group) so you can filter before or during search.
-- **Plan for re-indexing.** Keep the source document ID and a content hash per chunk so you can update only what changed.
+- **Plan for re-indexing.** Keep the source document ID and a content fingerprint per chunk so you can update only what changed.
 - **Version your index.** When you change the chunking or the model, build a new index next to the old one and compare before switching.
 
-## Retrieval: beyond "top 4 by cosine similarity"
+## Retrieval: beyond "top 4 by similarity"
 
-Pure vector search misses exact matches such as product codes, error messages, or names. Keyword search (BM25) catches them but misses paraphrases. Production systems usually combine both.
+Pure vector search misses exact matches such as product codes, error messages, or names. Keyword search catches them but misses paraphrases. Production systems usually combine both.
 
 **Practices:**
 
-- **Use hybrid search.** Run vector and keyword search, then merge the results (reciprocal rank fusion is a simple, robust choice).
+- **Use hybrid search.** Run vector search and keyword search separately, then merge the two result lists. Reciprocal rank fusion is a simple, robust way to merge them: each result earns points based on its position in each list, and the points are added together. A document near the top of both lists ends up at the top of the merged list.
 - **Retrieve more, then rerank.** Fetch 20 to 50 candidates cheaply, then rerank the top ones with a cross-encoder or a reranking model. Reranking often improves precision more than changing the embedding model.
 - **Tune k.** Too few chunks miss the answer. Too many dilute it and push the relevant text toward the middle of the prompt, where models attend least. Start with 3 to 6 chunks and measure.
 - **Apply filters before ranking,** not after. Filtering a top-10 list down to two results leaves you with too little.
-
-Example of hybrid merge:
-
-```python
-def rrf(rankings: list[list[str]], k: int = 60) -> list[str]:
-    # Reciprocal rank fusion: each list contributes 1 / (k + rank)
-    scores = {}
-    for ranking in rankings:
-        for rank, doc_id in enumerate(ranking, start=1):
-            scores[doc_id] = scores.get(doc_id, 0) + 1 / (k + rank)
-    return sorted(scores, key=scores.get, reverse=True)
-
-fused = rrf([vector_search(q), keyword_search(q)])
-```
 
 ## Prompting with retrieved context
 
 **Practices:**
 
 - **State the rules plainly:** answer only from the sources, cite each claim, and say when the sources do not answer the question.
-- **Mark the boundary.** Wrap retrieved text in clear delimiters such as `<source id="2">...</source>`. This helps the model separate your instructions from document content.
+- **Mark the boundary.** Wrap each retrieved passage in a clear tag with its source number. This helps the model separate your instructions from document content.
 - **Treat retrieved text as data, not instructions.** A document can contain text like "ignore previous instructions." Do not let retrieved content change the task. This is the main defense against indirect prompt injection in RAG systems.
-- **Ask for a structured answer when you can.** For example, an answer field plus a list of cited source IDs. Your application can then check that every cited ID was actually retrieved.
+- **Ask for a structured answer when you can.** For example, an answer plus a list of cited source numbers. Your application can then check that every cited number was actually retrieved.
 
 ## Evaluation: the part most teams skip
 
@@ -255,7 +161,7 @@ Without an evaluation set, you cannot tell whether a change helped. Build one ea
 
 **What to measure:**
 
-- **Retrieval quality:** recall@k (did the right chunk appear in the top k?) and MRR (how high did it rank?). Measure retrieval separately from generation, so you know which part to fix.
+- **Retrieval quality:** recall at k (did the right chunk appear in the top k?) and MRR (how high did it rank?). Measure retrieval separately from generation, so you know which part to fix.
 - **Answer faithfulness:** does every claim in the answer appear in the cited sources? Automated checks and LLM-as-judge methods help, but spot-check them by hand.
 - **Abstention:** on questions the corpus cannot answer, does the system say so?
 - **Latency and cost** per question, since hybrid search and reranking add both.
@@ -266,162 +172,91 @@ Run this evaluation on every change to chunking, the embedding model, the prompt
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| Answer is fluent but wrong | Right document, wrong chunk, or no retrieval hit | Check recall@k first; improve chunking and hybrid search |
+| Answer is fluent but wrong | Right document, wrong chunk, or no retrieval hit | Check recall at k first; improve chunking and hybrid search |
 | Answer cites a real source but says something it does not contain | Weak prompt or too much context | Tighten the instruction; reduce k; rerank |
-| Answer uses an outdated policy | Stale index or missing date filter | Add `effective_date` filters; re-index on change |
+| Answer uses an outdated policy | Stale index or missing date filter | Add effective-date filters; re-index on change |
 | Answer ignores the relevant detail in a long context | "Lost in the middle" effect | Put the most relevant chunks first and last; use fewer, better chunks |
-| Answer leaks content the user should not see | No access control at retrieval time | Filter by user permissions in the index query, not in the UI |
+| Answer leaks content the user should not see | No access control at retrieval time | Filter by user permissions in the search itself, not in the interface |
 | Answer follows instructions hidden in a document | Prompt injection through retrieved text | Delimit sources, treat them as data, and limit what tools the model can call |
 
 ## Security and access control
 
-Enforce permissions where data is retrieved, not where it is displayed. If a user cannot read a document in your document system, the retrieval query must never return its chunks to that user. Store an access group on each chunk and apply it as a filter on every search. Log which chunks were used for each answer, so you can audit what the model saw.
+Enforce permissions where data is retrieved, not where it is displayed. If a user cannot read a document in your document system, the retrieval step must never return its chunks to that user. Store an access group on each chunk and apply it as a filter on every search. Log which chunks were used for each answer, so you can audit what the model saw.
 
 ## Build a simple RAG step by step
 
-This section builds a working RAG system with two Python scripts and local files. It uses no database server, and it runs the embedding model and the LLM on your machine.
+This section explains how to build a working RAG system from a small project with local files. It needs no database server, and it runs the embedding model and the LLM on your own computer.
 
 ### The process
 
-{% include simple-rag-pipeline.html %}
+{% include rag-algorithm-flowchart.html %}
 
 The process has two parts. Part 1 runs once, or whenever your documents change, and writes an index to disk. Part 2 runs on every question and reads that index.
 
-### Step 1: set up the project
+### Step 1: prepare the project
 
-```
-simple-rag/
-├── docs/
-│   └── returns-policy.md
-├── index/              # created by ingest.py
-├── ingest.py
-└── ask.py
-```
+Create one folder for the project. Inside it, create a folder for your documents, and a folder that the indexing step will fill with the index files. Put your text file in the documents folder.
 
-Install the dependencies and a local LLM:
+For the example, the document is a short returns policy with four paragraphs, separated by blank lines:
 
-```bash
-pip install sentence-transformers numpy ollama
-ollama pull llama3.1
-```
+- Customers may return most items within 30 days of delivery.
+- Items must be unused and in their original packaging.
+- Electronics have a 15-day return window and must include all accessories.
+- Sale items are final and cannot be returned.
 
-Put this text in `docs/returns-policy.md`. Paragraphs are separated by blank lines, and each paragraph becomes one chunk:
+Each paragraph will become one chunk.
 
-```markdown
-Customers may return most items within 30 days of delivery.
+Next, choose two models. The first is an embedding model, which turns text into vectors. The second is an LLM, which writes the answer. Install both with the tools you prefer. You can run them on your own computer or call them through an API. For English content, a small English embedding model is enough. For Vietnamese content, choose a multilingual model such as bge-m3 or a multilingual E5 model, and test it on your own Vietnamese questions before you rely on it.
 
-Items must be unused and in their original packaging.
+### Step 2: index the documents
 
-Electronics have a 15-day return window and must include all accessories.
+Indexing runs once, or whenever the documents change. It has five parts:
 
-Sale items are final and cannot be returned.
-```
+1. **Read** each file in the documents folder.
+2. **Split** each file into chunks. For this short file, one chunk per paragraph is enough. For real documents, split by headings first, then by size, as described in the chunking section above.
+3. **Embed** each chunk. Send the text of each chunk to the embedding model, which returns one vector per chunk. Send chunks in batches, because batching is much faster than one request per chunk.
+4. **Store** the results. Save the vectors in one file, and save each chunk's text and metadata (document, section, chunk number) in a second file, one record per chunk. Row *i* of the vectors must belong to record *i* of the chunks file.
+5. **Record the model name and version** next to the index. If you change the model later, you must re-embed every chunk, and the record tells you when that is needed.
 
-### Step 2: chunk, embed, and save (`ingest.py`)
+For the example file, the result is four chunks, four vectors, and two files in the index folder.
 
-```python
-import json, pathlib
-import numpy as np
-from sentence_transformers import SentenceTransformer
+### Step 3: answer a question
 
-model = SentenceTransformer("all-MiniLM-L6-v2")  # 384-dimensional vectors, runs locally
+Answering runs on every question. It has four parts:
 
-def chunks_from(path):
-    text = pathlib.Path(path).read_text(encoding="utf-8")
-    for i, block in enumerate(text.split("\n\n")):   # one chunk per paragraph
-        if block.strip():
-            yield {"doc": str(path), "chunk_index": i, "text": block.strip()}
+1. **Embed the question** with the same embedding model used for indexing. This gives a vector for the question.
+2. **Compare** the question vector with every stored chunk vector, and measure how close each one is. Keep the top three chunks with the highest scores.
+3. **Build the prompt** from those chunks, using the template in the minimal example above: the instructions, the numbered sources, and the question.
+4. **Ask the LLM** for the answer. The LLM reads only the prompt. It does not search the index.
 
-rows = [c for p in pathlib.Path("docs").glob("*.md") for c in chunks_from(p)]
-
-# normalize_embeddings=True makes each vector length 1, so a dot product equals cosine similarity
-vectors = model.encode([r["text"] for r in rows], normalize_embeddings=True)
-
-pathlib.Path("index").mkdir(exist_ok=True)
-np.save("index/vectors.npy", vectors.astype("float32"))
-with open("index/chunks.jsonl", "w", encoding="utf-8") as f:
-    for r in rows:
-        f.write(json.dumps(r, ensure_ascii=False) + "\n")
-
-print(f"indexed {len(rows)} chunks")
-```
-
-Run it:
-
-```bash
-python ingest.py
-# indexed 4 chunks
-```
-
-Splitting by paragraph is the simplest rule that works for a short file. For real documents, split by headings first, then by size, as described in the chunking section above.
-
-### Step 3: retrieve and answer (`ask.py`)
-
-```python
-import json
-import numpy as np
-from sentence_transformers import SentenceTransformer
-import ollama
-
-model = SentenceTransformer("all-MiniLM-L6-v2")
-vectors = np.load("index/vectors.npy")
-chunks = [json.loads(line) for line in open("index/chunks.jsonl", encoding="utf-8")]
-
-def retrieve(question, k=3):
-    q = model.encode([question], normalize_embeddings=True)[0]
-    scores = vectors @ q                       # dot product of unit vectors = cosine similarity
-    top = np.argsort(-scores)[:k]
-    return [(chunks[i], float(scores[i])) for i in top]
-
-def answer(question):
-    hits = retrieve(question)
-    sources = "\n\n".join(f"[{n + 1}] {c['text']}" for n, (c, _) in enumerate(hits))
-    prompt = (
-        "Answer using only the sources below. Cite them as [n]. "
-        "If the sources do not contain the answer, say you do not know.\n\n"
-        f"Sources:\n{sources}\n\nQuestion: {question}"
-    )
-    reply = ollama.chat(model="llama3.1", messages=[{"role": "user", "content": prompt}])
-    return reply["message"]["content"]
-
-if __name__ == "__main__":
-    print(answer("Can I return a TV after 20 days?"))
-```
-
-Run it:
-
-```bash
-python ask.py
-```
+The application returns the answer with the citation numbers, so the user can check each source.
 
 ### What you should see
 
-The retriever scores the four chunks against the question. The electronics chunk should rank first, because the question is about a TV and the chunk talks about electronics. The prompt then contains that chunk, and the model should reply with something like:
+The retrieval step scores the four chunks against the question. The electronics chunk should rank first, because the question is about a TV and the chunk talks about electronics. The prompt then contains that chunk, and the model should reply with something like:
 
-```
-No. Electronics have a 15-day return window [1].
-```
+> No. Electronics have a 15-day return window [1].
 
-If the answer is wrong, check the retrieval step before changing the prompt. Print `retrieve("Can I return a TV after 20 days?")` and confirm the electronics chunk is in the top results. Most problems start there.
+If the answer is wrong, check the retrieval step before changing the prompt. Look at the top chunks for the question and confirm the electronics chunk is among them. Most problems start there.
 
 ### What this simple version leaves out
 
 This setup is a good starting point, and it has clear limits:
 
 - **Scale:** the whole index sits in memory, and every question compares against every chunk. That is fine for thousands of chunks, not millions.
-- **Updates:** `ingest.py` rebuilds everything. A production system re-embeds only changed chunks.
+- **Updates:** indexing rebuilds everything. A production system re-embeds only changed chunks.
 - **Access control:** there is no per-user filter. Add one before you connect real private data.
 - **Quality:** no hybrid search, no reranking, and no evaluation set. Add these as the system grows.
 
-When you need those features, move the index into a vector database such as pgvector or Qdrant, and keep the same pipeline. Run the database and the app as containers, and the change touches only the storage code.
+When you need those features, move the index into a vector database such as pgvector or Qdrant, and keep the same process. Run the database and the application as separate services, and the change touches only the storage part.
 
 ## Going beyond basic RAG
 
 Once the basics work, consider:
 
-- **Query rewriting:** turn a vague or follow-up question ("what about for students?") into a standalone query before searching.
-- **Multi-step retrieval:** let the model search again when the first results are not enough, with a limit on steps.
-- **Structured data:** for numbers and tables, a SQL or API lookup often beats text retrieval. Use RAG for the text and tools for the facts.
+- **Query rewriting:** turn a vague or follow-up question ("what about for students?") into a standalone question before searching.
+- **Multi-step retrieval:** let the model search again when the first results are not enough, with a limit on the number of steps.
+- **Structured data:** for numbers and tables, a database or API lookup often beats text retrieval. Use RAG for the text and tools for the facts.
 - **Knowledge graphs or GraphRAG** for questions that need links across many documents. This adds cost and complexity, so start with it only when simpler methods fail your evaluation set.
 
 ## Summary
