@@ -7,6 +7,8 @@ lang: en
 
 Large language models know a lot, but they do not know your documents, your product catalog, or yesterday's policy change. They also make things up when they are unsure. Retrieval-Augmented Generation (RAG) fixes both problems by fetching relevant text at question time and giving it to the model as context. This guide explains how RAG works, walks through a small example, and lists the practices that separate a demo from a system people trust.
 
+{% include toc.html %}
+
 ## At a glance
 
 | Stage | What happens | Best practice |
