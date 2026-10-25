@@ -22,6 +22,8 @@ Question ──► embed ──► vector search ──► top-k chunks ──�
 Documents ──► chunk ──► embed ──► vector store      prompt = context + question ──► LLM ──► answer + citations
 ```
 
+{% include llm-rag-diagram.html %}
+
 {% include rag-steps.html %}
 
 ## Key terms: chunk and vector, with an example
