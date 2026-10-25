@@ -68,6 +68,30 @@ An embedding model converts each chunk into a vector. Real models typically use 
 
 Each number is one coordinate. No single number means anything by itself. What matters is the whole list: a question about electronics returns produces a vector that lands close to the vector for chunk B, and a question about sale items lands close to the vector for chunk C.
 
+### Choosing an embedding model
+
+Not all embedding models are the same. They differ in which languages they understand, how large their vectors are, and where they run. There are three broad kinds.
+
+**English-only models** are trained mainly on English text. They are small and fast, and they work well when all your documents and questions are in English. A common example produces 384-number vectors. The weakness is that they often understand other languages poorly, so a Vietnamese question may land far from the English chunk that answers it, even when the meaning matches.
+
+**Multilingual models** are trained on text from many languages at once, usually including Vietnamese. They place a sentence and its translation close together, and they handle a question in one language against a document in another. The family of models called bge-m3 is one example. It produces 1024-number vectors and accepts long inputs, so it suits real documents. Multilingual models are larger and slower than English-only models, so they need more memory and a little more time per chunk.
+
+**Domain or hosted models** are tuned for a field such as law or medicine, or are offered as an API by a vendor. A hosted model removes the work of running it yourself, but your text leaves your system on every request, so check the privacy terms before you send private documents.
+
+These are the points to compare when you choose:
+
+| What to compare | Why it matters |
+|---|---|
+| Languages covered | Your users' questions and your documents must both be understood well |
+| Vector size (for example 384, 768, 1024) | Larger vectors use more storage and search time, but can capture finer differences |
+| Maximum input length | If a model accepts only short text, long chunks get cut off and lose meaning |
+| Where it runs | On your own machine or server, or through an API with a cost per request |
+| Test results on your own questions | Public benchmarks are a starting point; your evaluation set decides |
+
+For a Vietnamese returns policy, a multilingual model lets a question such as "Có được trả hàng sau 20 ngày không?" find the English or Vietnamese chunk about the electronics window. An English-only model would likely miss it. Still, test the model on real Vietnamese questions before you rely on it, because some multilingual models handle Vietnamese well and others handle it only moderately.
+
+Whichever model you choose, use the same one for indexing and for every question. If you change the model, every chunk must be embedded again.
+
 ### Step 3: search with a question
 
 The question is also turned into a vector. Retrieval then compares it with every chunk vector using cosine similarity, a score from -1 to 1 where higher means closer in meaning. Here is an illustrative run for the question "Can I return a TV after 20 days?":
