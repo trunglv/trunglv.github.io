@@ -2,6 +2,7 @@ en:
   nav_about: About
   nav_extensions: Magento Extensions
   nav_blog: Blog
+  nav_contact: Contact
   nav_rss: RSS
   hero_eyebrow: Betagento
   hero_title: Think small. Do simple.
@@ -19,6 +20,7 @@ vi:
   nav_about: Giới thiệu
   nav_extensions: Tiện ích Magento
   nav_blog: Bài viết
+  nav_contact: Liên hệ
   nav_rss: RSS
   hero_eyebrow: Betagento
   hero_title: Tinh gọn tư duy. Đơn giản hành động.

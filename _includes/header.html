@@ -27,10 +27,12 @@
         {% if lang == "vi" %}
         <a href="{{ "/vi/#about" | relative_url }}">{{ t.nav_about }}</a>
         <a href="{{ "/vi/blog/" | relative_url }}">{{ t.nav_blog }}</a>
+        <a href="{{ "/vi/contact/" | relative_url }}">{{ t.nav_contact }}</a>
         {% else %}
         <a href="{{ "/#about" | relative_url }}">{{ t.nav_about }}</a>
         <a href="{{ "/extensions/" | relative_url }}">{{ t.nav_extensions }}</a>
         <a href="{{ "/blog/" | relative_url }}">{{ t.nav_blog }}</a>
+        <a href="{{ "/contact/" | relative_url }}">{{ t.nav_contact }}</a>
         {% endif %}
         <a href="{{ "/feed.xml" | relative_url }}">{{ t.nav_rss }}</a>
       </nav>
