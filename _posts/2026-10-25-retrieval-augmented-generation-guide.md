@@ -22,6 +22,106 @@ Question ──► embed ──► vector search ──► top-k chunks ──�
 Documents ──► chunk ──► embed ──► vector store      prompt = context + question ──► LLM ──► answer + citations
 ```
 
+## Key terms: chunk and vector, with an example
+
+Two words come up constantly in RAG. Here is what they mean, using one short document.
+
+**Chunk:** a piece of a document that is small enough to fit in a prompt and specific enough to answer one kind of question. Chunks are the units that get searched and returned.
+
+**Vector (embedding):** a list of numbers that represents the meaning of a piece of text. An embedding model reads the text and outputs the list. Texts with similar meaning get lists of numbers that point in similar directions, so you can find related text by comparing lists instead of matching words.
+
+### The example document
+
+Imagine a file called `returns-policy.md` with this text:
+
+> **Returns policy.** Customers may return most items within 30 days of delivery. Items must be unused and in their original packaging. Electronics have a 15-day window and must include all accessories. Sale items are final and cannot be returned.
+
+### Step 1: split it into chunks
+
+A simple rule is to split by sentence and group sentences up to a size limit. This gives three chunks:
+
+| Chunk | Text | Index |
+|---|---|---|
+| A | Returns policy. Customers may return most items within 30 days of delivery. | 0 |
+| B | Items must be unused and in their original packaging. Electronics have a 15-day window and must include all accessories. | 1 |
+| C | Sale items are final and cannot be returned. | 2 |
+
+Each chunk keeps some context with it. In a real system, chunk B would also carry the document name and section, for example `returns-policy.md > Returns policy`, so the model knows where the sentence came from.
+
+### Step 2: turn each chunk into a vector
+
+An embedding model converts each chunk into a vector. A real model uses 384 to 3,072 numbers per vector. Here is chunk B with only 8 numbers, for illustration:
+
+```
+Chunk B text:  "Items must be unused ... Electronics have a 15-day window ..."
+Vector B:      [0.12, -0.53, 0.88, 0.04, -0.31, 0.27, 0.66, -0.09]
+```
+
+Each number is one coordinate. No single number means anything by itself. What matters is the whole list: a question about electronics returns produces a vector that lands close to Vector B, and a question about sale items lands close to Vector C.
+
+### Step 3: search with a question
+
+The question is also turned into a vector. Retrieval then compares it with every chunk vector using cosine similarity, a score from -1 to 1 where higher means closer in meaning. Here is an illustrative run for the question "Can I return a TV after 20 days?":
+
+| Chunk | Similarity score | Result |
+|---|---|---|
+| B (electronics window) | 0.82 | Top match |
+| A (30-day general window) | 0.61 | Second match |
+| C (sale items) | 0.18 | Not relevant |
+
+The top chunk, B, goes into the prompt. The model then answers from that text: the electronics window is 15 days, so a TV at day 20 is not eligible.
+
+Note that the question contains "TV", not "electronics", and the document never says "TV". Vector search still finds the right chunk because the meanings are close. Keyword search alone would miss it.
+
+### How the data is stored on disk
+
+Three kinds of data are kept, and they can be separate files or one database.
+
+1. **The raw document,** unchanged, as the source of truth:
+
+```
+data/raw/returns-policy.md
+```
+
+2. **The chunks,** one JSON object per line (JSONL). Each line holds the text and metadata for one chunk:
+
+```json
+{"id": "returns-policy#0", "doc": "returns-policy.md", "section": "Returns policy", "chunk_index": 0, "text": "Returns policy. Customers may return most items within 30 days of delivery.", "region": "all", "effective_date": "2026-01-01"}
+{"id": "returns-policy#1", "doc": "returns-policy.md", "section": "Returns policy", "chunk_index": 1, "text": "Items must be unused and in their original packaging. Electronics have a 15-day window and must include all accessories.", "region": "all", "effective_date": "2026-01-01"}
+{"id": "returns-policy#2", "doc": "returns-policy.md", "section": "Returns policy", "chunk_index": 2, "text": "Sale items are final and cannot be returned.", "region": "all", "effective_date": "2026-01-01"}
+```
+
+3. **The vectors,** stored as a matrix where row *i* is the vector for chunk *i*. For three chunks of 384 numbers stored as 32-bit floats, the file is about 4.6 KB:
+
+```
+data/index/vectors.npy     # shape (3, 384), float32
+data/index/chunks.jsonl    # row 0 -> returns-policy#0, row 1 -> returns-policy#1, ...
+```
+
+In production, a vector database such as pgvector, Qdrant, or Milvus keeps the same information. It stores each vector with its ID and metadata, and it builds an index structure so search does not compare the question against every row. The principle stays the same: the text and metadata live in one place, the vectors live with them, and every vector can be traced back to the exact chunk and document it came from.
+
+A small script that produces these files:
+
+```python
+import json, numpy as np
+
+chunks = [
+    {"id": "returns-policy#0", "doc": "returns-policy.md", "section": "Returns policy", "chunk_index": 0,
+     "text": "Returns policy. Customers may return most items within 30 days of delivery.",
+     "region": "all", "effective_date": "2026-01-01"},
+    # ... chunks 1 and 2 as above
+]
+
+vectors = embed([c["text"] for c in chunks])   # shape (3, 384), your embedding model
+
+np.save("data/index/vectors.npy", vectors.astype(np.float32))
+with open("data/index/chunks.jsonl", "w", encoding="utf-8") as f:
+    for c in chunks:
+        f.write(json.dumps(c, ensure_ascii=False) + "\n")
+```
+
+Keep the raw file. If the policy changes, you re-chunk the new version, re-embed only the changed chunks, and write a new index next to the old one.
+
 ## A minimal example
 
 This example uses an in-memory index so you can run it without infrastructure. It shows the moving parts; a production system swaps each piece for a real component.
