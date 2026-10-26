@@ -1,0 +1,153 @@
+<div class="cc-quiz" id="cc-quiz">
+  <style>
+    .cc-quiz { border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-card-bg); padding: 22px; margin: 28px 0; }
+    .cc-quiz-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .cc-quiz-title { font-weight: 700; color: var(--color-text); }
+    .cc-quiz-progress { font-size: 0.85rem; color: var(--color-text-muted); }
+    .cc-q { display: none; }
+    .cc-q.on { display: block; }
+    .cc-q h4 { margin: 0 0 12px; font-size: 1rem; color: var(--color-text); }
+    .cc-opt { display: block; width: 100%; text-align: left; font: inherit; font-size: 0.95rem; padding: 10px 14px; margin: 8px 0; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-bg); color: var(--color-text); cursor: pointer; }
+    .cc-opt:hover:not(:disabled) { border-color: var(--color-accent); }
+    .cc-opt:disabled { cursor: default; }
+    .cc-opt.right { border-color: #139e8c; background: rgba(19, 158, 140, 0.12); }
+    .cc-opt.wrong { border-color: #c0392b; background: rgba(192, 57, 43, 0.10); }
+    .cc-why { display: none; margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: var(--color-bg-subtle); font-size: 0.92rem; color: var(--color-text); }
+    .cc-why.on { display: block; }
+    .cc-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 12px; }
+    .cc-btn { font: inherit; font-weight: 600; padding: 9px 18px; border-radius: 999px; border: 1px solid var(--color-border); background: var(--color-card-bg); color: var(--color-text); cursor: pointer; }
+    .cc-btn.primary { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-accent-contrast); }
+    .cc-btn:disabled { opacity: 0.4; cursor: default; }
+    .cc-score { display: none; }
+    .cc-score.on { display: block; }
+    .cc-score strong { font-size: 1.2rem; color: var(--color-accent); }
+  </style>
+
+  <div class="cc-quiz-head">
+    <span class="cc-quiz-title">Quick quiz: how well do you know the mechanics?</span>
+    <span class="cc-quiz-progress" id="cc-progress">1 / 6</span>
+  </div>
+
+  <div class="cc-q on" data-q="1">
+    <h4>1. Resuming a session from yesterday. Which is true?</h4>
+    <button type="button" class="cc-opt" data-correct="false">The saved history is free, so the resumed conversation costs nothing.</button>
+    <button type="button" class="cc-opt" data-correct="true">The whole conversation is sent again. The cache makes it cheap only if it is still within its lifetime.</button>
+    <button type="button" class="cc-opt" data-correct="false">Claude Code summarises the history on resume, so only the summary is sent.</button>
+    <div class="cc-why">The transcript on disk costs nothing to keep, but resuming re-sends everything. If the cache has expired, the first request pays to write it again.</div>
+  </div>
+
+  <div class="cc-q" data-q="2">
+    <h4>2. Roughly how does the cache price compare with normal input, for a read within the lifetime?</h4>
+    <button type="button" class="cc-opt" data-correct="false">Twice the normal price.</button>
+    <button type="button" class="cc-opt" data-correct="false">The same price.</button>
+    <button type="button" class="cc-opt" data-correct="true">About a tenth of the normal price, or less on newer models.</button>
+    <div class="cc-why">Cache reads are billed at 0.1x base input (0.05x on Opus 5.5 and Sonnet 5.5, 0.025x on Fable 5.1 and Mythos 5.1). Writing to the cache costs 1.25x once.</div>
+  </div>
+
+  <div class="cc-q" data-q="3">
+    <h4>3. Where does a subdirectory's CLAUDE.md load?</h4>
+    <button type="button" class="cc-opt" data-correct="false">At launch, along with the root CLAUDE.md, every time.</button>
+    <button type="button" class="cc-opt" data-correct="true">Only when Claude reads or edits a file in that directory.</button>
+    <button type="button" class="cc-opt" data-correct="false">Never; subdirectory files are ignored.</button>
+    <div class="cc-why">Root and parent CLAUDE.md files load at launch. Files in subdirectories load on demand, which is why a large project can keep one file per system.</div>
+  </div>
+
+  <div class="cc-q" data-q="4">
+    <h4>4. You are in the middle of a bug, and an unrelated question comes up. Which keeps the history clean?</h4>
+    <button type="button" class="cc-opt" data-correct="false">Ask it in the same session and then /compact.</button>
+    <button type="button" class="cc-opt" data-correct="true">Use /btw for a quick answer, which never enters the history.</button>
+    <button type="button" class="cc-opt" data-correct="false">Switch to Opus so the answer is better.</button>
+    <div class="cc-why">/btw answers without adding the exchange to the conversation. Compacting still carries a summary of the unrelated question forward.</div>
+  </div>
+
+  <div class="cc-q" data-q="5">
+    <h4>5. An image is 1000 × 1000 pixels, on a standard-tier model. Roughly how many tokens?</h4>
+    <button type="button" class="cc-opt" data-correct="false">About 1,000, one per pixel row.</button>
+    <button type="button" class="cc-opt" data-correct="true">About 1,300, using 28×28-pixel patches.</button>
+    <button type="button" class="cc-opt" data-correct="false">About 1 million, one per pixel.</button>
+    <div class="cc-why">An image costs ⌈width/28⌉ × ⌈height/28⌉ tokens. 1000 / 28 rounds up to 36, so 36 × 36 = 1,296 tokens.</div>
+  </div>
+
+  <div class="cc-q" data-q="6">
+    <h4>6. Which of these is billed as output tokens?</h4>
+    <button type="button" class="cc-opt" data-correct="false">The files Claude reads from disk.</button>
+    <button type="button" class="cc-opt" data-correct="false">The CLAUDE.md file.</button>
+    <button type="button" class="cc-opt" data-correct="true">The model's thinking before its reply.</button>
+    <div class="cc-why">Thinking tokens are generated by the model, so they are billed at the output price, which is several times the input price. In this post's session they were about 29% of output.</div>
+  </div>
+
+  <div class="cc-score" id="cc-score">
+    <p>You scored <strong id="cc-total"></strong> out of 6.</p>
+    <p id="cc-comment"></p>
+  </div>
+
+  <div class="cc-nav">
+    <button type="button" class="cc-btn" id="cc-prev" disabled>Previous</button>
+    <button type="button" class="cc-btn primary" id="cc-next" disabled>Next</button>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.getElementById('cc-quiz');
+      if (!root) return;
+      var qs = root.querySelectorAll('.cc-q');
+      var total = qs.length;
+      var current = 0;
+      var score = 0;
+      var answered = {};
+      var progress = document.getElementById('cc-progress');
+      var prev = document.getElementById('cc-prev');
+      var next = document.getElementById('cc-next');
+      var scoreBox = document.getElementById('cc-score');
+
+      function render() {
+        Array.prototype.forEach.call(qs, function (q, i) { q.classList.toggle('on', i === current); });
+        progress.textContent = (current + 1) + ' / ' + total;
+        prev.disabled = current === 0;
+        var done = answered[current] !== undefined;
+        next.disabled = !done;
+        next.textContent = current === total - 1 ? 'See score' : 'Next';
+      }
+
+      function finish() {
+        scoreBox.classList.add('on');
+        document.getElementById('cc-total').textContent = score;
+        var msg = score === total ? 'Excellent. You have the mechanics down.'
+          : score >= 4 ? 'Solid. Re-read the parts you missed, they are the ones that cost tokens.'
+          : 'Worth a second read of Parts 3 to 5 and the token section.';
+        document.getElementById('cc-comment').textContent = msg;
+        next.disabled = true;
+        prev.disabled = false;
+      }
+
+      Array.prototype.forEach.call(qs, function (q, i) {
+        var opts = q.querySelectorAll('.cc-opt');
+        Array.prototype.forEach.call(opts, function (btn) {
+          btn.addEventListener('click', function () {
+            if (answered[i] !== undefined) return;
+            var right = btn.getAttribute('data-correct') === 'true';
+            answered[i] = right;
+            if (right) score++;
+            Array.prototype.forEach.call(opts, function (o) {
+              o.disabled = true;
+              if (o.getAttribute('data-correct') === 'true') o.classList.add('right');
+            });
+            if (!right) btn.classList.add('wrong');
+            q.querySelector('.cc-why').classList.add('on');
+            render();
+          });
+        });
+      });
+
+      prev.addEventListener('click', function () {
+        if (current > 0) { current--; render(); }
+      });
+      next.addEventListener('click', function () {
+        if (current < total - 1) { current++; render(); }
+        else { finish(); }
+      });
+
+      render();
+    })();
+  </script>
+</div>

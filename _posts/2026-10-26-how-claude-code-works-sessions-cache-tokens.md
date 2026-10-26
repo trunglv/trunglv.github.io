@@ -470,6 +470,10 @@ The batch is cheap for a structural reason: each small task gets a fresh, tiny c
 
 Once a week, trim `MEMORY.md` and `CLAUDE.md`, disable MCP servers you did not use, and turn the small tasks that repeated into skills. Ten minutes a week keeps the fixed cost of every session from creeping up.
 
+## Check yourself
+
+{% include cc-quiz.html %}
+
 ## Summary
 
 Claude Code is a loop around a stateless model: every request carries the whole conversation, and a turn with tool calls is several requests. The context window is large but fills with file contents and outputs, and compaction trades detail for room. Sessions are saved as JSONL transcripts that cost nothing to keep and nothing to lose, but resuming one re-sends everything. The prompt cache is what makes long sessions affordable, with reads at a tenth of the price or less, as long as nothing disturbs the prefix. CLAUDE.md and memory are the cheap, persistent knowledge; MCP servers and subagents are neutral tools that save or cost tokens depending on how they are used. The practical rules are short: clear between tasks, compact with intent, keep the prefix stable, keep memory small, and keep the noise out of context.
