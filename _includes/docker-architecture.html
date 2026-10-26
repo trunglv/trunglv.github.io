@@ -1,0 +1,58 @@
+<figure class="rag-figure">
+  <svg viewBox="0 0 960 330" role="img" aria-labelledby="docker-title docker-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+    <title id="docker-title">RAG system running as Docker containers</title>
+    <desc id="docker-desc">A user sends a question to the app container. The app container stores and searches vectors in the database container and sends the prompt to the LLM container. The database and the LLM each keep their data in a named volume that survives restarts.</desc>
+    <defs>
+      <marker id="da" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5b6577"/>
+      </marker>
+    </defs>
+
+    <!-- Docker network boundary -->
+    <rect x="200" y="20" width="740" height="290" rx="16" fill="#f8fafc" stroke="#8a94a6" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <text x="216" y="44" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#5b6577">Docker network: one project, containers talk by service name</text>
+
+    <!-- User -->
+    <rect x="30" y="130" width="130" height="70" rx="12" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="95" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0e1b3d">User</text>
+    <text x="95" y="180" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">asks a question</text>
+    <line x1="160" y1="165" x2="236" y2="165" stroke="#5b6577" stroke-width="2" marker-end="url(#da)"/>
+
+    <!-- App container -->
+    <rect x="240" y="100" width="210" height="130" rx="12" fill="#e8f7f4" stroke="#139e8c" stroke-width="2"/>
+    <text x="345" y="130" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">App container</text>
+    <text x="345" y="152" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">API for questions</text>
+    <text x="345" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">ingestion job for documents</text>
+    <text x="345" y="188" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">embedding model</text>
+    <text x="345" y="210" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#139e8c">port exposed to users</text>
+
+    <!-- Database container -->
+    <line x1="450" y1="140" x2="530" y2="110" stroke="#5b6577" stroke-width="2" marker-end="url(#da)"/>
+    <text x="482" y="112" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">store and search</text>
+    <rect x="530" y="60" width="200" height="90" rx="12" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="630" y="92" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0e1b3d">Database container</text>
+    <text x="630" y="114" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">Postgres with pgvector</text>
+    <text x="630" y="132" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">chunks, vectors, metadata</text>
+
+    <!-- LLM container -->
+    <line x1="450" y1="200" x2="530" y2="232" stroke="#5b6577" stroke-width="2" marker-end="url(#da)"/>
+    <text x="482" y="236" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">prompt in, answer out</text>
+    <rect x="530" y="190" width="200" height="90" rx="12" fill="#0e1b3d" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="630" y="222" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#ffffff">LLM container</text>
+    <text x="630" y="244" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#c9f2ea">local model server</text>
+    <text x="630" y="262" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#c9f2ea">for example Ollama</text>
+
+    <!-- Volumes -->
+    <rect x="530" y="0" width="0" height="0" fill="none"/>
+    <path d="M800,105 L800,140" fill="none" stroke="#5b6577" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#da)"/>
+    <rect x="760" y="140" width="150" height="46" rx="8" fill="#f4f6f8" stroke="#5b6577" stroke-width="1.5"/>
+    <text x="835" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">Volume: database</text>
+    <text x="835" y="176" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">survives restarts</text>
+    <path d="M800,190 L800,200" fill="none" stroke="#5b6577" stroke-width="1.5" stroke-dasharray="0"/>
+    <rect x="760" y="250" width="150" height="46" rx="8" fill="#f4f6f8" stroke="#5b6577" stroke-width="1.5"/>
+    <text x="835" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">Volume: models</text>
+    <text x="835" y="286" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">downloaded once</text>
+    <path d="M730,280 L760,273" fill="none" stroke="#5b6577" stroke-width="1.5" stroke-dasharray="4 3"/>
+  </svg>
+  <figcaption style="color:var(--color-text-muted);font-size:0.9rem;margin-top:10px;">Three long-running containers talk to each other inside one Docker network. Their data lives in volumes, so restarting a container does not lose the index or the downloaded model.</figcaption>
+</figure>

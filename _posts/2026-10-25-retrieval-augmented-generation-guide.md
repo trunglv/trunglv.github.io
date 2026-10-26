@@ -291,6 +291,49 @@ Run this evaluation on every change to chunking, the embedding model, the prompt
 
 Enforce permissions where data is retrieved, not where it is displayed. If a user cannot read a document in your document system, the retrieval step must never return its chunks to that user. Store an access group on each chunk and apply it as a filter on every search. Log which chunks were used for each answer, so you can audit what the model saw.
 
+## Run the system with Docker
+
+When the simple version outgrows your laptop, or when a colleague needs to run it too, put each part in its own container. Docker packages each part with everything it needs, so the system starts the same way on any machine that has Docker.
+
+{% include docker-architecture.html %}
+
+### Use ready-made open-source images first
+
+Build only the part you write yourself. For everything else, use an open-source image that already exists and is widely used. Here is what to choose:
+
+| Container | Ready-made open-source option | Role | Data it keeps |
+|---|---|---|---|
+| App | Your own code, with a small build file that packages it | Receives questions, runs the ingestion job, builds the prompt, calls the LLM | None. It is stateless, so you can restart or replace it at any time |
+| Database | Postgres with the pgvector extension, published as a ready image | Stores chunks, vectors, metadata, and the model version, and searches the vectors | Yes, in a volume |
+| LLM server | Ollama, which loads and serves open-weight models through a simple local interface | Writes answers from the prompt | The downloaded model files, in a volume |
+| Embedding server | An open-source embedding server such as Hugging Face Text Embeddings Inference, or the embedding model loaded in the app | Turns text into vectors | The model files, in a volume or the app image |
+
+Choosing ready-made images has three benefits. You do not maintain the database or model server yourself, security fixes arrive as new image versions, and anyone who knows these tools can read your setup without learning a custom one.
+
+### What each container does
+
+A container that only holds a running program is disposable. A container that holds data needs a volume, so that the data stays when the container is rebuilt. In the table above, the app is the only container you build, and the database, the LLM server, and the embedding server all run from published images with their data in volumes.
+
+### Set up the project
+
+1. **Install Docker** on your machine, then check that it runs.
+2. **Create the project folder.** Put the app code, the build file for the app, the documents folder, and one configuration file in it. The configuration file names the ready-made images from the table above, the port the app exposes, and the volumes they use.
+3. **Keep secrets out of the code.** Store the database password and any API keys in an environment file that is not committed to version control. The configuration file refers to them by name.
+4. **Write the database table.** Create a table with one row per chunk, holding the ID, document, section, text, metadata, the vector (sized to your embedding model, for example 1024 numbers for bge-m3), and the model version. Create the vector index on that column, so search does not compare every row.
+5. **Start everything** with one command from the project folder. The first start downloads the images, which can take a while. The LLM image is small, but the model it loads can be several gigabytes, so pull the model once and let the volume keep it.
+6. **Run the ingestion job** inside the app container. It reads the documents, chunks them, embeds them in batches, and writes the rows into the database. Run it again whenever the documents change.
+7. **Ask a question** through the app's API, or through a simple web page placed in front of it. The reply should contain the answer and the citation numbers.
+8. **Check the logs** of each container if something fails. Most problems show up as a container that could not reach another one, or a model that was not downloaded yet.
+
+### Before you put it in front of users
+
+- **Restrict what is exposed.** Only the app should have a port open to users. The database and the LLM server should be reachable only inside the Docker network.
+- **Add authentication** to the app, and enforce access groups in the database query, as described in the security section.
+- **Back up the database volume** on a schedule, and test that a restore works.
+- **Set resource limits** for each container, especially the LLM server, which needs much more memory than the others. A GPU speeds it up a great deal, if your machine or server has one.
+- **Pin image versions** instead of always using the latest, so an update does not change the behaviour of your system without you noticing.
+- **Log question and answer metadata,** but treat the logs as sensitive, as covered in the security section.
+
 ## Going beyond basic RAG
 
 Once the basics work, consider:
