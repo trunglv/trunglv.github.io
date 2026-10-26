@@ -1,11 +1,9 @@
 <div class="cc-quiz" id="cc-quiz">
   <style>
     .cc-quiz { border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-card-bg); padding: 22px; margin: 28px 0; }
-    .cc-quiz-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .cc-quiz-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
     .cc-quiz-title { font-weight: 700; color: var(--color-text); }
     .cc-quiz-progress { font-size: 0.85rem; color: var(--color-text-muted); }
-    .cc-q { display: none; }
-    .cc-q.on { display: block; }
     .cc-q h4 { margin: 0 0 12px; font-size: 1rem; color: var(--color-text); }
     .cc-opt { display: block; width: 100%; text-align: left; font: inherit; font-size: 0.95rem; padding: 10px 14px; margin: 8px 0; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-bg); color: var(--color-text); cursor: pointer; }
     .cc-opt:hover:not(:disabled) { border-color: var(--color-accent); }
@@ -24,60 +22,18 @@
   </style>
 
   <div class="cc-quiz-head">
-    <span class="cc-quiz-title">Quick quiz: how well do you know the mechanics?</span>
-    <span class="cc-quiz-progress" id="cc-progress">1 / 6</span>
+    <span class="cc-quiz-title">Quiz: how well do you know Claude Code's mechanics?</span>
+    <span class="cc-quiz-progress" id="cc-progress"></span>
   </div>
 
-  <div class="cc-q on" data-q="1">
-    <h4>1. Resuming a session from yesterday. Which is true?</h4>
-    <button type="button" class="cc-opt" data-correct="false">The saved history is free, so the resumed conversation costs nothing.</button>
-    <button type="button" class="cc-opt" data-correct="true">The whole conversation is sent again. The cache makes it cheap only if it is still within its lifetime.</button>
-    <button type="button" class="cc-opt" data-correct="false">Claude Code summarises the history on resume, so only the summary is sent.</button>
-    <div class="cc-why">The transcript on disk costs nothing to keep, but resuming re-sends everything. If the cache has expired, the first request pays to write it again.</div>
-  </div>
-
-  <div class="cc-q" data-q="2">
-    <h4>2. Roughly how does the cache price compare with normal input, for a read within the lifetime?</h4>
-    <button type="button" class="cc-opt" data-correct="false">Twice the normal price.</button>
-    <button type="button" class="cc-opt" data-correct="false">The same price.</button>
-    <button type="button" class="cc-opt" data-correct="true">About a tenth of the normal price, or less on newer models.</button>
-    <div class="cc-why">Cache reads are billed at 0.1x base input (0.05x on Opus 5.5 and Sonnet 5.5, 0.025x on Fable 5.1 and Mythos 5.1). Writing to the cache costs 1.25x once.</div>
-  </div>
-
-  <div class="cc-q" data-q="3">
-    <h4>3. Where does a subdirectory's CLAUDE.md load?</h4>
-    <button type="button" class="cc-opt" data-correct="false">At launch, along with the root CLAUDE.md, every time.</button>
-    <button type="button" class="cc-opt" data-correct="true">Only when Claude reads or edits a file in that directory.</button>
-    <button type="button" class="cc-opt" data-correct="false">Never; subdirectory files are ignored.</button>
-    <div class="cc-why">Root and parent CLAUDE.md files load at launch. Files in subdirectories load on demand, which is why a large project can keep one file per system.</div>
-  </div>
-
-  <div class="cc-q" data-q="4">
-    <h4>4. You are in the middle of a bug, and an unrelated question comes up. Which keeps the history clean?</h4>
-    <button type="button" class="cc-opt" data-correct="false">Ask it in the same session and then /compact.</button>
-    <button type="button" class="cc-opt" data-correct="true">Use /btw for a quick answer, which never enters the history.</button>
-    <button type="button" class="cc-opt" data-correct="false">Switch to Opus so the answer is better.</button>
-    <div class="cc-why">/btw answers without adding the exchange to the conversation. Compacting still carries a summary of the unrelated question forward.</div>
-  </div>
-
-  <div class="cc-q" data-q="5">
-    <h4>5. An image is 1000 × 1000 pixels, on a standard-tier model. Roughly how many tokens?</h4>
-    <button type="button" class="cc-opt" data-correct="false">About 1,000, one per pixel row.</button>
-    <button type="button" class="cc-opt" data-correct="true">About 1,300, using 28×28-pixel patches.</button>
-    <button type="button" class="cc-opt" data-correct="false">About 1 million, one per pixel.</button>
-    <div class="cc-why">An image costs ⌈width/28⌉ × ⌈height/28⌉ tokens. 1000 / 28 rounds up to 36, so 36 × 36 = 1,296 tokens.</div>
-  </div>
-
-  <div class="cc-q" data-q="6">
-    <h4>6. Which of these is billed as output tokens?</h4>
-    <button type="button" class="cc-opt" data-correct="false">The files Claude reads from disk.</button>
-    <button type="button" class="cc-opt" data-correct="false">The CLAUDE.md file.</button>
-    <button type="button" class="cc-opt" data-correct="true">The model's thinking before its reply.</button>
-    <div class="cc-why">Thinking tokens are generated by the model, so they are billed at the output price, which is several times the input price. In this post's session they were about 29% of output.</div>
+  <div class="cc-q" id="cc-question">
+    <h4 id="cc-text"></h4>
+    <div id="cc-options"></div>
+    <div class="cc-why" id="cc-why"></div>
   </div>
 
   <div class="cc-score" id="cc-score">
-    <p>You scored <strong id="cc-total"></strong> out of 6.</p>
+    <p>You scored <strong id="cc-total"></strong> out of <span id="cc-of"></span>.</p>
     <p id="cc-comment"></p>
   </div>
 
@@ -90,54 +46,162 @@
     (function () {
       var root = document.getElementById('cc-quiz');
       if (!root) return;
-      var qs = root.querySelectorAll('.cc-q');
-      var total = qs.length;
+
+      // [question, [option A, option B, option C], index of the correct option, explanation]
+      var Q = [
+        ["When you send a new message, what does Claude Code send to the API?",
+          ["Only your new message; the model remembers the rest.", "The whole conversation, the system prompt, CLAUDE.md, and tool definitions, plus your new message.", "Only the files you mentioned."], 1,
+          "The model keeps nothing between requests, so Claude Code re-sends the full context every time."],
+        ["A single turn in which Claude uses ten tools costs roughly how many API requests?",
+          ["One.", "Ten.", "About eleven, one per model reply."], 2,
+          "Each model reply is one request. Each tool result is sent back in a new request."],
+        ["Where does a session's transcript live on disk?",
+          ["In the project's git repository.", "Under ~/.claude/projects/<project>/, as a JSONL file.", "Inside the CLAUDE.md file."], 1,
+          "Each session is a JSON Lines file named by its session ID, in a folder derived from the working directory."],
+        ["Does resuming a saved session cost tokens?",
+          ["No, the history is already stored.", "Yes, the whole conversation is sent again, though the cache may make it cheap.", "Only if you use /compact first."], 1,
+          "Storage is free; re-reading the history into the model is what costs tokens."],
+        ["Which command reopens the most recent session in the current directory?",
+          ["claude --continue", "claude --fork-session", "claude --worktree"], 0,
+          "claude --continue picks up the latest session in this directory; --fork-session copies history into a new session instead."],
+        ["What does /clear do?",
+          ["Deletes the transcript file from disk.", "Empties the conversation so the next request starts from the fixed prefix only.", "Summarises the conversation."], 1,
+          "/clear removes the conversation from context but keeps the file on disk."],
+        ["What does /compact do?",
+          ["Deletes older messages without a trace.", "Replaces older messages in context with a summary, and accepts focus instructions.", "Switches to a smaller model."], 1,
+          "Compacting keeps a summary in context; the transcript file still holds the full record."],
+        ["Which CLAUDE.md files load at session launch?",
+          ["Every CLAUDE.md in the whole repository.", "Those in the working directory and its parents; subdirectory files load only when Claude touches that area.", "Only the file named CLAUDE.md in the home folder."], 1,
+          "Root and parent files load at launch. Subdirectory files load on demand, which keeps large projects cheap."],
+        ["For a project with several systems, what is the cheapest structure?",
+          ["One flat CLAUDE.md describing every system.", "A short root file with one line per system, and a CLAUDE.md in each system's folder.", "No CLAUDE.md at all."], 1,
+          "Nested files load only when their area is touched, so unrelated systems cost nothing."],
+        ["What is the cache write price, for the 5-minute lifetime, relative to normal input?",
+          ["0.1x", "1x", "1.25x"], 2,
+          "Writing to the cache costs 1.25x base input once; later reads cost 0.1x or less."],
+        ["On Opus 5.5 and Sonnet 5.5, what is the cache read multiplier?",
+          ["0.05x", "0.5x", "1x"], 0,
+          "Newer models have lower read multipliers: 0.05x on Opus 5.5 and Sonnet 5.5."],
+        ["What is the default cache lifetime on an API key?",
+          ["5 minutes, refreshed on each use.", "1 hour.", "24 hours."], 0,
+          "The default is 5 minutes, and each use refreshes it. Subscriptions get an hour for the main conversation."],
+        ["What happens to the cache when you switch models with /model?",
+          ["Nothing; the cache is model-independent.", "The system-prompt layer is rebuilt, so the next request pays the write price.", "The cache is copied to the new model."], 1,
+          "Switching models invalidates the first layer of the cache."],
+        ["Why does changing effort level mid-session cost more?",
+          ["It does not.", "On most models it invalidates the cache, so the next request rebuilds the prefix.", "It doubles the output price."], 1,
+          "Effort changes the request prefix on most models, so set it once per session."],
+        ["Editing CLAUDE.md during a session: when does the change apply?",
+          ["Immediately, and it invalidates the cache.", "At the next /clear, /compact, or restart, without invalidating the cache.", "Only after a git commit."], 1,
+          "The docs state the edit does not disturb the cache, but it applies only on a fresh context."],
+        ["Are thinking tokens billed as input or output?",
+          ["Input.", "Output, at the output price.", "They are free."], 1,
+          "Thinking is generated by the model, so it is billed as output, which is the most expensive kind."],
+        ["In one session of this blog's work, roughly what share of output tokens was thinking?",
+          ["About 3%", "About 29%", "About 90%"], 1,
+          "The transcript showed 485,665 thinking tokens out of 1,694,742 output tokens."],
+        ["How many tokens is a 1000 by 1000 pixel image on a standard-tier model?",
+          ["About 1,000", "About 1,300", "About 1,000,000"], 1,
+          "Patches of 28 by 28 pixels give 36 by 36 = 1,296 tokens."],
+        ["What is the rough token cost of a 3-page PDF in full visual mode?",
+          ["About 1,000", "About 7,000", "About 70,000"], 1,
+          "The platform docs give about 7,000 tokens for a 3-page PDF in visual mode, against about 1,000 for text only."],
+        ["What does /btw do to the conversation history?",
+          ["It adds the exchange to the history.", "It answers without the exchange entering the history.", "It clears the history."], 1,
+          "/btw is for quick side questions that should not follow you around."],
+        ["What is the default warning threshold for one MCP tool output?",
+          ["1,000 tokens", "10,000 tokens", "100,000 tokens"], 1,
+          "Claude Code warns when an MCP tool output exceeds 10,000 tokens."],
+        ["What does ENABLE_TOOL_SEARCH do by default on supported models?",
+          ["Loads every MCP tool definition upfront.", "Loads only tool names at start; full definitions are fetched when needed.", "Disables MCP servers."], 1,
+          "Tool search defers definitions, so unused MCP tools cost little."],
+        ["A subagent runs with its own context. What returns to your main conversation?",
+          ["Its full transcript.", "Only its summary.", "Nothing."], 1,
+          "Subagent noise stays inside the subagent; you get back the summary."],
+        ["Which setting skips CLAUDE.md for a custom subagent that does not need it?",
+          ["omitClaudeMd: true", "MAX_THINKING_TOKENS=0", "cleanupPeriodDays: 0"], 0,
+          "omitClaudeMd: true starts the subagent without the project's CLAUDE.md."],
+        ["How much of MEMORY.md loads at the start of each session?",
+          ["The whole file.", "The first 200 lines or 25 KB, whichever comes first.", "Only the title."], 1,
+          "Keep the index short, because only its opening portion is loaded."],
+        ["What is the target size for a CLAUDE.md file?",
+          ["Under 200 lines.", "Under 2,000 lines.", "No limit."], 0,
+          "The docs suggest under 200 lines; every line costs tokens on every session."],
+        ["Which command shows how much of the input came from the cache?",
+          ["/usage", "/btw", "/memory"], 0,
+          "/usage reports the cache share; that line needs Claude Code 2.1.251 or later."],
+        ["What does claude --add-dir ../other-repo do?",
+          ["Merges the two repositories.", "Gives the session access to another directory without merging.", "Starts a new worktree."], 1,
+          "It widens what the session can access; for parallel work on a separate copy, use --worktree."],
+        ["When should you resume a session instead of starting fresh?",
+          ["Always, to save tokens.", "When you return within the cache lifetime, so the history is read cheaply.", "Never; resuming always costs more."], 1,
+          "Within the cache lifetime, resuming reads the history cheaply; after it expires, the next request rebuilds the cache."],
+        ["What is the cheapest way to handle a batch of small unrelated tasks?",
+          ["One long session with no /clear.", "One batch session on a cheaper model, with /clear between items.", "A separate git repository for each task."], 1,
+          "A fresh, small context per item, sharing one warm prefix, is the cheap pattern from the daily routine."]
+      ];
+
+      var total = Q.length;
       var current = 0;
       var score = 0;
-      var answered = {};
+      var answered = [];
+      var text = document.getElementById('cc-text');
+      var opts = document.getElementById('cc-options');
+      var why = document.getElementById('cc-why');
       var progress = document.getElementById('cc-progress');
       var prev = document.getElementById('cc-prev');
       var next = document.getElementById('cc-next');
       var scoreBox = document.getElementById('cc-score');
+      document.getElementById('cc-of').textContent = total;
 
       function render() {
-        Array.prototype.forEach.call(qs, function (q, i) { q.classList.toggle('on', i === current); });
+        var item = Q[current];
+        text.textContent = (current + 1) + '. ' + item[0];
+        opts.innerHTML = '';
+        item[1].forEach(function (label, i) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'cc-opt';
+          b.textContent = label;
+          b.addEventListener('click', function () { choose(i); });
+          if (answered[current] !== undefined) {
+            b.disabled = true;
+            if (i === item[2]) b.classList.add('right');
+            if (i === answered[current] && i !== item[2]) b.classList.add('wrong');
+          }
+          opts.appendChild(b);
+        });
+        if (answered[current] !== undefined) {
+          why.textContent = item[3];
+          why.classList.add('on');
+        } else {
+          why.textContent = '';
+          why.classList.remove('on');
+        }
         progress.textContent = (current + 1) + ' / ' + total;
         prev.disabled = current === 0;
-        var done = answered[current] !== undefined;
-        next.disabled = !done;
+        next.disabled = answered[current] === undefined;
         next.textContent = current === total - 1 ? 'See score' : 'Next';
+      }
+
+      function choose(i) {
+        if (answered[current] !== undefined) return;
+        answered[current] = i;
+        if (i === Q[current][2]) score++;
+        render();
       }
 
       function finish() {
         scoreBox.classList.add('on');
         document.getElementById('cc-total').textContent = score;
-        var msg = score === total ? 'Excellent. You have the mechanics down.'
-          : score >= 4 ? 'Solid. Re-read the parts you missed, they are the ones that cost tokens.'
-          : 'Worth a second read of Parts 3 to 5 and the token section.';
+        var msg = score >= 27 ? 'Excellent. You have the mechanics down.'
+          : score >= 20 ? 'Solid. Re-read the sections for the questions you missed; they are the ones that cost tokens.'
+          : 'Worth a second read of the cache, sessions, and CLAUDE.md sections, then try again.';
         document.getElementById('cc-comment').textContent = msg;
-        next.disabled = true;
-        prev.disabled = false;
+        document.getElementById('cc-question').style.display = 'none';
+        document.querySelector('.cc-nav').style.display = 'none';
+        document.querySelector('.cc-quiz-progress').textContent = 'Done';
       }
-
-      Array.prototype.forEach.call(qs, function (q, i) {
-        var opts = q.querySelectorAll('.cc-opt');
-        Array.prototype.forEach.call(opts, function (btn) {
-          btn.addEventListener('click', function () {
-            if (answered[i] !== undefined) return;
-            var right = btn.getAttribute('data-correct') === 'true';
-            answered[i] = right;
-            if (right) score++;
-            Array.prototype.forEach.call(opts, function (o) {
-              o.disabled = true;
-              if (o.getAttribute('data-correct') === 'true') o.classList.add('right');
-            });
-            if (!right) btn.classList.add('wrong');
-            q.querySelector('.cc-why').classList.add('on');
-            render();
-          });
-        });
-      });
 
       prev.addEventListener('click', function () {
         if (current > 0) { current--; render(); }
