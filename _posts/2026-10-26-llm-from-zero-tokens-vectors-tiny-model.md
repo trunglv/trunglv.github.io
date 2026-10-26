@@ -247,6 +247,62 @@ Anthropic does not publish every detail of how Claude is trained, so this is the
 
 The core is still a next-token predictor, the same kind of thing the tiny model learns. What changes from step to step is the data, the feedback, and the system around the model.
 
+## 10. Serving a model: what a hosting server does
+
+A trained model is a set of files. To answer anyone, a program has to load those numbers into memory and run the pipeline from section 5 for every request, fast, for many people at once. That program is an inference server. This section is what sits behind an API such as the one Ollama exposes in the RAG post's Docker setup.
+
+### What the model is on disk
+
+| File | What it holds | Why the server needs it |
+|---|---|---|
+| Weights | The parameters, as large arrays of numbers. Common formats: safetensors (used by the Hugging Face ecosystem) and GGUF (used by llama.cpp and Ollama). Big models are split into several files | This is the model. At 16-bit precision a 7B model is about 14 GB; quantized to 4 bits, about 3.5 GB |
+| Tokenizer | The vocabulary and the rules for splitting text | Text must be turned into exactly the IDs the model was trained on. A mismatched tokenizer produces nonsense |
+| Config | Number of layers, vector size, attention heads, context length, special tokens | Tells the server how to build the network before loading the weights into it |
+| Chat template | How a list of messages becomes one token sequence, with markers for system, user, and assistant turns | A chat model expects its own markers; the wrong template degrades answers |
+
+Ollama keeps these in its models directory, which is why the RAG post's `docker-compose.yml` mounts a volume at `/root/.ollama`: the files are downloaded once and survive restarts.
+
+### Tools you need
+
+| Layer | Role | Common open-source choices |
+|---|---|---|
+| Inference server | Loads the weights, exposes an API, batches requests, manages GPU memory | vLLM, SGLang, Text Generation Inference for GPU servers with many users; llama.cpp and Ollama for a laptop or a single consumer GPU |
+| Runtime | Drivers and libraries that let the server use the hardware | NVIDIA drivers with CUDA (or ROCm for AMD, Metal on Apple silicon); Docker with the NVIDIA Container Toolkit to run it in a container |
+| API | The interface clients call | HTTP, usually in the OpenAI-compatible shape (`/v1/chat/completions`), with streaming over server-sent events |
+| Gateway | What sits in front of the server | A reverse proxy such as nginx or Caddy for TLS, API keys, and rate limits |
+| Observability | Knowing what the server is doing | Logs plus metrics such as tokens per second, queue length, and GPU memory, typically with Prometheus and Grafana |
+| Model source | Where the files come from | The Hugging Face Hub, or `ollama pull` for Ollama's library |
+
+### Memory: what has to fit on the GPU
+
+Two things live in GPU memory while the server runs, and the second one is the one people forget.
+
+- **The weights,** loaded once and fixed: about 14 GB for a 7B model at 16 bits.
+- **The KV cache,** one per active request, which grows with every token in that request. It stores the attention state so the model does not recompute the whole conversation for each new token. For a 7B-class model with standard attention (32 layers, vectors of 4,096 numbers, 16-bit values), it costs 2 × 32 × 4,096 × 2 bytes, about 0.5 MB per token. A 4,000-token conversation uses about 2 GB; eight such conversations at once use about 17 GB, more than the weights themselves. Many recent models use grouped-query attention, which cuts this several times.
+
+So the server size is decided by context length and concurrency as much as by parameter count. Quantizing the weights frees memory for more cache, at some cost in quality. vLLM's paged attention manages the cache in fixed blocks, like an operating system paging memory, so long and short requests can share the GPU without wasting space.
+
+### What happens when a request arrives
+
+{% include llm-serving-flow.html %}
+
+1. **The client sends a request** over HTTP: a list of messages, the model name, and settings such as temperature and the maximum number of output tokens.
+2. **Template and tokenize.** The server applies the chat template to turn the messages into one string, then the tokenizer turns the string into IDs. This is where the token count of your prompt is decided.
+3. **Schedule.** A scheduler adds the request to the batch that is already running. Modern servers use continuous batching: new requests join and finished ones leave at every step, instead of waiting for a whole batch to finish.
+4. **Prefill.** All prompt tokens go through the model in one parallel pass, which produces the KV cache for the request and the first output token. If a prompt cache is enabled and the prompt shares a prefix with a recent request, that part of the cache is reused instead of recomputed. This is the prompt cache from the Claude Code post, seen from the server side.
+5. **Decode.** The model produces one token per step for every request in the batch, samples it according to temperature and the other settings, appends it, and extends the KV cache. Each token is detokenized and streamed to the client as it is produced, which is why replies appear word by word.
+6. **Stop.** The reply ends at a stop token, the output limit, or a stop sequence. The KV cache is freed, and the response carries the usage: prompt tokens, output tokens, and, where supported, cached tokens.
+
+### Why this shapes cost and speed
+
+- **Prefill is parallel, decode is sequential.** Prefill is limited by raw compute; decode is limited by how fast the GPU can read the weights for each step. That is the mechanical reason output tokens are slower and pricier than input tokens.
+- **Batching raises throughput.** Many requests share each decode step, so the server produces far more tokens per second in total, at a small cost in latency for each user.
+- **Memory decides how many users fit.** Once the KV cache fills the GPU, new requests queue. Shorter contexts, quantization, and grouped-query attention all raise the number of concurrent users.
+
+### A minimal setup to try
+
+On a laptop, Ollama is the simplest path: `ollama pull qwen2.5:7b` downloads the files, and `ollama serve` exposes an API at `http://localhost:11434`. The Docker Compose in the RAG post does exactly this in a container. For a server with a real GPU and several users, run vLLM in Docker with the model name as an argument; it exposes an OpenAI-compatible API, and a reverse proxy in front of it adds TLS and API keys.
+
 ## Check yourself
 
 {% include llm-quiz.html %}

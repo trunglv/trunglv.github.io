@@ -1,0 +1,76 @@
+<figure class="rag-figure">
+  <svg viewBox="0 0 960 460" role="img" aria-labelledby="srv-title srv-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+    <title id="srv-title">What a model server does, from startup to a streamed reply</title>
+    <desc id="srv-desc">At startup, the server loads the model files from disk into GPU memory once. For each request: the client sends messages over HTTP; the server applies the chat template and tokenizes the text; a scheduler adds the request to the running batch; prefill processes all prompt tokens in one parallel pass and builds the KV cache; the decode loop then produces one token per step, streaming each to the client; a stop token or limit ends the reply and the KV cache is freed. GPU memory holds the fixed weights plus a KV cache per active request.</desc>
+    <defs>
+      <marker id="sv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6577"/></marker>
+      <marker id="svo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d68910"/></marker>
+    </defs>
+
+    <!-- Startup lane -->
+    <text x="30" y="34" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Startup, once</text>
+    <rect x="30" y="46" width="250" height="70" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="155" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Model files on disk</text>
+    <text x="155" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">weights, tokenizer, config,</text>
+    <text x="155" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">chat template</text>
+    <line x1="280" y1="81" x2="326" y2="81" stroke="#5b6577" stroke-width="2" marker-end="url(#sv)"/>
+    <rect x="330" y="46" width="250" height="70" rx="10" fill="#e8f7f4" stroke="#139e8c" stroke-width="2"/>
+    <text x="455" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Load weights into GPU memory</text>
+    <text x="455" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">tens of seconds to minutes,</text>
+    <text x="455" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">then the server listens for requests</text>
+
+    <!-- GPU memory box -->
+    <rect x="640" y="46" width="300" height="110" rx="10" fill="#f4f6f8" stroke="#8a94a6" stroke-width="1.5"/>
+    <text x="790" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">GPU memory while serving</text>
+    <rect x="660" y="82" width="170" height="22" fill="#0e1b3d"/>
+    <text x="745" y="97" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#ffffff">weights, fixed</text>
+    <rect x="830" y="82" width="90" height="22" fill="#d68910"/>
+    <text x="875" y="97" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#ffffff">KV cache</text>
+    <text x="790" y="124" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">KV cache grows with every token of every</text>
+    <text x="790" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">active request, and is freed when it ends</text>
+
+    <!-- Request lane -->
+    <text x="30" y="192" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Every request</text>
+    <rect x="30" y="204" width="130" height="64" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="95" y="228" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">1. Client</text>
+    <text x="95" y="246" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">messages over HTTP</text>
+    <line x1="160" y1="236" x2="186" y2="236" stroke="#5b6577" stroke-width="2" marker-end="url(#sv)"/>
+
+    <rect x="190" y="204" width="150" height="64" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="265" y="228" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">2. Template + tokenize</text>
+    <text x="265" y="246" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">messages → one string → IDs</text>
+    <line x1="340" y1="236" x2="366" y2="236" stroke="#5b6577" stroke-width="2" marker-end="url(#sv)"/>
+
+    <rect x="370" y="204" width="130" height="64" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="435" y="228" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">3. Scheduler</text>
+    <text x="435" y="246" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">joins the running batch</text>
+    <line x1="500" y1="236" x2="526" y2="236" stroke="#5b6577" stroke-width="2" marker-end="url(#sv)"/>
+
+    <rect x="530" y="204" width="140" height="64" rx="10" fill="#e8f7f4" stroke="#139e8c" stroke-width="2"/>
+    <text x="600" y="228" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">4. Prefill</text>
+    <text x="600" y="246" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">all prompt tokens, one pass</text>
+    <line x1="670" y1="236" x2="696" y2="236" stroke="#5b6577" stroke-width="2" marker-end="url(#sv)"/>
+
+    <rect x="700" y="204" width="150" height="64" rx="10" fill="#fff8e6" stroke="#d68910" stroke-width="2"/>
+    <text x="775" y="228" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">5. Decode loop</text>
+    <text x="775" y="246" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">one token per step</text>
+    <path d="M840,268 L840,284 L720,284 L720,272" fill="none" stroke="#d68910" stroke-width="2" marker-end="url(#svo)"/>
+    <text x="780" y="302" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#d68910">append, repeat</text>
+    <line x1="850" y1="236" x2="876" y2="236" stroke="#5b6577" stroke-width="2" marker-end="url(#sv)"/>
+
+    <rect x="880" y="204" width="60" height="64" rx="10" fill="#0e1b3d"/>
+    <text x="910" y="230" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#ffffff">6. Stop</text>
+    <text x="910" y="248" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#c9f2ea">free cache</text>
+
+    <!-- streaming arrow back to client -->
+    <path d="M775,268 L775,340 L95,340 L95,272" fill="none" stroke="#139e8c" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#sv)"/>
+    <text x="435" y="334" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#139e8c">each token is detokenized and streamed to the client as it is produced</text>
+
+    <!-- footnote -->
+    <rect x="30" y="370" width="910" height="70" rx="10" fill="#f4f6f8"/>
+    <text x="48" y="394" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">Two kinds of work</text>
+    <text x="48" y="414" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">Prefill reads the whole prompt in parallel and is limited by raw compute. Decode produces one token at a time and is limited by how fast</text>
+    <text x="48" y="430" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">the GPU can read the weights each step. That is the mechanical reason output tokens are slower and pricier than input tokens.</text>
+  </svg>
+  <figcaption style="color:var(--color-text-muted);font-size:0.9rem;margin-top:10px;">The weights are loaded once. Each request gets its own KV cache, is batched with others, and is answered token by token.</figcaption>
+</figure>
