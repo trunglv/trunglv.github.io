@@ -1,0 +1,49 @@
+<figure class="rag-figure">
+  <svg viewBox="0 0 960 360" role="img" aria-labelledby="vec-title vec-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+    <title id="vec-title">Tokens as points in a vector space</title>
+    <desc id="vec-desc">A two-dimensional picture of word vectors. Words with related meaning sit close together: king and queen, man and woman, cat and dog. Unrelated words, such as apple, sit far away. An arrow from man to woman and an arrow from king to queen point in roughly the same direction, which is what the analogy shows.</desc>
+    <defs>
+      <marker id="va" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d68910"/></marker>
+    </defs>
+
+    <!-- axes -->
+    <line x1="60" y1="310" x2="560" y2="310" stroke="#8a94a6" stroke-width="1.5"/>
+    <line x1="60" y1="310" x2="60" y2="40" stroke="#8a94a6" stroke-width="1.5"/>
+    <text x="560" y="332" text-anchor="end" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">dimension 1 (for example, "royalty")</text>
+    <text x="70" y="50" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">dimension 2 (for example, "gender")</text>
+
+    <!-- royalty cluster -->
+    <circle cx="380" cy="110" r="7" fill="#139e8c"/>
+    <text x="394" y="114" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">king</text>
+    <circle cx="470" cy="150" r="7" fill="#139e8c"/>
+    <text x="484" y="154" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">queen</text>
+
+    <!-- people cluster lower -->
+    <circle cx="250" cy="220" r="7" fill="#139e8c"/>
+    <text x="264" y="224" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">man</text>
+    <circle cx="340" cy="260" r="7" fill="#139e8c"/>
+    <text x="354" y="264" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">woman</text>
+
+    <!-- unrelated -->
+    <circle cx="140" cy="90" r="7" fill="#c0392b"/>
+    <text x="154" y="94" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">apple</text>
+
+    <!-- analogy arrows -->
+    <line x1="250" y1="220" x2="340" y2="260" stroke="#d68910" stroke-width="2.5" marker-end="url(#va)"/>
+    <line x1="380" y1="110" x2="470" y2="150" stroke="#d68910" stroke-width="2.5" marker-end="url(#va)"/>
+    <text x="420" y="200" font-family="Arial, sans-serif" font-size="12" fill="#d68910">parallel arrows:</text>
+    <text x="420" y="216" font-family="Arial, sans-serif" font-size="12" fill="#d68910">man→woman, king→queen</text>
+
+    <!-- legend / reading guide -->
+    <rect x="600" y="60" width="330" height="200" rx="12" fill="#f4f6f8"/>
+    <text x="620" y="88" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0e1b3d">How to read it</text>
+    <text x="620" y="114" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">Each word is a point, and its vector is</text>
+    <text x="620" y="132" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">the list of its coordinates.</text>
+    <text x="620" y="158" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">Close points = similar meaning or usage.</text>
+    <text x="620" y="184" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">Real models use hundreds or thousands</text>
+    <text x="620" y="202" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">of dimensions; we can only draw two.</text>
+    <text x="620" y="228" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">The dimensions are not labelled by people;</text>
+    <text x="620" y="246" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">training finds them on its own.</text>
+  </svg>
+  <figcaption style="color:var(--color-text-muted);font-size:0.9rem;margin-top:10px;">A two-dimensional sketch of a space that has far more dimensions in a real model. The directions, not the exact positions, carry the meaning.</figcaption>
+</figure>

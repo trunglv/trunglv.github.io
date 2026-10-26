@@ -1,0 +1,42 @@
+<figure class="rag-figure">
+  <svg viewBox="0 0 960 230" role="img" aria-labelledby="pipe2-title pipe2-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+    <title id="pipe2-title">From text to a prediction, step by step</title>
+    <desc id="pipe2-desc">The text "the cat sat on the" is split into tokens, each token becomes an ID, each ID becomes a vector, the vector is turned into a score for every possible next token, and the scores become probabilities. The most likely next token is then chosen.</desc>
+    <defs>
+      <marker id="pa2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6577"/></marker>
+    </defs>
+
+    <rect x="10" y="80" width="130" height="70" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="75" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">Text</text>
+    <text x="75" y="126" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">"the cat sat on the"</text>
+    <line x1="140" y1="115" x2="162" y2="115" stroke="#5b6577" stroke-width="2" marker-end="url(#pa2)"/>
+
+    <rect x="166" y="80" width="130" height="70" rx="10" fill="#e8f7f4" stroke="#139e8c" stroke-width="2"/>
+    <text x="231" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">1. Tokens</text>
+    <text x="231" y="126" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">split into pieces</text>
+    <line x1="296" y1="115" x2="318" y2="115" stroke="#5b6577" stroke-width="2" marker-end="url(#pa2)"/>
+
+    <rect x="322" y="80" width="130" height="70" rx="10" fill="#e8f7f4" stroke="#139e8c" stroke-width="2"/>
+    <text x="387" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">2. IDs</text>
+    <text x="387" y="126" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">one number each</text>
+    <line x1="452" y1="115" x2="474" y2="115" stroke="#5b6577" stroke-width="2" marker-end="url(#pa2)"/>
+
+    <rect x="478" y="80" width="130" height="70" rx="10" fill="#e8f7f4" stroke="#139e8c" stroke-width="2"/>
+    <text x="543" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">3. Vectors</text>
+    <text x="543" y="126" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">a row of numbers each</text>
+    <line x1="608" y1="115" x2="630" y2="115" stroke="#5b6577" stroke-width="2" marker-end="url(#pa2)"/>
+
+    <rect x="634" y="80" width="130" height="70" rx="10" fill="#fff8e6" stroke="#d68910" stroke-width="2"/>
+    <text x="699" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">4. Scores</text>
+    <text x="699" y="126" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">one per possible token</text>
+    <line x1="764" y1="115" x2="786" y2="115" stroke="#5b6577" stroke-width="2" marker-end="url(#pa2)"/>
+
+    <rect x="790" y="80" width="150" height="70" rx="10" fill="#0e1b3d"/>
+    <text x="865" y="106" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#ffffff">5. Probabilities</text>
+    <text x="865" y="126" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#c9f2ea">add up to 1; pick one</text>
+
+    <text x="480" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">Training compares step 5 with the token that really came next, and nudges the numbers in steps 3 and 4.</text>
+    <text x="480" y="215" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">Generation runs the same five steps again and again, appending each chosen token.</text>
+  </svg>
+  <figcaption style="color:var(--color-text-muted);font-size:0.9rem;margin-top:10px;">The whole of a language model is this pipeline. Training changes the numbers in the vectors and in the scoring step so that the right next token gets the higher probability.</figcaption>
+</figure>
