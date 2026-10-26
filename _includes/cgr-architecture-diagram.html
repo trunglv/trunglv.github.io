@@ -1,0 +1,62 @@
+<figure class="rag-figure">
+  <svg viewBox="0 0 960 390" role="img" aria-labelledby="arch-title arch-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+    <title id="arch-title">Example module dependency diagram used to assess architecture</title>
+    <desc id="arch-desc">Five modules arranged in layers: api, services, domain, repository, and utils. Green arrows are dependencies in the right direction, from a higher layer to a lower one. A red arrow from repository back up to services creates a dependency cycle. An orange dashed arrow from domain up to api is a layer violation. Four modules depend on utils, so it is marked as a hotspot.</desc>
+    <defs>
+      <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#139e8c"/></marker>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0392b"/></marker>
+      <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d68910"/></marker>
+      <marker id="am" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8a94a6"/></marker>
+    </defs>
+
+    <text x="30" y="62" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">Layer 1</text>
+    <text x="30" y="152" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">Layer 2</text>
+    <text x="30" y="242" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">Layer 3</text>
+    <text x="30" y="332" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">Layer 4</text>
+
+    <rect x="260" y="35" width="180" height="50" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="350" y="66" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">api</text>
+    <rect x="260" y="125" width="180" height="50" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="350" y="156" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">services</text>
+    <rect x="260" y="215" width="180" height="50" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="350" y="246" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">domain</text>
+    <rect x="260" y="305" width="180" height="50" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="350" y="336" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">repository</text>
+
+    <rect x="560" y="170" width="170" height="56" rx="10" fill="#fff8e6" stroke="#d68910" stroke-width="2.5"/>
+    <text x="645" y="196" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">utils</text>
+    <text x="645" y="214" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#d68910">hotspot: 4 modules depend on it</text>
+
+    <!-- Right direction: each layer depends on the one below -->
+    <line x1="350" y1="85" x2="350" y2="121" stroke="#139e8c" stroke-width="2.5" marker-end="url(#ag)"/>
+    <line x1="350" y1="175" x2="350" y2="211" stroke="#139e8c" stroke-width="2.5" marker-end="url(#ag)"/>
+    <line x1="350" y1="265" x2="350" y2="301" stroke="#139e8c" stroke-width="2.5" marker-end="url(#ag)"/>
+
+    <!-- Cycle: repository imports services back -->
+    <path d="M440,320 C490,280 490,190 444,162" fill="none" stroke="#c0392b" stroke-width="2.5" marker-end="url(#ar)"/>
+    <text x="448" y="380" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#c0392b">dependency cycle: repository imports services</text>
+
+    <!-- Layer violation: domain imports api (upward) -->
+    <path d="M260,240 C150,220 150,82 256,62" fill="none" stroke="#d68910" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#ao)"/>
+    <text x="168" y="108" text-anchor="end" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#d68910">layer violation:</text>
+    <text x="168" y="124" text-anchor="end" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#d68910">domain imports api</text>
+
+    <!-- Many modules depend on utils -->
+    <line x1="440" y1="60" x2="590" y2="168" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#am)"/>
+    <line x1="440" y1="150" x2="558" y2="186" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#am)"/>
+    <line x1="440" y1="240" x2="558" y2="212" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#am)"/>
+    <line x1="440" y1="335" x2="600" y2="228" stroke="#8a94a6" stroke-width="1.5" marker-end="url(#am)"/>
+
+    <rect x="760" y="40" width="185" height="150" rx="10" fill="#f4f6f8"/>
+    <text x="774" y="64" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Legend</text>
+    <line x1="774" y1="86" x2="810" y2="86" stroke="#139e8c" stroke-width="2.5"/>
+    <text x="818" y="90" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">right direction</text>
+    <line x1="774" y1="112" x2="810" y2="112" stroke="#c0392b" stroke-width="2.5"/>
+    <text x="818" y="116" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">cycle</text>
+    <line x1="774" y1="138" x2="810" y2="138" stroke="#d68910" stroke-width="2.5" stroke-dasharray="6 4"/>
+    <text x="818" y="142" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">layer violation</text>
+    <line x1="774" y1="164" x2="810" y2="164" stroke="#8a94a6" stroke-width="1.5"/>
+    <text x="818" y="168" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">shared helper</text>
+  </svg>
+  <figcaption style="color:var(--color-text-muted);font-size:0.9rem;margin-top:10px;">An illustrative example. Claude Code draws a diagram like this from the results of the importers and callers tools; you then read the red and orange arrows and the hotspots to judge the architecture.</figcaption>
+</figure>

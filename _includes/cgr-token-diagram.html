@@ -1,0 +1,48 @@
+<figure class="rag-figure">
+  <svg viewBox="0 0 960 400" role="img" aria-labelledby="tok-title tok-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+    <title id="tok-title">How Claude Code reads code, without and with the graph</title>
+    <desc id="tok-desc">Left, without the graph: Claude searches with grep and then reads several whole files to find the callers, so many unrelated lines enter its context. Right, with the graph: Claude calls the callers tool and gets a short list, then the context tool returns only the needed pieces within a token budget.</desc>
+
+    <text x="240" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#0e1b3d">Without the graph</text>
+    <text x="720" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#0e1b3d">With the graph (code-graph-rag MCP)</text>
+    <text x="240" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">Question: "Who calls create_order, and what breaks if I change it?"</text>
+    <text x="720" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">Same question</text>
+
+    <!-- Left: many big blocks -->
+    <rect x="40" y="70" width="400" height="34" rx="6" fill="#f4f6f8" stroke="#8a94a6"/>
+    <text x="54" y="92" font-family="Arial, sans-serif" font-size="13" fill="#0e1b3d">grep "create_order": 40 matches, incl. comments and tests</text>
+    <rect x="40" y="112" width="400" height="58" rx="6" fill="#fde8e8" stroke="#c0392b"/>
+    <text x="54" y="136" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Read the whole of order_service.py</text>
+    <text x="54" y="156" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">the full file, mostly unrelated</text>
+    <rect x="40" y="178" width="400" height="58" rx="6" fill="#fde8e8" stroke="#c0392b"/>
+    <text x="54" y="202" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Read the whole of checkout_api.py</text>
+    <text x="54" y="222" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">to see how it is called</text>
+    <rect x="40" y="244" width="400" height="58" rx="6" fill="#fde8e8" stroke="#c0392b"/>
+    <text x="54" y="268" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Read test files and models too</text>
+    <text x="54" y="288" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">to guess which tests are affected</text>
+    <rect x="40" y="310" width="400" height="34" rx="6" fill="#f4f6f8" stroke="#8a94a6"/>
+    <text x="54" y="332" font-family="Arial, sans-serif" font-size="13" fill="#0e1b3d">Indirect callers can still be missed</text>
+
+    <!-- Right: few small blocks -->
+    <rect x="520" y="70" width="400" height="58" rx="6" fill="#e8f7f4" stroke="#139e8c"/>
+    <text x="534" y="94" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">callers create_order</text>
+    <text x="534" y="114" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">a JSON list: file, line, argument count</text>
+    <rect x="520" y="136" width="400" height="58" rx="6" fill="#e8f7f4" stroke="#139e8c"/>
+    <text x="534" y="160" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">tests_reaching create_order</text>
+    <text x="534" y="180" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">exactly the tests that reach this function</text>
+    <rect x="520" y="202" width="400" height="72" rx="6" fill="#e8f7f4" stroke="#139e8c"/>
+    <text x="534" y="226" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">context create_order (budget_tokens)</text>
+    <text x="534" y="246" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">its source, caller lines, callee signatures,</text>
+    <text x="534" y="264" font-family="Arial, sans-serif" font-size="12" fill="#5b6577">types and tests, trimmed to the token budget</text>
+    <rect x="520" y="282" width="400" height="34" rx="6" fill="#ffffff" stroke="#8a94a6" stroke-dasharray="5 4"/>
+    <text x="534" y="304" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Open a whole file only when you edit it</text>
+
+    <!-- Bars -->
+    <text x="40" y="372" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">Tokens in context</text>
+    <rect x="160" y="360" width="280" height="16" rx="4" fill="#c0392b"/>
+    <text x="650" y="372" text-anchor="end" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0e1b3d">Tokens in context</text>
+    <rect x="660" y="360" width="80" height="16" rx="4" fill="#139e8c"/>
+    <text x="480" y="394" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">Illustrative proportions, not a measurement. Real savings depend on the repository and the question.</text>
+  </svg>
+  <figcaption style="color:var(--color-text-muted);font-size:0.9rem;margin-top:10px;">The graph replaces reading whole files with structured answers, so fewer unrelated lines of code enter Claude's context.</figcaption>
+</figure>
