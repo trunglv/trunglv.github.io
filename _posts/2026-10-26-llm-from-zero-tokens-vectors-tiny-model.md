@@ -89,6 +89,58 @@ Two things follow from the picture:
 
 So a vector is the model's stored meaning of a token, and the arithmetic on vectors is how it relates one meaning to another.
 
+## 3b. What are the parameters?
+
+A **parameter** is one number inside the model whose value is learned during training. When people say a model has "7 billion parameters", they mean it has 7 billion such numbers, all tuned by the training loop in section 5.
+
+Parameters are not text, not tokens, and not memory of your conversation. They are the fixed numbers that turn an input into a prediction. The same parameters are used for every question.
+
+Where they live in a model:
+
+| Part of the model | What its parameters are | Size, in the example model |
+|---|---|---|
+| Embedding table | One vector per token in the vocabulary | 18 tokens × 8 numbers = 144 |
+| Output layer | Turns a vector into one score per token | 8 × 18 = 144 |
+| **Total** | | **288 parameters** |
+
+That is the whole tiny model in `tiny_llm.py`. You can count its parameters by hand, and that is the point of the example.
+
+A real transformer has more parts, and the count grows fast. Here is a worked example for a model with a 50,000-token vocabulary, 768-number vectors, 12 layers, and a feed-forward size of 3,072:
+
+| Part | Formula | Parameters |
+|---|---|---|
+| Embedding table | 50,000 × 768 | 38.4 million |
+| Attention, per layer | 4 × 768 × 768 (query, key, value, output) | 2.36 million |
+| Feed-forward, per layer | 2 × 768 × 3,072 | 4.72 million |
+| One layer | attention + feed-forward | 7.08 million |
+| 12 layers | 12 × 7.08 million | 84.9 million |
+| **Total** | embedding + 12 layers | **about 123 million** |
+
+Two things to notice. The embedding table depends on the vocabulary and the vector size. Most of the parameters in a deep model sit in the repeated layers, and the layers' size grows with the square of the vector size. That is why doubling the vector size roughly quadruples the layer parameters.
+
+### Parameters are not the same as tokens or context
+
+| Word | What it means | Example |
+|---|---|---|
+| Parameter | A learned number inside the model, fixed after training | 123 million in the example above |
+| Token | A piece of text in one input or output | "unbelievable" = 3 tokens |
+| Context window | The maximum number of tokens the model can read at once | 1 million tokens |
+
+A model with more parameters can learn more patterns, but it does not read more text. Context is a separate limit, set by how the model was built.
+
+### How much memory parameters take
+
+Each parameter is stored as a number, and the precision decides the size. A common format uses 2 bytes per parameter (16-bit floats):
+
+- The 123-million-parameter example: about 247 MB at 2 bytes each.
+- A 7-billion-parameter model: about 14 GB at 2 bytes each, before any working memory for the conversation.
+
+This is why large models need powerful graphics cards to run, and why compressing them to fewer bits per parameter, a process called quantization, is a common way to make them fit on a laptop.
+
+### Where the numbers come from
+
+Publicly, parameter counts are usually quoted as a single figure, such as 7B or 70B, without the breakdown above. The breakdown is how you can check such a figure: count the embedding table, the layers, and the output layer, and the total should land near the quoted number. Exact sizes of commercial models are not always published, so treat any specific number for them as an estimate unless the vendor states it.
+
 ## 4. From vectors to a prediction
 
 Here is the full path from text to a next-token prediction. The model does five things, and training is the process of making steps 3 and 4 good.
