@@ -1,0 +1,89 @@
+<figure class="rag-figure">
+  <svg viewBox="0 0 960 470" role="img" aria-labelledby="att-title att-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+    <title id="att-title">Attention: how the token "it" reads the earlier tokens</title>
+    <desc id="att-desc">The sentence "The cat sat because it" is shown as five tokens. The last token, it, sends out a query. Each earlier token offers a key and a value. The query is scored against every key: 0 for The, 1.5 for cat, 0 for sat, 0.5 for because. Softmax turns the scores into weights 0.12, 0.55, 0.12, 0.20. The new vector for it is the weighted sum of the values, mostly the value of cat. The keys and values of earlier tokens are what the server keeps as the KV cache.</desc>
+    <defs>
+      <marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d68910"/></marker>
+      <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6577"/></marker>
+    </defs>
+
+    <!-- token row -->
+    <text x="30" y="34" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Tokens, each with a key and a value</text>
+    <g font-family="Arial, sans-serif" text-anchor="middle">
+      <rect x="30" y="50" width="110" height="60" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+      <text x="85" y="76" font-size="14" font-weight="700" fill="#0e1b3d">The</text>
+      <text x="85" y="98" font-size="11" fill="#5b6577">key, value</text>
+      <rect x="160" y="50" width="110" height="60" rx="10" fill="#e8f7f4" stroke="#139e8c" stroke-width="2.5"/>
+      <text x="215" y="76" font-size="14" font-weight="700" fill="#0e1b3d">cat</text>
+      <text x="215" y="98" font-size="11" fill="#5b6577">key, value</text>
+      <rect x="290" y="50" width="110" height="60" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+      <text x="345" y="76" font-size="14" font-weight="700" fill="#0e1b3d">sat</text>
+      <text x="345" y="98" font-size="11" fill="#5b6577">key, value</text>
+      <rect x="420" y="50" width="110" height="60" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+      <text x="475" y="76" font-size="14" font-weight="700" fill="#0e1b3d">because</text>
+      <text x="475" y="98" font-size="11" fill="#5b6577">key, value</text>
+      <rect x="560" y="50" width="110" height="60" rx="10" fill="#fff8e6" stroke="#d68910" stroke-width="2.5"/>
+      <text x="615" y="76" font-size="14" font-weight="700" fill="#0e1b3d">it</text>
+      <text x="615" y="98" font-size="11" fill="#d68910">query</text>
+    </g>
+
+    <!-- attention arcs from "it" to earlier tokens, thickness = weight -->
+    <path d="M600,112 C560,170 120,170 85,114" fill="none" stroke="#d68910" stroke-width="1.5" opacity="0.6" marker-end="url(#aa)"/>
+    <path d="M605,112 C570,185 250,185 215,114" fill="none" stroke="#d68910" stroke-width="5" marker-end="url(#aa)"/>
+    <path d="M610,112 C590,160 370,160 345,114" fill="none" stroke="#d68910" stroke-width="1.5" opacity="0.6" marker-end="url(#aa)"/>
+    <path d="M615,112 C610,150 495,150 475,114" fill="none" stroke="#d68910" stroke-width="2.5" opacity="0.85" marker-end="url(#aa)"/>
+    <text x="350" y="212" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#d68910">arrow thickness = attention weight</text>
+
+    <!-- scores table -->
+    <rect x="30" y="236" width="640" height="118" rx="10" fill="#f4f6f8"/>
+    <g font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">
+      <text x="48" y="262" font-weight="700">For the query of "it"</text>
+      <text x="300" y="262" text-anchor="middle" font-weight="700">The</text>
+      <text x="390" y="262" text-anchor="middle" font-weight="700">cat</text>
+      <text x="480" y="262" text-anchor="middle" font-weight="700">sat</text>
+      <text x="580" y="262" text-anchor="middle" font-weight="700">because</text>
+      <text x="48" y="292">2. score = query · key</text>
+      <text x="300" y="292" text-anchor="middle">0</text>
+      <text x="390" y="292" text-anchor="middle" font-weight="700" fill="#139e8c">1.5</text>
+      <text x="480" y="292" text-anchor="middle">0</text>
+      <text x="580" y="292" text-anchor="middle">0.5</text>
+      <text x="48" y="318">3. weight = softmax(scores)</text>
+      <text x="300" y="318" text-anchor="middle">0.12</text>
+      <text x="390" y="318" text-anchor="middle" font-weight="700" fill="#139e8c">0.55</text>
+      <text x="480" y="318" text-anchor="middle">0.12</text>
+      <text x="580" y="318" text-anchor="middle">0.20</text>
+      <text x="48" y="342" fill="#5b6577">weights add up to 1</text>
+    </g>
+
+    <!-- weighted sum -->
+    <line x1="350" y1="354" x2="350" y2="376" stroke="#5b6577" stroke-width="2" marker-end="url(#ag)"/>
+    <rect x="30" y="380" width="640" height="70" rx="10" fill="#fff8e6" stroke="#d68910" stroke-width="2"/>
+    <g font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">
+      <text x="48" y="406" font-weight="700">4. new vector for "it" = weighted sum of the values</text>
+      <text x="48" y="430">0.12 × value(The) + 0.55 × value(cat) + 0.12 × value(sat) + 0.20 × value(because)   →   mostly "cat"</text>
+    </g>
+
+    <!-- side panel -->
+    <rect x="700" y="50" width="240" height="400" rx="12" fill="#f4f6f8"/>
+    <g font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">
+      <text x="720" y="78" font-size="14" font-weight="700">The four steps</text>
+      <text x="720" y="106" font-weight="700">1. Project</text>
+      <text x="720" y="124">three learned matrices turn each</text>
+      <text x="720" y="140">token vector into query, key, value</text>
+      <text x="720" y="170" font-weight="700">2. Score</text>
+      <text x="720" y="188">query of the current token dotted</text>
+      <text x="720" y="204">with the key of each earlier token</text>
+      <text x="720" y="234" font-weight="700">3. Softmax</text>
+      <text x="720" y="252">scores become weights that add to 1</text>
+      <text x="720" y="282" font-weight="700">4. Sum</text>
+      <text x="720" y="300">weights × values, added up, replace</text>
+      <text x="720" y="316">the token's vector</text>
+      <text x="720" y="350" font-weight="700" fill="#139e8c">KV cache</text>
+      <text x="720" y="368" fill="#5b6577">keys and values of earlier tokens</text>
+      <text x="720" y="384" fill="#5b6577">do not change, so the server keeps</text>
+      <text x="720" y="400" fill="#5b6577">them instead of recomputing them</text>
+      <text x="720" y="416" fill="#5b6577">for every new token (section 10)</text>
+    </g>
+  </svg>
+  <figcaption style="color:var(--color-text-muted);font-size:0.9rem;margin-top:10px;">One attention head, for one token. Every token in the sequence does this at once, in every layer, and a layer has many heads with their own matrices.</figcaption>
+</figure>

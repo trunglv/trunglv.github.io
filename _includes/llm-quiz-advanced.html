@@ -50,7 +50,7 @@
       // [question, [option A, option B, option C], index of the correct option, explanation]
       var Q = [
         [
-          "In a classic neural network, what are the parameters?",
+          "In a neural network, what are the parameters?",
           [
             "The weights and biases of every neuron.",
             "The activation functions.",
@@ -60,94 +60,94 @@
           "Each neuron multiplies its inputs by weights and adds a bias; those numbers are what training changes."
         ],
         [
-          "Where do most of the parameters of an LLM sit?",
-          [
-            "In the embedding table, one vector per token.",
-            "In the feed-forward and attention matrices inside the layers.",
-            "In the tokenizer vocabulary."
-          ],
-          1,
-          "The embedding table is only the first layer. The matrices inside the 32 or more layers hold the bulk of a 7B model."
-        ],
-        [
           "What does an activation function such as ReLU or GELU do?",
           [
             "It normalizes the inputs to mean zero.",
-            "It picks the most likely token.",
-            "It adds a non-linearity between two linear layers."
+            "It adds a non-linearity between two linear layers.",
+            "It picks the most likely token."
           ],
-          2,
-          "Without a non-linearity, a stack of matrix multiplications collapses into one matrix. GELU and SwiGLU are the modern shapes of the same idea."
+          1,
+          "Without a non-linearity, a stack of matrix multiplications collapses into one matrix."
         ],
         [
-          "Which part of training an LLM is backpropagation?",
+          "What is backpropagation?",
           [
-            "Computing, for every weight, how the loss changes if that weight moves.",
             "Splitting text into tokens.",
-            "Choosing the learning rate schedule."
-          ],
-          0,
-          "Backprop applies the chain rule layer by layer to get the gradient; gradient descent then moves each weight against it."
-        ],
-        [
-          "Which optimizer is the usual default for training LLMs?",
-          [
-            "Plain stochastic gradient descent.",
-            "AdamW.",
-            "Newton's method."
-          ],
-          1,
-          "AdamW, Adam with decoupled weight decay, is the standard choice."
-        ],
-        [
-          "Why do transformers use residual (skip) connections in every layer?",
-          [
-            "To reduce the vocabulary size.",
-            "To make the model faster at serving time.",
-            "So that networks of 32 to 100 layers can be trained at all."
+            "Choosing the learning rate.",
+            "Computing, for every weight, how the loss changes if that weight moves."
           ],
           2,
-          "Skip connections, from ResNet, let gradients flow through deep stacks. Each transformer layer has two of them."
+          "Gradient descent then moves each weight a small step against that gradient."
         ],
         [
-          "Which classic architecture did the transformer replace for sequences, and why?",
+          "What does the tiny model in section 7 lack that a transformer adds?",
           [
-            "RNN/LSTM, because they process a sequence step by step while attention processes it in parallel.",
-            "Convolutional networks, because they cannot handle text.",
-            "Decision trees, because they do not learn embeddings."
+            "A way to look at more than the previous token, which attention provides.",
+            "A softmax at the output.",
+            "A loss function."
           ],
           0,
-          "RNNs are sequential, which is slow on GPUs. Attention looks at the whole sequence at once."
+          "The tiny model reads only the previous character. Attention lets each token read all earlier ones."
         ],
         [
-          "What is new in a transformer compared with a classic feed-forward network?",
+          "Which three vectors does attention compute from each token's vector?",
           [
-            "A new kind of loss function.",
-            "Attention and positional encoding.",
-            "A new kind of gradient descent."
+            "Input, hidden, output.",
+            "Query, key, value.",
+            "Score, weight, sum."
           ],
           1,
-          "Everything else is familiar. Attention lets each token read the others; positional encoding gives the order, which attention alone lacks."
+          "Three learned matrices produce them: the query asks, the key offers, the value is what gets passed on."
+        ],
+        [
+          "How is the attention score between the current token and an earlier one computed?",
+          [
+            "By comparing their token IDs.",
+            "By their distance in the sentence.",
+            "As the dot product of the current token's query with the earlier token's key."
+          ],
+          2,
+          "It is the same similarity idea as in section 3, applied to query and key vectors."
+        ],
+        [
+          "In \"The cat sat because it\", the weights for it were 0.12, 0.55, 0.12, 0.20. What is the new vector for it?",
+          [
+            "The weighted sum of the four value vectors, mostly value(cat).",
+            "The value of cat alone.",
+            "The average of the four keys."
+          ],
+          0,
+          "Softmax weights add up to 1 and multiply the values; the result replaces the token's vector."
+        ],
+        [
+          "Why does a layer have many attention heads?",
+          [
+            "To make the vocabulary larger.",
+            "So different heads can learn different relations, such as pronouns or subject and verb.",
+            "To reduce memory use."
+          ],
+          1,
+          "Each head has its own matrices; their outputs are joined before the feed-forward network."
+        ],
+        [
+          "Why do attention costs grow quickly with context length?",
+          [
+            "Because the tokenizer slows down.",
+            "Because the vocabulary grows with the context.",
+            "Because every pair of tokens is scored, so the work grows with the square of the length."
+          ],
+          2,
+          "That is why long contexts are expensive and why the KV cache matters for serving."
         ],
         [
           "Why does a transformer need positional encoding?",
           [
+            "Because a weighted sum has no notion of order; without it, \"dog bites man\" and \"man bites dog\" look the same.",
             "Because tokens have no IDs.",
-            "Because the softmax requires it.",
-            "Because attention on its own has no notion of token order."
-          ],
-          2,
-          "Attention is a weighted sum over positions. Without position information, 'dog bites man' and 'man bites dog' would look the same."
-        ],
-        [
-          "Which statement about softmax in a transformer is right?",
-          [
-            "It appears twice: at the output over the vocabulary, and inside attention over positions.",
-            "It is only used during training.",
-            "It replaces the activation function."
+            "Because the softmax requires it."
           ],
           0,
-          "The output softmax gives token probabilities; the attention softmax gives the weights for the weighted sum."
+          "Position is mixed into the vectors, either as learned position vectors or as a rotation of query and key (RoPE)."
         ],
         [
           "Which files make up a model on disk?",

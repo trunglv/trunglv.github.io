@@ -233,35 +233,43 @@ The tiny model has one weakness that explains the whole field: it looks only at 
 
 The ideas are the same at every scale. Only the size of the table, the number of layers, and the amount of data change. Once the pipeline in section 5 makes sense, the rest of an LLM is a matter of scale and of attention, which is the next thing to learn.
 
-### If you learned neural networks before
+### The neural network inside, and what attention adds
 
-A transformer does not replace the neural network you may have studied years ago; it is built out of those parts. Here is the classic picture in five lines, as a reminder before the mapping.
+An LLM is a neural network, the same kind of thing as a classic multi-layer network, only larger and with one extra block. The classic picture in five lines:
 
-- **A neuron** takes a list of input numbers, multiplies each by a weight, adds them up with a bias, and passes the sum through an activation function such as ReLU or sigmoid. The weights and biases are the parameters.
-- **A layer** is many neurons reading the same inputs, which is one matrix multiplication followed by the activation. Stacking layers gives a network; the layers between input and output are the hidden layers.
-- **The forward pass** pushes an input through the layers to get an output, for example class probabilities from a softmax at the end.
-- **The loss** measures how wrong that output is against the known answer, with cross-entropy for classification.
-- **Backpropagation** uses the chain rule to compute, for every weight, how much the loss would change if that weight moved, and **gradient descent** moves each weight a small step the other way, with an optimizer such as SGD with momentum or Adam choosing the step. Repeat over batches of data for several epochs, watching for overfitting.
+- **A neuron** takes a list of input numbers, multiplies each by a weight, adds them up with a bias, and passes the sum through an activation function such as ReLU or GELU. The weights and biases are the parameters.
+- **A layer** is many neurons reading the same inputs, which is one matrix multiplication followed by the activation. Stacking layers gives a network.
+- **The forward pass** pushes an input through the layers to get an output, here a softmax over the vocabulary.
+- **The loss** measures how wrong that output is against the known answer, cross-entropy for next-token prediction.
+- **Backpropagation** computes, for every weight, how much the loss would change if that weight moved, and **gradient descent** moves each weight a small step the other way. Repeat over batches of data.
 
-An LLM is this network with two changes of scale and one change of structure: the input is a sequence of token vectors instead of one fixed vector, the output softmax is over the vocabulary, and attention is added so each position can read the others. Almost everything from the classic course is still in use, often under a newer name.
+Sections 5 to 7 are exactly this, and `tiny_llm.py` is a one-layer version written by hand. What the tiny model lacks is a way to look at more than one previous token. A transformer adds two things to fix that: attention and positional encoding. Everything else in it is the classic network above.
 
-| You learned | Where it is in an LLM |
-|---|---|
-| Fully-connected layer (W·x + b) | Most of the parameters. The feed-forward block in every layer is two fully-connected layers, and the embedding and output layers are matrix multiplications too |
-| Activation functions (ReLU, sigmoid, tanh) | Still there, with newer shapes: GELU, SiLU/SwiGLU. Same idea: a non-linearity between two linear layers |
-| Softmax and cross-entropy | Used exactly as taught: softmax at the output to get token probabilities, cross-entropy as the loss. Softmax appears a second time inside attention |
-| Backpropagation and gradient descent | The whole of training. Section 6 and `tiny_llm.py` are forward pass, loss, backprop, update, written by hand |
-| Learning rate, batch, epoch, overfitting | Same concepts at a different scale: a warm-up and decay schedule for the learning rate, batches of millions of tokens, usually a single epoch because the data is so large |
-| Momentum and Adam | AdamW is the default optimizer for every LLM |
-| Normalization (BatchNorm) | The LayerNorm or RMSNorm variant, placed before each block in a layer |
-| Dropout and regularization | Still used, together with weight decay |
-| Residual (skip) connections from ResNet | Two per layer. Without them, networks of 32 to 100 layers cannot be trained |
-| Word embeddings (word2vec) | The embedding table of an LLM is the same idea, learned together with the rest of the model |
-| RNN and LSTM | What the transformer replaced. RNNs process a sequence one step at a time; the transformer processes the whole sequence in parallel on a GPU. Knowing RNNs helps you see why attention was needed |
+#### Attention
 
-Only two pieces are new compared with that course. **Attention** lets each token score how much to look at every earlier token and take a weighted sum of their vectors, which is how a model uses thousands of tokens of context instead of one. **Positional encoding** tells the model the order of the tokens, because attention on its own has no notion of position. Both are again just matrix multiplications and a softmax, built from the same bricks.
+The problem attention solves: in "The cat sat because it", the model should know that *it* refers to *cat*. The vector for *it* has to pull information from the vector for *cat*, four tokens back. Attention is the mechanism that lets each token read the earlier ones and decide how much to take from each.
 
-So if backpropagation and fully-connected layers already make sense to you, the original transformer paper, *Attention Is All You Need*, and a small GPT implementation such as nanoGPT (about 300 lines) will feel about 80 percent familiar. What is left to learn is not new mathematics but engineering at scale: KV caches, batching, quantization, and distributed training, which section 10 touches on from the serving side.
+{% include llm-attention.html %}
+
+For one token, the steps are:
+
+1. **Three vectors per token.** Three learned matrices turn every token's vector into a **query** (what this token is looking for), a **key** (what this token offers), and a **value** (what it passes on if chosen). These matrices are parameters, learned like any other.
+2. **Score.** The query of the current token is dotted with the key of every earlier token, the same cosine-like similarity as in section 3. In the example, the query of *it* scores 1.5 against *cat*, 0.5 against *because*, and 0 against *The* and *sat*.
+3. **Softmax.** The scores become weights that add up to 1: 0.55 for *cat*, 0.20 for *because*, 0.12 each for *The* and *sat*.
+4. **Weighted sum.** The new vector for *it* is 0.55 × value(cat) + 0.20 × value(because) + 0.12 × value(The) + 0.12 × value(sat). It now carries mostly what *cat* carried, which is what "it" should mean here.
+
+That is one attention head. A layer runs many heads in parallel, each with its own matrices, so one head can learn to track pronouns, another subject and verb, another the previous word. Their outputs are joined, passed through the classic feed-forward network, and the result goes to the next layer. A 7B model stacks about 32 of these layers, so by the top, every token vector has read the whole context many times over.
+
+Two consequences are worth keeping:
+
+- **Every pair of tokens is scored,** so attention costs grow with the square of the context length. This is why long contexts are expensive, and why the tiny model's "previous token only" rule was so cheap.
+- **The keys and values of earlier tokens never change** once computed, so a server stores them instead of recomputing them for every new token. That stored set is the KV cache of section 10.
+
+#### Positional encoding
+
+A weighted sum has no notion of order: on its own, attention would see "dog bites man" and "man bites dog" as the same bag of tokens. So before the first layer, information about each token's position is mixed into its vector, either as a learned vector per position or, in most recent models, as a rotation of the query and key vectors by an angle that depends on the position (RoPE). With that, the scores in step 2 can also depend on how far apart two tokens are.
+
+If backpropagation and layers already make sense to you, these two blocks are all that is new. The original transformer paper, *Attention Is All You Need*, and a small implementation such as nanoGPT (about 300 lines) will then read as familiar code. What remains is engineering at scale, which section 10 covers from the serving side.
 
 ## 9. How a system like Claude is built
 
