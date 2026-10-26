@@ -279,6 +279,91 @@ This is the case where the default habit, one long conversation, costs the most.
 
 Two things to avoid. Do not use `/compact` as a substitute for `/clear` between unrelated tasks: the summary still carries the old task, and compaction itself is a request that produces a summary. And do not switch directories for every small task when they belong to the same project, because the cache prefix is scoped to the directory and each switch starts cold.
 
+## Using memory and the cache on purpose
+
+Parts 4 and 5 explained what the prompt cache and the memory files are. This section is about using them deliberately. They solve different problems: memory carries knowledge between sessions, and the cache makes the repeated part of each request cheap. Both work best when you decide what goes where, instead of letting it happen.
+
+### Where knowledge should live
+
+Every piece of knowledge you give Claude has a storage cost, and the storages differ. CLAUDE.md and auto memory are paid on every session. Path-scoped rules and skills are paid only when used. The code itself costs nothing until Claude reads it. So the question for each fact or instruction is not "is this useful?" but "where does it cost the least for the benefit it gives?"
+
+{% include cc-memory-decision.html %}
+
+| Storage | Loads | Put here | Do not put here |
+|---|---|---|---|
+| `CLAUDE.md` (project) | Every session, at launch | Build and test commands, conventions, the two or three mistakes Claude keeps making, the "why" behind unusual choices | File trees, architecture that can be read from the code, long how-to guides |
+| `~/.claude/CLAUDE.md` (personal) | Every session, every project | Your own preferences: response style, commit message format, tools you prefer | Anything specific to one project |
+| `.claude/rules/*.md` with `paths` | When Claude touches a matching file | Rules that apply to one area: how migrations are written, what the API layer must not import | Rules that apply everywhere (those belong in CLAUDE.md) |
+| Skills and custom commands | Description at start, body when used | Procedures you run sometimes: release steps, a review checklist, a report format | Facts (a skill is a procedure, not a notebook) |
+| Auto memory (`MEMORY.md` and its files) | First 200 lines or 25 KB of `MEMORY.md`, every session | Things learned while working: a preference you stated, a correction, a fact about the project that is not in the code | Task progress, temporary state, anything the code already says |
+
+### Writing a CLAUDE.md that earns its tokens
+
+- **Apply the docs' test to every line:** would removing it cause Claude to make a mistake? If not, cut it. A 60-line file that Claude follows beats a 300-line file it skims.
+- **Write the why, not the what.** "Use `pnpm`, not `npm`; the lockfile breaks otherwise" is worth a line. A list of folders is not; Claude can list them itself.
+- **Imports do not save anything.** A file pulled in with `@path` loads together with the file that imports it, every time. Use imports to organise, not to hide size.
+- **Edits apply at the next `/clear`, `/compact`, or restart,** not mid-session. They do not disturb the cache, so you can edit freely and the change takes effect on the next fresh context.
+- **Subagents do not receive auto memory,** and a custom subagent can skip CLAUDE.md with `omitClaudeMd: true`. If a subagent needs a rule, put it in the subagent's own definition.
+
+### Keeping auto memory useful
+
+Auto memory is the notebook Claude keeps for a project, and only the first 200 lines or 25 KB of its index load each session. Two habits keep it worth its cost. Tell Claude explicitly when something should be remembered ("remember that we deploy from the `release` branch"), so the note is written in your words rather than inferred. And open `/memory` now and then to delete entries that are stale or that the code now makes obvious, because every surviving line is loaded into every session from then on.
+
+### Memory tools beyond the built-ins
+
+For day-to-day work in a codebase, the built-in memory is the best option: it is the cheapest in tokens, it lives in plain files you control in git, and the cache treats it as part of the fixed prefix. External tools earn their place in specific situations.
+
+| Tool | What it does | When it is worth it | What it costs |
+|---|---|---|---|
+| `@modelcontextprotocol/server-memory`, the official MCP memory server | Keeps a small knowledge graph of entities, relations, and observations in a local JSON file. Claude creates and queries it through tools | Structured, queryable memory shared across projects or across MCP clients (Claude Desktop, Cursor, and others) | Tool definitions and results enter the context; the graph grows unless pruned; Claude has to decide to call it, unlike CLAUDE.md, which is always loaded |
+| `annotate` and `glosses` in code-graph-rag | Attaches a durable note to a function or class in the code graph, for example "safe because validate() runs first". Each note is graded EXACT, STALE, or MOVED as the code changes | Memory about the *why* of code, which is not in the code and gets lost when files are renamed | Only available with code-graph-rag; notes live in the graph, not in git |
+| Hosted memory services (mem0 and similar) | Vector memory with search by meaning, shared across agents | Products with end users that must remember things long term | Data leaves your machine; one more system to run; more than coding work needs |
+
+A reasonable setup: built-in memory as the base, `annotate` for notes tied to code if you use the graph, and a memory server only when several clients must share it. Whatever you choose, prune it on a schedule. Every line that survives is a token paid on every session.
+
+### Keeping the cache warm
+
+The cache is three layers (Part 4), and each layer is only reused while it stays identical. The table lists what changes each layer and what to do instead.
+
+| Action | What it breaks | What to do instead |
+|---|---|---|
+| Switching models with `/model` | Layer 1, the system prompt and tools | Choose the model at session start. For a run of trivial tasks, start a separate session on a cheaper model |
+| Changing effort or toggling fast mode | Layer 1 on most models | Set it once per session |
+| Adding or removing an MCP server whose tools load upfront | Layer 1 | Connect servers before the first prompt |
+| Upgrading Claude Code | Layer 1 | Upgrade between sessions, not during one |
+| `/compact` or auto-compaction | Layers 2 and 3 are rebuilt | Compact at a natural break, with a focus, and not more often than needed |
+| `/clear` | Layer 3 is emptied; layers 1 and 2 are reused if unchanged and still within the lifetime | This is the cheap reset; use it between unrelated tasks |
+| A pause longer than the cache lifetime | Everything expires | See the lifetime note below |
+| Starting a new session after committing | A new git status snapshot in the prefix | Sessions started back to back share the prefix only if the snapshot matches; do not count on it across a commit |
+
+**The lifetime.** On an API key the cache lives 5 minutes from its last use, so a coffee break costs a full rebuild on the next request. On a subscription within plan usage, Claude Code gives the main conversation an hour. If you pause often and pay by the token, `CLAUDE_CODE_PROMPT_CACHE_TTL=1h` (or `promptCacheTtl` in settings) is a trade: a 1-hour write costs 2x base input instead of 1.25x, but reads stay at 0.1x or less, so it pays off as soon as a pause would have forced a rebuild.
+
+**Resuming.** The same rule applies to `claude --continue`: within the lifetime, the old conversation comes back as cache reads; after it, as a full write. Decide whether to resume or start fresh on that basis.
+
+### One project with several systems
+
+Should a large project made of several systems, say a store, an ERP connector, and a front end, live in one Claude Code project? Yes, as long as the knowledge is layered rather than flat. The loading rules are built for exactly this:
+
+- CLAUDE.md files in the working directory and its parents load at launch. A CLAUDE.md in a **subdirectory loads only when Claude touches a file there**. So keep the root CLAUDE.md short: shared conventions and one line per system saying where it lives. Give each system its own CLAUDE.md in its folder. Working on the store then costs nothing for the connector's instructions.
+- Path-scoped rules do the same for narrower areas: a rule with `paths: ["services/erp-connector/**"]` loads only when that code is involved.
+- Do not describe the architecture in the root file. Claude can read the code; the root only needs to say what is where.
+
+Three things to watch:
+
+1. **Auto memory is tied to the directory you start in.** Start from the root today and from `services/store/` tomorrow, and you get two separate memory folders. Pick one starting point and keep it, or set `autoMemoryDirectory` in settings so both share one.
+2. **The cache prefix is tied to the directory too.** Starting from the same place lets sessions that follow each other reuse the prefix.
+3. **A flat CLAUDE.md that covers every system is the expensive mistake,** because all of it loads on every session for every task.
+
+When the systems are separate repositories, `claude --add-dir ../erp-connector` gives one session access to another directory without merging repositories. For parallel work on two systems, `claude --worktree` creates a git worktree, which is its own project with its own memory and cache.
+
+If you use code-graph-rag, index each system as its own project and group them in a workspace. One MCP server then serves the workspace, and the graph keeps the links between services, such as which connector calls which store endpoint. That is what answers "if I change this API, which system breaks?"
+
+### Check it, do not guess
+
+- `/usage` shows the share of input tokens served from the cache and whether the cache is warm or cold (Claude Code 2.1.251 or later). A session that is mostly cache reads is working as intended; a low share means something in the prefix keeps changing.
+- A status line can show `cache_read_input_tokens` and `cache_creation_input_tokens` as you work. Watching the write counter spike after an action tells you exactly which habit is expensive.
+- `/context` shows which CLAUDE.md and memory files are loaded and how much room they take. If memory is a large block, it is time to prune.
+
 ## Summary
 
 Claude Code is a loop around a stateless model: every request carries the whole conversation, and a turn with tool calls is several requests. The context window is large but fills with file contents and outputs, and compaction trades detail for room. Sessions are saved as JSONL transcripts that cost nothing to keep and nothing to lose, but resuming one re-sends everything. The prompt cache is what makes long sessions affordable, with reads at a tenth of the price or less, as long as nothing disturbs the prefix. CLAUDE.md and memory are the cheap, persistent knowledge; MCP servers and subagents are neutral tools that save or cost tokens depending on how they are used. The practical rules are short: clear between tasks, compact with intent, keep the prefix stable, keep memory small, and keep the noise out of context.
