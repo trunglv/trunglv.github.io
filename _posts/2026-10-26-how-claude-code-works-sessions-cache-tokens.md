@@ -248,6 +248,37 @@ These are the practices that follow from everything above, with the reason for e
 15. **Resume within the cache lifetime when you can.** Coming back to a session an hour later on a subscription, or five minutes later on an API key, keeps the history as cheap reads. Coming back the next day rebuilds it.
 16. **Check `/usage` once in a while.** If the cache share is low or one MCP server dominates, you have found the next thing to fix.
 
+## A suggested workflow
+
+The tips above are easier to apply as a routine. This is the one I use, built around the one decision that matters most: after each task, is the next task related to this one?
+
+{% include cc-workflow.html %}
+
+**Set up once per project.** Write a short CLAUDE.md, move occasional knowledge into skills or path-scoped rules, keep only the MCP servers you need, cap shell and MCP output, and add a status line that shows context and cache usage. This is where most of the per-session fixed cost is decided.
+
+**Start a session deliberately.** Open in the right directory, connect MCP servers before the first prompt, choose the model and effort level once, and begin with a prompt that names the files or functions involved. A specific first prompt avoids an exploration phase that fills the context with file reads.
+
+**Work on one task at a time.** Ask for narrow reads, send noisy work to a subagent, use `/btw` for side questions, and if you have corrected Claude twice on the same point, `/clear` and write a better prompt rather than arguing in a long context.
+
+**Decide after each task.** If the next task is related, keep the session and `/compact` with a focus at a natural break. If it is not, `/clear`. The history drops to zero, and the fixed prefix (system prompt, tools, CLAUDE.md) is small and, when unchanged and still within the cache lifetime, is served from the cache.
+
+**End with intent.** If you will be back within the cache lifetime, resume. If not, start fresh next time and let CLAUDE.md and memory carry the knowledge. A long session resumed the next day re-sends its entire history.
+
+### Many small, unrelated tasks
+
+This is the case where the default habit, one long conversation, costs the most. Ten unrelated tasks in one session means the tenth task's requests carry the other nine tasks' files and outputs, and pay for them as cache reads on every request. The fix is to keep each task's context separate. These are the tools that do that, all built into Claude Code:
+
+| Tool | Use it for | Why it saves tokens |
+|---|---|---|
+| `/clear` (also `/reset`, `/new`) | Moving to the next unrelated task in the same session | The conversation is emptied. Only the fixed prefix remains, and it is small |
+| `/btw` | A quick question in the middle of a task | The answer is shown to you but never enters the history, so later requests do not carry it |
+| A subagent (the Agent tool, or a custom one with `model: haiku`) | A self-contained job: run the tests, find where a setting is read, check a dependency | It runs in its own context window and returns only a summary. Add `omitClaudeMd: true` to a custom subagent that does not need your project instructions |
+| `claude -p "..."` (print mode) | One scripted task from the shell, or a batch of them in a loop | Each call is a standalone request with no session to carry. Good for repetitive small jobs you can describe in one line |
+| A skill or custom slash command | A small task you repeat often (format a changelog, write a migration) | The instructions live in the skill and load only when it runs, instead of being re-typed into every conversation |
+| `claude --model haiku` for a session of trivial tasks | Renames, small fixes, questions about syntax | Cheaper per token, and starting the session on it avoids a mid-session switch that would rebuild the cache |
+
+Two things to avoid. Do not use `/compact` as a substitute for `/clear` between unrelated tasks: the summary still carries the old task, and compaction itself is a request that produces a summary. And do not switch directories for every small task when they belong to the same project, because the cache prefix is scoped to the directory and each switch starts cold.
+
 ## Summary
 
 Claude Code is a loop around a stateless model: every request carries the whole conversation, and a turn with tool calls is several requests. The context window is large but fills with file contents and outputs, and compaction trades detail for room. Sessions are saved as JSONL transcripts that cost nothing to keep and nothing to lose, but resuming one re-sends everything. The prompt cache is what makes long sessions affordable, with reads at a tenth of the price or less, as long as nothing disturbs the prefix. CLAUDE.md and memory are the cheap, persistent knowledge; MCP servers and subagents are neutral tools that save or cost tokens depending on how they are used. The practical rules are short: clear between tasks, compact with intent, keep the prefix stable, keep memory small, and keep the noise out of context.
