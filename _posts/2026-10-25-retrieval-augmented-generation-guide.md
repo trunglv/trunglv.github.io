@@ -324,6 +324,117 @@ The three files below set up everything except your app. The image versions were
 
 Place them in the project folder next to an `app` folder (your code and its build file) and a `docs` folder (the documents to index).
 
+#### docker-compose.yml
+
+```yaml
+# Simple RAG stack: your app + Postgres/pgvector + Ollama (LLM and embeddings).
+# All images except the app are published open-source images, pinned to a version.
+# Before the first start: copy env.example to .env and set a real password.
+
+name: simple-rag
+
+services:
+  app:
+    build: ./app                  # your own code; the only image you build
+    ports:
+      - "8000:8000"               # the only port exposed outside Docker
+    environment:
+      DATABASE_URL: postgresql://rag:${POSTGRES_PASSWORD}@db:5432/rag
+      OLLAMA_URL: http://ollama:11434
+      EMBED_MODEL: bge-m3         # multilingual (incl. Vietnamese), 1024-dimensional vectors
+      LLM_MODEL: qwen2.5:7b       # open-weight LLM that writes the answers
+    volumes:
+      - ./docs:/app/docs:ro       # the documents to index
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  db:
+    image: pgvector/pgvector:0.8.7-pg17
+    environment:
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: rag
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro   # creates the table on first start
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag -d rag"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:0.40.11
+    volumes:
+      - ollama:/root/.ollama      # downloaded models survive restarts
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+    # NVIDIA GPU: uncomment if the host has a GPU and the NVIDIA Container Toolkit.
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  ollama-init:                    # one-off job: download the two models, then exit
+    image: ollama/ollama:0.40.11
+    environment:
+      OLLAMA_HOST: ollama:11434
+    entrypoint: ["sh", "-c", "ollama pull bge-m3 && ollama pull qwen2.5:7b"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  pgdata:
+  ollama:
+```
+
+#### init.sql
+
+```sql
+-- Runs once, on the first start of the database container.
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE IF NOT EXISTS chunks (
+  id            text PRIMARY KEY,               -- for example returns-policy#0
+  doc           text NOT NULL,                  -- source document
+  section       text,                           -- section path inside the document
+  chunk_index   integer NOT NULL,
+  content       text NOT NULL,                  -- the chunk text shown as a source
+  metadata      jsonb NOT NULL DEFAULT '{}',    -- region, effective date, ...
+  access_group  text NOT NULL DEFAULT 'public', -- filter on this for every search
+  embed_model   text NOT NULL,                  -- for example bge-m3; re-embed when it changes
+  embedding     vector(1024) NOT NULL           -- 1024 matches bge-m3
+);
+
+-- Approximate nearest-neighbour index for cosine similarity search.
+CREATE INDEX IF NOT EXISTS chunks_embedding_idx
+  ON chunks USING hnsw (embedding vector_cosine_ops);
+
+CREATE INDEX IF NOT EXISTS chunks_access_group_idx ON chunks (access_group);
+```
+
+#### env.example
+
+```bash
+# Copy this file to .env (in the same folder as docker-compose.yml)
+# and replace the password. Never commit the real .env file.
+POSTGRES_PASSWORD=change-me
+```
+
 ### Set up the project
 
 1. **Install Docker** on your machine, then check that it runs.
