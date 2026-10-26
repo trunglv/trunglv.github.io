@@ -54,6 +54,18 @@ The splits above are illustrative; exact boundaries depend on the tokenizer. The
 
 Thinking deserves a mention here because it is easy to forget: before answering, the model writes a private scratchpad, and those tokens are billed as output. In the session that wrote this post, thinking was 485,665 of 1,694,742 output tokens, about 29%. Part 8 covers how to control it.
 
+### What happens inside the model
+
+Input and output are not handled the same way, and that difference explains most of the price gap.
+
+{% include cc-model-flow.html %}
+
+1. **Your input is read first.** The question, the context, the files, CLAUDE.md, and the history become a sequence of token IDs. The model reads all of them in one parallel pass and builds an internal state for each token, often called the KV cache. This is the expensive part of re-sending a long history, and it is the part the prompt cache saves.
+2. **The output is written one token at a time.** For each new token, the model runs a full step over everything so far, picks the next token, appends it, and repeats. Each output token therefore costs a full model step, which is why output is both slower and more expensive than input.
+3. **Thinking is part of the output.** Thinking tokens are generated the same way and billed as output. The model reads them back before writing its reply, so they cost compute and also shape the answer.
+
+The price follows the compute. Input is processed in parallel, so many tokens share one pass. Output is sequential, so each token pays for its own pass.
+
 ### Images, PDFs, and other files
 
 Non-text inputs are converted to tokens by their own rules.
