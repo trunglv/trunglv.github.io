@@ -23,6 +23,57 @@ Everything here comes from the official docs at code.claude.com and platform.cla
 | Do MCP servers save tokens? | Not by themselves. A good tool saves tokens when its answer replaces reading files. Its tool definitions and outputs cost tokens, which Claude Code now limits by default. |
 | What costs the most? | Reading large files and command outputs into context, long sessions without `/clear`, extended thinking, and subagents that run their own conversations. |
 
+## First, what a token is
+
+Everything in this post is counted in tokens, so it helps to know what one looks like.
+
+A token is the unit the model reads and the unit you pay for. It is not a word and not a character; it is a chunk of text somewhere in between, chosen by the model's tokenizer from a fixed vocabulary. Common words get a token of their own; rare words, names, and numbers are broken into several. The model never sees letters, only a sequence of token IDs, which is also why it can be bad at counting the letters in a word.
+
+| Text | Roughly tokenized as | Tokens |
+|---|---|---|
+| The cat sat on the mat. | The · cat · sat · on · the · mat · . | 7 |
+| Retrieval-Augmented Generation | Ret · rieval · - · Aug · mented · Generation | 6 |
+| 2026-10-26 | 202 · 6 · - · 10 · - · 26 | 6 |
+| Tôi muốn trả hàng sau 20 ngày | T · ôi · muốn · trả · h · àng · sau · 20 · ng · ày | about 10 |
+| {"id": "returns-policy#0", "region": "all"} | every brace, quote, colon, and comma is its own token | about 18 |
+
+The splits above are illustrative; exact boundaries depend on the tokenizer. The rules of thumb hold:
+
+- **English averages about 4 characters, or 0.75 words, per token.** A 1,000-word page is about 1,300 tokens. A 1M context window is roughly 750,000 English words.
+- **Vietnamese, code, and JSON cost more per word.** Diacritics often split a syllable into two or three tokens, so Vietnamese can take 1.5 to 2 times the tokens of the same meaning in English. Code and JSON are dense with punctuation, and each bracket and quote is a token. This is why a large JSON tool result is expensive out of proportion to what it says.
+- **Whitespace counts.** Indentation, blank lines, and long separators all become tokens. Pretty-printed JSON costs more than the same data on one line.
+
+### The four kinds on the bill
+
+| Kind | What it is | Price |
+|---|---|---|
+| Input | Everything sent to the model: your prompt, the files it read, tool results, CLAUDE.md | Base price |
+| Cache write | Input stored in the prompt cache for reuse | 1.25x base (5-minute lifetime) |
+| Cache read | Input served from the cache instead of being processed again | 0.1x base or less |
+| Output | The reply, and the model's thinking before the reply | Several times the input price |
+
+Thinking deserves a mention here because it is easy to forget: before answering, the model writes a private scratchpad, and those tokens are billed as output. In the session that wrote this post, thinking was 485,665 of 1,694,742 output tokens, about 29%. Part 8 covers how to control it.
+
+### Images, PDFs, and other files
+
+Non-text inputs are converted to tokens by their own rules.
+
+**Images** are cut into 28×28-pixel patches, one visual token each, so an image costs ⌈width/28⌉ × ⌈height/28⌉ tokens. Large images are downscaled first, which caps the cost:
+
+| Image | Standard tier (most models) | High-resolution tier (Claude 4.7 and later) |
+|---|---|---|
+| 1000×1000 | 1,296 tokens | 1,296 |
+| 1920×1080, a laptop screenshot | downscaled, 1,560 | not resized, 2,691 |
+| 3840×2160, a 4K screenshot | downscaled, 1,560 | downscaled, 4,784 |
+
+A screenshot therefore costs about as much as a 1,000-word page, and up to three times that on the newer models. Crop to the region that matters, and downsample unless you need fine detail.
+
+**PDFs** are processed as both an image of each page and the text extracted from it. The platform docs give a 3-page PDF as about 7,000 tokens in full visual mode, so budget 2,000 to 2,500 tokens per page and more for dense pages. In Claude Code, the Read tool accepts a page range; read the pages you need, not the document.
+
+**Office files** (Word, Excel, PowerPoint) are not text. Claude Code reads them through a conversion step, and converting to Markdown or CSV first is both cheaper and more accurate than a page image. **Notebooks** come through with their outputs, so a notebook full of plots and large dataframes costs far more than its code. **Audio and video** are not direct inputs; transcribe them to text first.
+
+Two session-level consequences. Everything in the history is resent on every request, so a screenshot pasted early rides along in all later requests; twenty screenshots in a debugging session is 30,000 or more tokens on every request after them, and a `/clear` after an image-heavy stretch pays off. And when the information is textual, give Claude the text: a log file or an error message costs a few hundred tokens and is searchable, while a screenshot of the same thing costs 1,500 and is not.
+
 ## Part 1: What happens in one turn
 
 The model behind Claude Code is stateless. It does not remember your last message, your project, or the file it read a minute ago. Every API request must contain everything the model needs. Claude Code is the program that assembles that request, runs the tools the model asks for, and keeps the conversation going. The docs call it the agentic harness: the layer around the model that provides the tools and manages the context the model sees.
