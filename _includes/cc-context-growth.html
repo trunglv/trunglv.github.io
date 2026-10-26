@@ -1,0 +1,43 @@
+<figure class="rag-figure">
+  <svg viewBox="0 0 960 430" role="img" aria-labelledby="grow-title grow-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+    <title id="grow-title">What each API call sends, and what the cache does with it</title>
+    <desc id="grow-desc">Three horizontal bars show the prompt sent on an early call, a later call, and a much later call in one session. Each bar grows because the conversation grows. Most of each bar is read from the cache, a small part is written to the cache for the first time, and only a tiny part is uncached. Real figures from one session: an early call wrote about 25,000 tokens to the cache and read about 31,000; the 400th call wrote about 300 and read about 225,000, with 2 uncached tokens.</desc>
+
+    <text x="30" y="30" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0e1b3d">The prompt sent on each API call in one session</text>
+
+    <!-- legend -->
+    <rect x="600" y="16" width="16" height="12" fill="#139e8c"/><text x="622" y="27" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">read from cache (cheap)</text>
+    <rect x="600" y="36" width="16" height="12" fill="#d68910"/><text x="622" y="47" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">written to cache (first time seen)</text>
+    <rect x="600" y="56" width="16" height="12" fill="#c0392b"/><text x="622" y="67" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">uncached (full price)</text>
+
+    <!-- Bar 1: early call -->
+    <text x="30" y="110" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Early call</text>
+    <rect x="150" y="92" width="120" height="28" fill="#139e8c"/>
+    <rect x="270" y="92" width="100" height="28" fill="#d68910"/>
+    <rect x="370" y="92" width="3" height="28" fill="#c0392b"/>
+    <text x="150" y="138" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">system prompt + tools, already cached from a moment ago</text>
+    <text x="150" y="152" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">CLAUDE.md, memory and first messages: written to cache</text>
+
+    <!-- Bar 2: later call -->
+    <text x="30" y="200" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Later call</text>
+    <rect x="150" y="182" width="330" height="28" fill="#139e8c"/>
+    <rect x="480" y="182" width="40" height="28" fill="#d68910"/>
+    <rect x="520" y="182" width="3" height="28" fill="#c0392b"/>
+    <text x="150" y="228" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">everything from before: read from cache</text>
+    <text x="150" y="242" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">the previous turn's messages and tool results: written once</text>
+
+    <!-- Bar 3: call 400 -->
+    <text x="30" y="290" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Call 400</text>
+    <rect x="150" y="272" width="720" height="28" fill="#139e8c"/>
+    <rect x="870" y="272" width="6" height="28" fill="#d68910"/>
+    <rect x="876" y="272" width="2" height="28" fill="#c0392b"/>
+    <text x="150" y="318" font-family="Arial, sans-serif" font-size="11" fill="#5b6577">the bar is long because the conversation is long, but almost all of it is a cache read</text>
+
+    <!-- real numbers box -->
+    <rect x="30" y="340" width="900" height="76" rx="10" fill="#f4f6f8"/>
+    <text x="48" y="364" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0e1b3d">Real figures from the session that wrote this post (from its transcript file)</text>
+    <text x="48" y="386" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">Early call: 2 uncached, 25,506 written to cache, 30,989 read from cache, 113 output.</text>
+    <text x="48" y="406" font-family="Arial, sans-serif" font-size="12" fill="#0e1b3d">Call 400: 2 uncached, 346 written, 225,081 read, 256 output. Over 1,593 calls, 96.7% of all prompt tokens were cache reads.</text>
+  </svg>
+  <figcaption style="color:var(--color-text-muted);font-size:0.9rem;margin-top:10px;">The prompt grows with every call, but the part that repeats is read from the cache. Bars are to scale with each other only roughly.</figcaption>
+</figure>
