@@ -19,6 +19,7 @@ You do not need to know calculus or machine learning libraries. You do need to b
 | Token | A piece of text, the unit the model reads and writes | Prices, context limits, and the length of every prompt |
 | ID | A number that stands for one token | The model's internal view of text |
 | Vector | A list of numbers that describes one token | Where meaning is stored |
+| Parameter | A number inside the model, learned during training | Model sizes such as "7B" |
 | Probability | How likely each possible next token is | The model's answer, before one token is chosen |
 | Training | Adjusting the numbers until predictions improve | How the model is built |
 
@@ -72,10 +73,10 @@ Think of a vector as a set of coordinates. A word becomes a point in a space, an
 
 | Word | Royalty | Gender | Vector |
 |---|---|---|---|
-| king | 0.9 | 0.8 | [0.9, 0.8] |
-| queen | 0.9 | -0.8 | [0.9, -0.8] |
-| man | 0.1 | 0.8 | [0.1, 0.8] |
-| woman | 0.1 | -0.8 | [0.1, -0.8] |
+| king | 0.9 | 0.4 | [0.9, 0.4] |
+| queen | 0.9 | -0.4 | [0.9, -0.4] |
+| man | 0.1 | 0.4 | [0.1, 0.4] |
+| woman | 0.1 | -0.4 | [0.1, -0.4] |
 | apple | -0.8 | 0.1 | [-0.8, 0.1] |
 
 Nobody wrote "royalty" or "gender" into the model. Those labels are ours, for explaining the picture. In a real model, training discovers its own directions, and there are hundreds or thousands of them.
@@ -84,14 +85,14 @@ Nobody wrote "royalty" or "gender" into the model. Those labels are ours, for ex
 
 Two things follow from the picture:
 
-- **Similarity is distance or angle.** King and queen share a royalty value, so they sit near each other. Apple sits far from all of them. The standard way to measure closeness is the cosine similarity: 1 means the same direction, 0 means unrelated, and negative values mean opposite directions. In our toy numbers, king and queen have a cosine of 0.12 because they differ in gender, while king and apple have -0.66.
+- **Similarity is distance or angle.** King and queen share a royalty value, so they sit near each other. Apple sits far from all of them. The standard way to measure closeness is the cosine similarity: 1 means the same direction, 0 means unrelated, and negative values mean opposite directions. In our toy numbers, king and queen have a cosine of 0.67, clearly similar, while king and apple have -0.86, pointing the opposite way. One caution about a two-dimensional sketch: with only a gender axis to separate them, man and woman come out as near opposites (-0.88), which is an artefact of having two dimensions. A real model has thousands, most of which the two words share, so they come out similar.
 - **Directions can carry relationships.** In our numbers, king minus man gives [0.8, 0], and queen minus woman also gives [0.8, 0]. The same step in the space turns a man into a woman as turns a king into a queen. This is the famous analogy that made embeddings popular: "king − man + woman ≈ queen". Real embeddings show this pattern approximately, not exactly.
 
 So a vector is the model's stored meaning of a token, and the arithmetic on vectors is how it relates one meaning to another.
 
-## 3b. What are the parameters?
+## 4. What are the parameters?
 
-A **parameter** is one number inside the model whose value is learned during training. When people say a model has "7 billion parameters", they mean it has 7 billion such numbers, all tuned by the training loop in section 5.
+A **parameter** is one number inside the model whose value is learned during training. When people say a model has "7 billion parameters", they mean it has 7 billion such numbers, all tuned by the training loop in section 6.
 
 Parameters are not text, not tokens, and not memory of your conversation. They are the fixed numbers that turn an input into a prediction. The same parameters are used for every question.
 
@@ -116,7 +117,7 @@ A real transformer has more parts, and the count grows fast. Here is a worked ex
 | 12 layers | 12 × 7.08 million | 84.9 million |
 | **Total** | embedding + 12 layers | **about 123 million** |
 
-Two things to notice. The embedding table depends on the vocabulary and the vector size. Most of the parameters in a deep model sit in the repeated layers, and the layers' size grows with the square of the vector size. That is why doubling the vector size roughly quadruples the layer parameters.
+The output layer that turns the final vector back into token scores usually reuses the embedding table, so it is not counted twice, and small extras such as biases and normalisation weights are left out. Two things to notice. The embedding table depends on the vocabulary and the vector size. Most of the parameters in a deep model sit in the repeated layers, and the layers' size grows with the square of the vector size. That is why doubling the vector size roughly quadruples the layer parameters.
 
 ### Parameters are not the same as tokens or context
 
@@ -141,7 +142,7 @@ This is why large models need powerful graphics cards to run, and why compressin
 
 Publicly, parameter counts are usually quoted as a single figure, such as 7B or 70B, without the breakdown above. The breakdown is how you can check such a figure: count the embedding table, the layers, and the output layer, and the total should land near the quoted number. Exact sizes of commercial models are not always published, so treat any specific number for them as an estimate unless the vendor states it.
 
-## 4. From vectors to a prediction
+## 5. From vectors to a prediction
 
 Here is the full path from text to a next-token prediction. The model does five things, and training is the process of making steps 3 and 4 good.
 
@@ -155,7 +156,7 @@ Here is the full path from text to a next-token prediction. The model does five 
 
 A real LLM does the same five steps, with one large addition: between steps 3 and 4 it applies **attention**, which lets each token look at the tokens before it and mix in their information. That is how "bank" can mean a river edge in one sentence and a financial institution in another. We skip attention in the tiny model below and come back to it at the end.
 
-## 5. Training: how the numbers get learned
+## 6. Training: how the numbers get learned
 
 At the start, the vectors are random, so the predictions are random too. Training fixes that with a simple loop.
 
@@ -167,7 +168,7 @@ At the start, the vectors are random, so the predictions are random too. Trainin
 
 Nothing in this loop tells the model what a noun or a royalty is. It only learns to predict what comes next, and to get good at that it has to build useful vectors. That is the surprising part: prediction alone produces meaning.
 
-## 6. Build a tiny model yourself
+## 7. Build a tiny model yourself
 
 The file below contains a complete model with about 100 lines of Python and only numpy. It is not a transformer and has no attention, so it cannot write real sentences. It does contain every concept above: characters as tokens, a table of vectors, probabilities from a softmax, a loss, gradient-based training, and sampling. You can read every line and change it.
 
@@ -217,7 +218,7 @@ The script then prints a sample and the nearest tokens for a few characters. The
 - **Change the number of steps.** Compare the loss at 200 steps with the loss at 2,000.
 - **Change the temperature.** It is set to 0.8 in `generate`. Lower values give safer, more repetitive text; higher values give more random text.
 
-## 7. What is missing, and how a real LLM differs
+## 8. What is missing, and how a real LLM differs
 
 The tiny model has one weakness that explains the whole field: it looks only at the previous character. A real LLM looks at thousands of previous tokens, and that is what attention adds.
 
@@ -227,10 +228,28 @@ The tiny model has one weakness that explains the whole field: it looks only at 
 | Context | The previous token only | Up to hundreds of thousands or millions of tokens |
 | Vectors | 8 numbers per token | Thousands of numbers per token |
 | Between vectors and scores | Nothing; one weight matrix | Many layers, each with attention and a small network |
-| Parameters | About 300 numbers | Billions |
+| Parameters | 288 | Billions |
 | Training data | About 2,900 characters | Trillions of tokens |
 
-The ideas are the same at every scale. Only the size of the table, the number of layers, and the amount of data change. Once the pipeline in section 4 makes sense, the rest of an LLM is a matter of scale and of attention, which is the next thing to learn.
+The ideas are the same at every scale. Only the size of the table, the number of layers, and the amount of data change. Once the pipeline in section 5 makes sense, the rest of an LLM is a matter of scale and of attention, which is the next thing to learn.
+
+## 9. How a system like Claude is built
+
+Anthropic does not publish every detail of how Claude is trained, so this is the general pipeline that most modern assistants follow. It shows how the ideas in this post grow into a product.
+
+1. **Collect and filter data.** Large amounts of text and code are gathered and cleaned for quality and safety.
+2. **Pretraining.** The model learns to predict the next token over this data. This is the same loop as the tiny model in this post, scaled up: a transformer with attention, billions of parameters, and far more text.
+3. **Supervised fine-tuning.** The model is trained on examples of good conversations, so it learns the format and manners of an assistant instead of simply continuing text.
+4. **Feedback-based training.** Responses are compared, and the model is tuned toward the ones people or a model judged better. Anthropic has described Constitutional AI, in which the model critiques and revises its own answers against a set of written principles.
+5. **Evaluation and safety testing.** Capabilities and failures are measured before release. Problems found here send the team back to earlier steps.
+6. **Serving.** The trained model runs on large clusters, with optimised inference, prompt caching, and limits on use.
+7. **The products around the model.** System prompts, tools, and harnesses such as Claude Code shape what the model does in practice. The model requests a tool; the harness runs it and sends the result back.
+
+The core is still a next-token predictor, the same kind of thing the tiny model learns. What changes from step to step is the data, the feedback, and the system around the model.
+
+## Check yourself
+
+{% include llm-quiz.html %}
 
 ## Summary
 

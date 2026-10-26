@@ -1,0 +1,447 @@
+<div class="llm-quiz" id="llm-quiz">
+  <style>
+    .llm-quiz { border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-card-bg); padding: 22px; margin: 28px 0; }
+    .llm-quiz-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+    .llm-quiz-title { font-weight: 700; color: var(--color-text); }
+    .llm-quiz-progress { font-size: 0.85rem; color: var(--color-text-muted); }
+    .llm-q h4 { margin: 0 0 12px; font-size: 1rem; color: var(--color-text); }
+    .llm-opt { display: block; width: 100%; text-align: left; font: inherit; font-size: 0.95rem; padding: 10px 14px; margin: 8px 0; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-bg); color: var(--color-text); cursor: pointer; }
+    .llm-opt:hover:not(:disabled) { border-color: var(--color-accent); }
+    .llm-opt:disabled { cursor: default; }
+    .llm-opt.right { border-color: #139e8c; background: rgba(19, 158, 140, 0.12); }
+    .llm-opt.wrong { border-color: #c0392b; background: rgba(192, 57, 43, 0.10); }
+    .llm-why { display: none; margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: var(--color-bg-subtle); font-size: 0.92rem; color: var(--color-text); }
+    .llm-why.on { display: block; }
+    .llm-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 12px; }
+    .llm-btn { font: inherit; font-weight: 600; padding: 9px 18px; border-radius: 999px; border: 1px solid var(--color-border); background: var(--color-card-bg); color: var(--color-text); cursor: pointer; }
+    .llm-btn.primary { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-accent-contrast); }
+    .llm-btn:disabled { opacity: 0.4; cursor: default; }
+    .llm-score { display: none; }
+    .llm-score.on { display: block; }
+    .llm-score strong { font-size: 1.2rem; color: var(--color-accent); }
+  </style>
+
+  <div class="llm-quiz-head">
+    <span class="llm-quiz-title">Quiz: how well do you understand LLMs?</span>
+    <span class="llm-quiz-progress" id="llm-progress"></span>
+  </div>
+
+  <div class="llm-q" id="llm-question">
+    <h4 id="llm-text"></h4>
+    <div id="llm-options"></div>
+    <div class="llm-why" id="llm-why"></div>
+  </div>
+
+  <div class="llm-score" id="llm-score">
+    <p>You scored <strong id="llm-total"></strong> out of <span id="llm-of"></span>.</p>
+    <p id="llm-comment"></p>
+  </div>
+
+  <div class="llm-nav">
+    <button type="button" class="llm-btn" id="llm-prev" disabled>Previous</button>
+    <button type="button" class="llm-btn primary" id="llm-next" disabled>Next</button>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.getElementById('llm-quiz');
+      if (!root) return;
+
+      // [question, [option A, option B, option C], index of the correct option, explanation]
+      var Q = [
+        [
+          "What does a language model predict?",
+          [
+            "The next token.",
+            "A random word.",
+            "The user's intent."
+          ],
+          0,
+          "Everything an LLM writes is a chain of next-token predictions."
+        ],
+        [
+          "Why are subword tokens common in modern LLMs?",
+          [
+            "Each whole word needs its own entry, so the vocabulary is always huge.",
+            "A fixed vocabulary can spell out any text, including rare words.",
+            "They remove the need for numbers."
+          ],
+          1,
+          "Common pieces get their own token; rare words are built from pieces."
+        ],
+        [
+          "What is a token ID?",
+          [
+            "A vector of meaning.",
+            "The weight of one parameter.",
+            "A number that stands for one token."
+          ],
+          2,
+          "The ID is a label; the vector is looked up from it."
+        ],
+        [
+          "What does a token's vector represent?",
+          [
+            "Its learned meaning, as a list of numbers.",
+            "Its length in characters.",
+            "The file it came from."
+          ],
+          0,
+          "Training shapes these numbers so that related tokens end up close together."
+        ],
+        [
+          "In vector space, what does a high cosine similarity between two tokens suggest?",
+          [
+            "They have the same number of characters.",
+            "They point in similar directions, so they have related meaning or usage.",
+            "They appear in the same file."
+          ],
+          1,
+          "Cosine similarity compares direction, not length."
+        ],
+        [
+          "What does king − man + woman ≈ queen illustrate?",
+          [
+            "The model stores a dictionary of words.",
+            "The vector for queen is copied from king.",
+            "Directions in the space can carry relationships."
+          ],
+          2,
+          "The analogy holds approximately in real embeddings, not exactly."
+        ],
+        [
+          "What turns a model's scores into probabilities?",
+          [
+            "The softmax function.",
+            "The tokenizer.",
+            "The loss function."
+          ],
+          0,
+          "Softmax makes every value positive and the total equal to 1."
+        ],
+        [
+          "Why must the probabilities over the vocabulary add up to 1?",
+          [
+            "It makes training faster.",
+            "They form a valid distribution: the model must pick one token from the whole vocabulary.",
+            "It is required by the tokenizer."
+          ],
+          1,
+          "A probability distribution has to cover every possible next token."
+        ],
+        [
+          "What does the loss measure?",
+          [
+            "The length of the output.",
+            "The size of the file on disk.",
+            "How far the model's probability for the true next token is from being confident."
+          ],
+          2,
+          "A small loss means the right next token got high probability."
+        ],
+        [
+          "Which way does gradient descent move a parameter?",
+          [
+            "To reduce the loss.",
+            "To increase the loss.",
+            "At random."
+          ],
+          0,
+          "The gradient points the way that makes the error larger, so the update goes the other way."
+        ],
+        [
+          "What is the learning rate?",
+          [
+            "The number of tokens processed per second.",
+            "The size of each nudge applied to the parameters.",
+            "The size of the vocabulary."
+          ],
+          1,
+          "Too large and training is unstable; too small and it is slow."
+        ],
+        [
+          "How many parameters does the tiny model in this post have?",
+          [
+            "144",
+            "18",
+            "288"
+          ],
+          2,
+          "18 × 8 for the embedding table, plus 8 × 18 for the output layer."
+        ],
+        [
+          "How many parameters are in an embedding table of 18 tokens with 8 numbers each?",
+          [
+            "144",
+            "8",
+            "26"
+          ],
+          0,
+          "18 rows of 8 numbers each."
+        ],
+        [
+          "About how much memory do 123 million parameters take at 2 bytes each?",
+          [
+            "About 123 MB.",
+            "About 247 MB.",
+            "About 14 GB."
+          ],
+          1,
+          "123 million × 2 bytes is roughly 247 million bytes."
+        ],
+        [
+          "What is a parameter?",
+          [
+            "A token in a prompt.",
+            "The maximum length of a reply.",
+            "A learned number inside the model, fixed after training."
+          ],
+          2,
+          "Parameters are the model's learned numbers, not text."
+        ],
+        [
+          "What is the context window?",
+          [
+            "The maximum number of tokens the model can read at once.",
+            "The number of parameters.",
+            "The number of layers."
+          ],
+          0,
+          "Context is a separate limit from parameter count."
+        ],
+        [
+          "What does pretraining teach a model?",
+          [
+            "To follow instructions politely.",
+            "To predict the next token across very large amounts of text.",
+            "To refuse harmful requests."
+          ],
+          1,
+          "Pretraining builds general knowledge and language; later steps shape behaviour."
+        ],
+        [
+          "What is supervised fine-tuning?",
+          [
+            "Training from scratch on the internet.",
+            "Compressing the model to fewer bits.",
+            "Training on examples of good responses so the model learns the assistant's style."
+          ],
+          2,
+          "It turns a next-token predictor into something that answers like an assistant."
+        ],
+        [
+          "What does reinforcement learning from feedback add?",
+          [
+            "A way to prefer responses that people or a model judged better.",
+            "A larger vocabulary.",
+            "Faster inference."
+          ],
+          0,
+          "Responses are compared, and the model is tuned toward the preferred ones."
+        ],
+        [
+          "In Constitutional AI, as Anthropic has described it, what does the model do?",
+          [
+            "It deletes tokens it finds unsafe.",
+            "It critiques and revises its own responses against written principles.",
+            "It is trained only on text written by humans."
+          ],
+          1,
+          "The principles are written down, so the behaviour is easier to inspect and change."
+        ],
+        [
+          "Why are evaluation and safety testing needed after training?",
+          [
+            "To change the vocabulary.",
+            "To shrink the file size.",
+            "To find failures before people rely on the model."
+          ],
+          2,
+          "Testing can send the team back to earlier steps."
+        ],
+        [
+          "What is a system prompt?",
+          [
+            "Instructions given at the start of a conversation that shape the model's behaviour.",
+            "The training data.",
+            "A list of allowed tokens."
+          ],
+          0,
+          "It is part of the input, so it counts toward tokens on every request."
+        ],
+        [
+          "What does a tool definition do for a model?",
+          [
+            "It runs the tool itself.",
+            "It describes a tool's name, purpose, and inputs so the model can ask for it.",
+            "It stores the model's memory."
+          ],
+          1,
+          "The model requests a tool; something else must execute it."
+        ],
+        [
+          "What is a harness, as in Claude Code?",
+          [
+            "The model's weights.",
+            "The training dataset.",
+            "The program around the model that provides tools and manages the context it sees."
+          ],
+          2,
+          "The harness is what runs tools, builds requests, and keeps the conversation going."
+        ],
+        [
+          "Who runs a tool call in Claude Code?",
+          [
+            "The harness, on your machine; the results are sent back to the model.",
+            "The model, through its weights.",
+            "The tokenizer."
+          ],
+          0,
+          "The model only produces the request to use a tool."
+        ],
+        [
+          "What does temperature control during generation?",
+          [
+            "The size of the vocabulary.",
+            "How random the choice of the next token is.",
+            "The training speed."
+          ],
+          1,
+          "Lower values choose the likeliest tokens; higher values allow more variety."
+        ],
+        [
+          "What is a hallucination?",
+          [
+            "A token missing from the vocabulary.",
+            "A memory leak in the program.",
+            "A fluent answer that is not supported by facts or sources."
+          ],
+          2,
+          "The model can sound confident even when it has no reliable basis."
+        ],
+        [
+          "Why can giving the model source text reduce hallucinations?",
+          [
+            "The answer can rely on the text in front of it, not only on what it remembers.",
+            "It changes the model's parameters.",
+            "It increases the vocabulary."
+          ],
+          0,
+          "This is the core idea behind RAG."
+        ],
+        [
+          "What is inference?",
+          [
+            "Training the model on new data.",
+            "Using a trained model to produce output.",
+            "Compressing the tokenizer."
+          ],
+          1,
+          "Training changes the parameters; inference only reads them."
+        ],
+        [
+          "Why do output tokens cost more than input tokens?",
+          [
+            "Output is stored for longer.",
+            "Output is always written in English.",
+            "Each output token needs a full model step, while input is processed in one pass."
+          ],
+          2,
+          "Input is read in one pass; each output token needs a model step of its own."
+        ],
+        [
+          "What does quantization do?",
+          [
+            "It stores each parameter with fewer bits, to save memory.",
+            "It adds new parameters.",
+            "It changes the vocabulary."
+          ],
+          0,
+          "It trades a little precision for much smaller memory."
+        ],
+        [
+          "What comes first when building a system like Claude?",
+          [
+            "Deploying it to users.",
+            "Collecting and filtering large amounts of data.",
+            "Writing the system prompt."
+          ],
+          1,
+          "Everything after depends on the data and the pretraining that uses it."
+        ]
+      ];
+
+      var total = Q.length;
+      var current = 0;
+      var score = 0;
+      var answered = [];
+      var text = document.getElementById('llm-text');
+      var opts = document.getElementById('llm-options');
+      var why = document.getElementById('llm-why');
+      var progress = document.getElementById('llm-progress');
+      var prev = document.getElementById('llm-prev');
+      var next = document.getElementById('llm-next');
+      var scoreBox = document.getElementById('llm-score');
+      document.getElementById('llm-of').textContent = total;
+
+      function render() {
+        var item = Q[current];
+        text.textContent = (current + 1) + '. ' + item[0];
+        opts.innerHTML = '';
+        item[1].forEach(function (label, i) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'llm-opt';
+          b.textContent = label;
+          b.addEventListener('click', function () { choose(i); });
+          if (answered[current] !== undefined) {
+            b.disabled = true;
+            if (i === item[2]) b.classList.add('right');
+            if (i === answered[current] && i !== item[2]) b.classList.add('wrong');
+          }
+          opts.appendChild(b);
+        });
+        if (answered[current] !== undefined) {
+          why.textContent = item[3];
+          why.classList.add('on');
+        } else {
+          why.textContent = '';
+          why.classList.remove('on');
+        }
+        progress.textContent = (current + 1) + ' / ' + total;
+        prev.disabled = current === 0;
+        next.disabled = answered[current] === undefined;
+        next.textContent = current === total - 1 ? 'See score' : 'Next';
+      }
+
+      function choose(i) {
+        if (answered[current] !== undefined) return;
+        answered[current] = i;
+        if (i === Q[current][2]) score++;
+        render();
+      }
+
+      function finish() {
+        scoreBox.classList.add('on');
+        document.getElementById('llm-total').textContent = score;
+        var msg = score >= 29 ? 'Excellent. You have the mechanics down.'
+          : score >= 23 ? 'Solid. Re-read the sections for the questions you missed.'
+          : 'Worth a second read of the sections on tokens, vectors, and training, then try again.';
+        document.getElementById('llm-comment').textContent = msg;
+        document.getElementById('llm-question').style.display = 'none';
+        document.querySelector('.llm-nav').style.display = 'none';
+        document.querySelector('.llm-quiz-progress').textContent = 'Done';
+      }
+
+      prev.addEventListener('click', function () {
+        if (current > 0) { current--; render(); }
+      });
+      next.addEventListener('click', function () {
+        if (current < total - 1) { current++; render(); }
+        else { finish(); }
+      });
+
+      render();
+    })();
+  </script>
+</div>
