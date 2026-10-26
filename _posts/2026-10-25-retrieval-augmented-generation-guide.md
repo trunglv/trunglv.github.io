@@ -304,23 +304,33 @@ Build only the part you write yourself. For everything else, use an open-source 
 | Container | Ready-made open-source option | Role | Data it keeps |
 |---|---|---|---|
 | App | Your own code, with a small build file that packages it | Receives questions, runs the ingestion job, builds the prompt, calls the LLM | None. It is stateless, so you can restart or replace it at any time |
-| Database | Postgres with the pgvector extension, published as a ready image | Stores chunks, vectors, metadata, and the model version, and searches the vectors | Yes, in a volume |
-| LLM server | Ollama, which loads and serves open-weight models through a simple local interface | Writes answers from the prompt | The downloaded model files, in a volume |
-| Embedding server | An open-source embedding server such as Hugging Face Text Embeddings Inference, or the embedding model loaded in the app | Turns text into vectors | The model files, in a volume or the app image |
+| Database | `pgvector/pgvector:0.8.7-pg17`: Postgres 17 with the pgvector extension | Stores chunks, vectors, metadata, and the model version, and searches the vectors | Yes, in a volume |
+| LLM server | `ollama/ollama:0.40.11`, serving the open-weight model `qwen2.5:7b` | Writes answers from the prompt | The downloaded model files, in a volume |
+| Embedding server | The same Ollama container, serving `bge-m3` (multilingual, including Vietnamese, 1024-number vectors). Hugging Face Text Embeddings Inference is an alternative | Turns text into vectors | The model files, in the Ollama volume |
 
 Choosing ready-made images has three benefits. You do not maintain the database or model server yourself, security fixes arrive as new image versions, and anyone who knows these tools can read your setup without learning a custom one.
 
 ### What each container does
 
-A container that only holds a running program is disposable. A container that holds data needs a volume, so that the data stays when the container is rebuilt. In the table above, the app is the only container you build, and the database, the LLM server, and the embedding server all run from published images with their data in volumes.
+A container that only holds a running program is disposable. A container that holds data needs a volume, so that the data stays when the container is rebuilt. In the table above, the app is the only container you build. The database and Ollama run from published images, and Ollama serves both the LLM and the embedding model, so the whole system needs only three long-running containers.
+
+### Download the configuration
+
+The three files below set up everything except your app. The image versions were current on 26 October 2026. Check for newer versions before you deploy.
+
+- [docker-compose.yml]({{ "/assets/downloads/rag-docker/docker-compose.yml" | relative_url }}): the services, pinned images, health checks, volumes, and the one port the app exposes. It also contains a one-off job that downloads `bge-m3` and `qwen2.5:7b` into Ollama on first start, and a commented-out block for using an NVIDIA GPU.
+- [init.sql]({{ "/assets/downloads/rag-docker/init.sql" | relative_url }}): runs once when the database starts for the first time. It enables pgvector, creates the chunks table with a 1024-number vector column to match `bge-m3`, and adds a similarity index and an access-group index.
+- [env.example]({{ "/assets/downloads/rag-docker/env.example" | relative_url }}): copy it to a file named `.env` next to `docker-compose.yml`, and set a real database password.
+
+Place them in the project folder next to an `app` folder (your code and its build file) and a `docs` folder (the documents to index).
 
 ### Set up the project
 
 1. **Install Docker** on your machine, then check that it runs.
 2. **Create the project folder.** Put the app code, the build file for the app, the documents folder, and one configuration file in it. The configuration file names the ready-made images from the table above, the port the app exposes, and the volumes they use.
 3. **Keep secrets out of the code.** Store the database password and any API keys in an environment file that is not committed to version control. The configuration file refers to them by name.
-4. **Write the database table.** Create a table with one row per chunk, holding the ID, document, section, text, metadata, the vector (sized to your embedding model, for example 1024 numbers for bge-m3), and the model version. Create the vector index on that column, so search does not compare every row.
-5. **Start everything** with one command from the project folder. The first start downloads the images, which can take a while. The LLM image is small, but the model it loads can be several gigabytes, so pull the model once and let the volume keep it.
+4. **Let the database create its table.** The `init.sql` file creates one row per chunk, holding the ID, document, section, text, metadata, access group, model version, and the vector (1024 numbers for `bge-m3`), plus an index so search does not compare every row. If you choose a different embedding model, change the vector size to match it.
+5. **Start everything** with one command from the project folder. The first start downloads the images, and the one-off job then downloads the two models. The models are several gigabytes together, so this takes a while once, and the volume keeps them for later starts.
 6. **Run the ingestion job** inside the app container. It reads the documents, chunks them, embeds them in batches, and writes the rows into the database. Run it again whenever the documents change.
 7. **Ask a question** through the app's API, or through a simple web page placed in front of it. The reply should contain the answer and the citation numbers.
 8. **Check the logs** of each container if something fails. Most problems show up as a container that could not reach another one, or a model that was not downloaded yet.
