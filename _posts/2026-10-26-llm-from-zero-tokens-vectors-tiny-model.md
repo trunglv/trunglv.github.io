@@ -233,6 +233,28 @@ The tiny model has one weakness that explains the whole field: it looks only at 
 
 The ideas are the same at every scale. Only the size of the table, the number of layers, and the amount of data change. Once the pipeline in section 5 makes sense, the rest of an LLM is a matter of scale and of attention, which is the next thing to learn.
 
+### If you learned neural networks before
+
+A transformer does not replace the neural network you may have studied years ago; it is built out of those parts. Almost everything from a classic course is still in use, often under a newer name.
+
+| You learned | Where it is in an LLM |
+|---|---|
+| Fully-connected layer (W·x + b) | Most of the parameters. The feed-forward block in every layer is two fully-connected layers, and the embedding and output layers are matrix multiplications too |
+| Activation functions (ReLU, sigmoid, tanh) | Still there, with newer shapes: GELU, SiLU/SwiGLU. Same idea: a non-linearity between two linear layers |
+| Softmax and cross-entropy | Used exactly as taught: softmax at the output to get token probabilities, cross-entropy as the loss. Softmax appears a second time inside attention |
+| Backpropagation and gradient descent | The whole of training. Section 6 and `tiny_llm.py` are forward pass, loss, backprop, update, written by hand |
+| Learning rate, batch, epoch, overfitting | Same concepts at a different scale: a warm-up and decay schedule for the learning rate, batches of millions of tokens, usually a single epoch because the data is so large |
+| Momentum and Adam | AdamW is the default optimizer for every LLM |
+| Normalization (BatchNorm) | The LayerNorm or RMSNorm variant, placed before each block in a layer |
+| Dropout and regularization | Still used, together with weight decay |
+| Residual (skip) connections from ResNet | Two per layer. Without them, networks of 32 to 100 layers cannot be trained |
+| Word embeddings (word2vec) | The embedding table of an LLM is the same idea, learned together with the rest of the model |
+| RNN and LSTM | What the transformer replaced. RNNs process a sequence one step at a time; the transformer processes the whole sequence in parallel on a GPU. Knowing RNNs helps you see why attention was needed |
+
+Only two pieces are new compared with that course. **Attention** lets each token score how much to look at every earlier token and take a weighted sum of their vectors, which is how a model uses thousands of tokens of context instead of one. **Positional encoding** tells the model the order of the tokens, because attention on its own has no notion of position. Both are again just matrix multiplications and a softmax, built from the same bricks.
+
+So if backpropagation and fully-connected layers already make sense to you, the original transformer paper, *Attention Is All You Need*, and a small GPT implementation such as nanoGPT (about 300 lines) will feel about 80 percent familiar. What is left to learn is not new mathematics but engineering at scale: KV caches, batching, quantization, and distributed training, which section 10 touches on from the serving side.
+
 ## 9. How a system like Claude is built
 
 Anthropic does not publish every detail of how Claude is trained, so this is the general pipeline that most modern assistants follow. It shows how the ideas in this post grow into a product.
