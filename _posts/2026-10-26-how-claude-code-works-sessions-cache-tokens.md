@@ -364,6 +364,61 @@ If you use code-graph-rag, index each system as its own project and group them i
 - A status line can show `cache_read_input_tokens` and `cache_creation_input_tokens` as you work. Watching the write counter spike after an action tells you exactly which habit is expensive.
 - `/context` shows which CLAUDE.md and memory files are loaded and how much room they take. If memory is a large block, it is time to prune.
 
+## A daily routine that makes saving a habit
+
+Tips are only useful if you remember them, and in the middle of a bug nobody remembers token advice. The better approach is to give the day a shape that saves tokens by itself. The mechanics in this post reward one particular shape: a few long sessions on related work, interruptions kept on the side, and small tasks done together once. Plan the day that way and the saving happens without thinking about it.
+
+{% include cc-daily-routine.html %}
+
+### Morning: ten minutes of planning
+
+Before opening Claude Code, list what the day holds and sort each item into three kinds:
+
+| Kind | Looks like | Where it goes |
+|---|---|---|
+| Deep | Needs context, takes an hour or more: a feature, a refactor, an investigation | A focused block, one session per group of related items |
+| Small | Minutes, self-contained: a rename, a doc fix, a quick question that can wait | The inbox, processed in one batch at the end of the day |
+| Room | Nothing yet, but something will come | Twenty to thirty percent of the day left unassigned |
+
+Then group the deep items so that each block contains related work, and decide the model and effort level for each block now. Choosing up front prevents the mid-session model switch that rebuilds the cache. Write the plan down, in a plan file or your notes, not in a Claude session: it is task state, and task state does not belong in memory.
+
+### Focused blocks: one session, one topic, no gaps
+
+Each block is a single session. Start with a specific prompt that names the files, keep the session as long as the work stays related, and `/compact` with a focus at the boundary between items. Send noisy work to a subagent. Keep the block moving: on an API key the cache expires after five minutes idle, so a long pause in the middle of a block costs a rebuild on the next request. Take breaks between blocks, not inside them. When the block ends, `/clear`.
+
+### Room for urgent work: isolate it
+
+An urgent request is the moment the habit is tested. The instinct is to type it into the session that is open. Do not. It drags unrelated files into a deep session, every later request carries them, and if you `/clear` to deal with it you throw away the context you built. Instead:
+
+- **If it is a question,** `/btw` answers it without touching the history.
+- **If it is a task,** open a second terminal and start a new session in the same directory. It has its own conversation, and within the cache lifetime it reuses the same fixed prefix, so it is cheap to start. If it touches the same files you are editing, `claude --worktree` gives it a separate copy of the repository.
+- **When it is done,** close that session and go back to the deep one, which is exactly as you left it. If the interruption was long, its first request rebuilds the cache once; that is still far cheaper than having polluted it.
+
+The room you left in the morning is what makes this possible. A day planned to the minute has no second terminal.
+
+### End of day: batch the inbox
+
+During the day, small tasks go into a list, not into a session. At the end of the day, open one session for the whole list:
+
+- Start it on a cheaper model and a lower effort level; small tasks do not need more.
+- `/clear` between items. Each item then starts from the small fixed prefix, which stays warm across the batch, so the setup cost is paid once for the whole list rather than once per item.
+- For the mechanical ones, a shell loop over `claude -p "..."` is simpler than a conversation.
+- Any item you find yourself doing every week becomes a skill or custom command, so next time it is one line.
+
+The batch is cheap for a structural reason: each small task gets a fresh, tiny context instead of riding inside a deep session's quarter-million-token history, and the items share one warm cache.
+
+### Wrap-up: five minutes
+
+- Tell Claude what to remember, in one short session or at the end of the last one: "remember that the staging deploy needs the `release` branch". Prune anything in `/memory` that the day made obsolete.
+- If you corrected Claude on the same thing twice today, add one line to CLAUDE.md so it does not happen tomorrow.
+- Write tomorrow's first task as a specific prompt, so tomorrow starts with a focused block instead of an exploration.
+- Look at `/usage`. Note the cache share and the heaviest MCP server. If a number looks wrong, that is tomorrow's adjustment.
+- Do not leave a long session to resume in the morning. The history would be re-sent in full. Start fresh and let memory carry the knowledge.
+
+### Weekly: a short review
+
+Once a week, trim `MEMORY.md` and `CLAUDE.md`, disable MCP servers you did not use, and turn the small tasks that repeated into skills. Ten minutes a week keeps the fixed cost of every session from creeping up.
+
 ## Summary
 
 Claude Code is a loop around a stateless model: every request carries the whole conversation, and a turn with tool calls is several requests. The context window is large but fills with file contents and outputs, and compaction trades detail for room. Sessions are saved as JSONL transcripts that cost nothing to keep and nothing to lose, but resuming one re-sends everything. The prompt cache is what makes long sessions affordable, with reads at a tenth of the price or less, as long as nothing disturbs the prefix. CLAUDE.md and memory are the cheap, persistent knowledge; MCP servers and subagents are neutral tools that save or cost tokens depending on how they are used. The practical rules are short: clear between tasks, compact with intent, keep the prefix stable, keep memory small, and keep the noise out of context.
