@@ -235,7 +235,15 @@ The ideas are the same at every scale. Only the size of the table, the number of
 
 ### If you learned neural networks before
 
-A transformer does not replace the neural network you may have studied years ago; it is built out of those parts. Almost everything from a classic course is still in use, often under a newer name.
+A transformer does not replace the neural network you may have studied years ago; it is built out of those parts. Here is the classic picture in five lines, as a reminder before the mapping.
+
+- **A neuron** takes a list of input numbers, multiplies each by a weight, adds them up with a bias, and passes the sum through an activation function such as ReLU or sigmoid. The weights and biases are the parameters.
+- **A layer** is many neurons reading the same inputs, which is one matrix multiplication followed by the activation. Stacking layers gives a network; the layers between input and output are the hidden layers.
+- **The forward pass** pushes an input through the layers to get an output, for example class probabilities from a softmax at the end.
+- **The loss** measures how wrong that output is against the known answer, with cross-entropy for classification.
+- **Backpropagation** uses the chain rule to compute, for every weight, how much the loss would change if that weight moved, and **gradient descent** moves each weight a small step the other way, with an optimizer such as SGD with momentum or Adam choosing the step. Repeat over batches of data for several epochs, watching for overfitting.
+
+An LLM is this network with two changes of scale and one change of structure: the input is a sequence of token vectors instead of one fixed vector, the output softmax is over the vocabulary, and attention is added so each position can read the others. Almost everything from the classic course is still in use, often under a newer name.
 
 | You learned | Where it is in an LLM |
 |---|---|
@@ -327,7 +335,15 @@ On a laptop, Ollama is the simplest path: `ollama pull qwen2.5:7b` downloads the
 
 ## Check yourself
 
+The first quiz covers sections 1 to 7 and 9: tokens, vectors, parameters, training, and the tiny model.
+
 {% include llm-quiz.html %}
+
+### Advanced: neural networks and serving
+
+This one covers the two deeper parts: the neural-network mapping in section 8 and the serving stack in section 10.
+
+{% include llm-quiz-advanced.html %}
 
 ## Summary
 

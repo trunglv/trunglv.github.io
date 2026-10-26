@@ -1,0 +1,327 @@
+<div class="adv-quiz" id="adv-quiz">
+  <style>
+    .adv-quiz { border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-card-bg); padding: 22px; margin: 28px 0; }
+    .adv-quiz-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+    .adv-quiz-title { font-weight: 700; color: var(--color-text); }
+    .adv-quiz-progress { font-size: 0.85rem; color: var(--color-text-muted); }
+    .adv-q h4 { margin: 0 0 12px; font-size: 1rem; color: var(--color-text); }
+    .adv-opt { display: block; width: 100%; text-align: left; font: inherit; font-size: 0.95rem; padding: 10px 14px; margin: 8px 0; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-bg); color: var(--color-text); cursor: pointer; }
+    .adv-opt:hover:not(:disabled) { border-color: var(--color-accent); }
+    .adv-opt:disabled { cursor: default; }
+    .adv-opt.right { border-color: #139e8c; background: rgba(19, 158, 140, 0.12); }
+    .adv-opt.wrong { border-color: #c0392b; background: rgba(192, 57, 43, 0.10); }
+    .adv-why { display: none; margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: var(--color-bg-subtle); font-size: 0.92rem; color: var(--color-text); }
+    .adv-why.on { display: block; }
+    .adv-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 12px; }
+    .adv-btn { font: inherit; font-weight: 600; padding: 9px 18px; border-radius: 999px; border: 1px solid var(--color-border); background: var(--color-card-bg); color: var(--color-text); cursor: pointer; }
+    .adv-btn.primary { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-accent-contrast); }
+    .adv-btn:disabled { opacity: 0.4; cursor: default; }
+    .adv-score { display: none; }
+    .adv-score.on { display: block; }
+    .adv-score strong { font-size: 1.2rem; color: var(--color-accent); }
+  </style>
+
+  <div class="adv-quiz-head">
+    <span class="adv-quiz-title">Quiz: neural networks and serving</span>
+    <span class="adv-quiz-progress" id="adv-progress"></span>
+  </div>
+
+  <div class="adv-q" id="adv-question">
+    <h4 id="adv-text"></h4>
+    <div id="adv-options"></div>
+    <div class="adv-why" id="adv-why"></div>
+  </div>
+
+  <div class="adv-score" id="adv-score">
+    <p>You scored <strong id="adv-total"></strong> out of <span id="adv-of"></span>.</p>
+    <p id="adv-comment"></p>
+  </div>
+
+  <div class="adv-nav">
+    <button type="button" class="adv-btn" id="adv-prev" disabled>Previous</button>
+    <button type="button" class="adv-btn primary" id="adv-next" disabled>Next</button>
+  </div>
+
+  <script>
+    (function () {
+      var root = document.getElementById('adv-quiz');
+      if (!root) return;
+
+      // [question, [option A, option B, option C], index of the correct option, explanation]
+      var Q = [
+        [
+          "In a classic neural network, what are the parameters?",
+          [
+            "The weights and biases of every neuron.",
+            "The activation functions.",
+            "The training examples."
+          ],
+          0,
+          "Each neuron multiplies its inputs by weights and adds a bias; those numbers are what training changes."
+        ],
+        [
+          "Where do most of the parameters of an LLM sit?",
+          [
+            "In the embedding table, one vector per token.",
+            "In the feed-forward and attention matrices inside the layers.",
+            "In the tokenizer vocabulary."
+          ],
+          1,
+          "The embedding table is only the first layer. The matrices inside the 32 or more layers hold the bulk of a 7B model."
+        ],
+        [
+          "What does an activation function such as ReLU or GELU do?",
+          [
+            "It normalizes the inputs to mean zero.",
+            "It picks the most likely token.",
+            "It adds a non-linearity between two linear layers."
+          ],
+          2,
+          "Without a non-linearity, a stack of matrix multiplications collapses into one matrix. GELU and SwiGLU are the modern shapes of the same idea."
+        ],
+        [
+          "Which part of training an LLM is backpropagation?",
+          [
+            "Computing, for every weight, how the loss changes if that weight moves.",
+            "Splitting text into tokens.",
+            "Choosing the learning rate schedule."
+          ],
+          0,
+          "Backprop applies the chain rule layer by layer to get the gradient; gradient descent then moves each weight against it."
+        ],
+        [
+          "Which optimizer is the usual default for training LLMs?",
+          [
+            "Plain stochastic gradient descent.",
+            "AdamW.",
+            "Newton's method."
+          ],
+          1,
+          "AdamW, Adam with decoupled weight decay, is the standard choice."
+        ],
+        [
+          "Why do transformers use residual (skip) connections in every layer?",
+          [
+            "To reduce the vocabulary size.",
+            "To make the model faster at serving time.",
+            "So that networks of 32 to 100 layers can be trained at all."
+          ],
+          2,
+          "Skip connections, from ResNet, let gradients flow through deep stacks. Each transformer layer has two of them."
+        ],
+        [
+          "Which classic architecture did the transformer replace for sequences, and why?",
+          [
+            "RNN/LSTM, because they process a sequence step by step while attention processes it in parallel.",
+            "Convolutional networks, because they cannot handle text.",
+            "Decision trees, because they do not learn embeddings."
+          ],
+          0,
+          "RNNs are sequential, which is slow on GPUs. Attention looks at the whole sequence at once."
+        ],
+        [
+          "What is new in a transformer compared with a classic feed-forward network?",
+          [
+            "A new kind of loss function.",
+            "Attention and positional encoding.",
+            "A new kind of gradient descent."
+          ],
+          1,
+          "Everything else is familiar. Attention lets each token read the others; positional encoding gives the order, which attention alone lacks."
+        ],
+        [
+          "Why does a transformer need positional encoding?",
+          [
+            "Because tokens have no IDs.",
+            "Because the softmax requires it.",
+            "Because attention on its own has no notion of token order."
+          ],
+          2,
+          "Attention is a weighted sum over positions. Without position information, 'dog bites man' and 'man bites dog' would look the same."
+        ],
+        [
+          "Which statement about softmax in a transformer is right?",
+          [
+            "It appears twice: at the output over the vocabulary, and inside attention over positions.",
+            "It is only used during training.",
+            "It replaces the activation function."
+          ],
+          0,
+          "The output softmax gives token probabilities; the attention softmax gives the weights for the weighted sum."
+        ],
+        [
+          "Which files make up a model on disk?",
+          [
+            "Only the weights.",
+            "Weights, tokenizer, config, and chat template.",
+            "The training data and the weights."
+          ],
+          1,
+          "The server needs the config to build the network, the tokenizer to make the right IDs, and the template to format chat turns."
+        ],
+        [
+          "About how much GPU memory do the weights of a 7B model take at 16-bit precision, and at 4-bit?",
+          [
+            "About 70 GB and 17 GB.",
+            "About 7 GB and 1.75 GB.",
+            "About 14 GB and 3.5 GB."
+          ],
+          2,
+          "7 billion \u00d7 2 bytes is 14 GB; quantized to half a byte per parameter it is 3.5 GB."
+        ],
+        [
+          "What is the KV cache?",
+          [
+            "Per-request attention state that grows with every token, so the model does not recompute the whole conversation for each new token.",
+            "A copy of the weights kept on disk.",
+            "The list of recent prompts for the prompt cache."
+          ],
+          0,
+          "It is the second big consumer of GPU memory, next to the fixed weights, and it is freed when the request ends."
+        ],
+        [
+          "For a 7B-class model with standard attention, what is the KV cache cost for a 4,000-token conversation, roughly?",
+          [
+            "About 2 GB.",
+            "About 20 MB.",
+            "About 14 GB."
+          ],
+          0,
+          "About 0.5 MB per token \u00d7 4,000 tokens. Eight such conversations at once use more memory than the weights."
+        ],
+        [
+          "What does the prefill step do?",
+          [
+            "Produces output tokens one at a time.",
+            "Processes all prompt tokens in one parallel pass and builds the KV cache.",
+            "Downloads the model files."
+          ],
+          1,
+          "Prefill is compute-bound and parallel; it also yields the first output token."
+        ],
+        [
+          "Why are output tokens slower and pricier than input tokens?",
+          [
+            "Because output tokens are longer strings.",
+            "Because the tokenizer runs twice on outputs.",
+            "Because decode produces one token per step and each step must read the weights again, while prefill handles the whole prompt in parallel."
+          ],
+          2,
+          "Decode is limited by memory bandwidth, prefill by compute. That is the mechanical reason behind the price difference."
+        ],
+        [
+          "What is continuous batching?",
+          [
+            "Running one request at a time to save memory.",
+            "Letting requests join and leave the running batch at every step instead of waiting for a whole batch to finish.",
+            "Splitting a long prompt into chunks."
+          ],
+          1,
+          "It keeps the GPU busy and raises total tokens per second, at a small latency cost for each user."
+        ],
+        [
+          "Which inference server is the simplest path on a laptop, and which suits a GPU server with many users?",
+          [
+            "Ollama or llama.cpp on a laptop; vLLM, SGLang, or TGI for many users.",
+            "vLLM on a laptop; Ollama for many users.",
+            "Both cases need the same server."
+          ],
+          0,
+          "Ollama wraps llama.cpp for single-user use; vLLM and friends add paged attention and continuous batching for scale."
+        ],
+        [
+          "Where does the prompt cache from the Claude Code post live, seen from the server side?",
+          [
+            "In the tokenizer.",
+            "In the client's browser.",
+            "In the KV cache: a shared prefix of a recent request is reused instead of recomputed in prefill."
+          ],
+          2,
+          "That is why identical prefixes cost far fewer input tokens: the server skips their prefill."
+        ],
+        [
+          "What ends a reply and what happens then?",
+          [
+            "A stop token, the output limit, or a stop sequence; the KV cache is freed and usage is returned.",
+            "The client closing the connection; the weights are unloaded.",
+            "The scheduler timing out; the model is reloaded."
+          ],
+          0,
+          "The response carries prompt tokens, output tokens, and, where supported, cached tokens."
+        ]
+      ];
+
+      var total = Q.length;
+      var current = 0;
+      var score = 0;
+      var answered = [];
+      var text = document.getElementById('adv-text');
+      var opts = document.getElementById('adv-options');
+      var why = document.getElementById('adv-why');
+      var progress = document.getElementById('adv-progress');
+      var prev = document.getElementById('adv-prev');
+      var next = document.getElementById('adv-next');
+      var scoreBox = document.getElementById('adv-score');
+      document.getElementById('adv-of').textContent = total;
+
+      function render() {
+        var item = Q[current];
+        text.textContent = (current + 1) + '. ' + item[0];
+        opts.innerHTML = '';
+        item[1].forEach(function (label, i) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'adv-opt';
+          b.textContent = label;
+          b.addEventListener('click', function () { choose(i); });
+          if (answered[current] !== undefined) {
+            b.disabled = true;
+            if (i === item[2]) b.classList.add('right');
+            if (i === answered[current] && i !== item[2]) b.classList.add('wrong');
+          }
+          opts.appendChild(b);
+        });
+        if (answered[current] !== undefined) {
+          why.textContent = item[3];
+          why.classList.add('on');
+        } else {
+          why.textContent = '';
+          why.classList.remove('on');
+        }
+        progress.textContent = (current + 1) + ' / ' + total;
+        prev.disabled = current === 0;
+        next.disabled = answered[current] === undefined;
+        next.textContent = current === total - 1 ? 'See score' : 'Next';
+      }
+
+      function choose(i) {
+        if (answered[current] !== undefined) return;
+        answered[current] = i;
+        if (i === Q[current][2]) score++;
+        render();
+      }
+
+      function finish() {
+        scoreBox.classList.add('on');
+        document.getElementById('adv-total').textContent = score;
+        var msg = score >= 18 ? 'Excellent. You have the mechanics down.'
+          : score >= 14 ? 'Solid. Re-read the sections for the questions you missed.'
+          : 'Worth a second read of sections 8 and 10, then try again.';
+        document.getElementById('adv-comment').textContent = msg;
+        document.getElementById('adv-question').style.display = 'none';
+        document.querySelector('.adv-nav').style.display = 'none';
+        document.querySelector('.adv-quiz-progress').textContent = 'Done';
+      }
+
+      prev.addEventListener('click', function () {
+        if (current > 0) { current--; render(); }
+      });
+      next.addEventListener('click', function () {
+        if (current < total - 1) { current++; render(); }
+        else { finish(); }
+      });
+
+      render();
+    })();
+  </script>
+</div>
