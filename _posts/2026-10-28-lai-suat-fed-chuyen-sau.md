@@ -52,20 +52,7 @@ Kết hợp hai công cụ, FED có một "hành lang" lãi suất, lãi suất 
 
 Đây là phần quan trọng nhất, và cũng là phần hay bị hiểu sai. Lãi suất FED không tác động trực tiếp lên khoản vay của bạn. Nó lan truyền qua nhiều tầng.
 
-```
-FED điều chỉnh khoảng mục tiêu
-        ↓
-Lãi suất liên ngân hàng qua đêm thay đổi
-        ↓
-Lãi suất ngắn hạn (tín dụng, lãi suất tiền gửi ngắn hạn) thay đổi theo
-        ↓
-Lãi suất cơ bản (prime rate) của ngân hàng thường được đặt theo lãi suất FED cộng thêm một mức cố định
-        ↓
-Lãi suất thẻ tín dụng, vay tiêu dùng, vay mua xe (thường có lãi suất thả nổi) điều chỉnh theo
-        ↓
-Lãi suất thế chấp (mortgage) và trái phiếu dài hạn chịu tác động gián tiếp,
-chủ yếu qua kỳ vọng về lạm phát và lãi suất trái phiếu chính phủ 10 năm
-```
+{% include fed-transmission-flow.html %}
 
 Điểm cần nhớ:
 
