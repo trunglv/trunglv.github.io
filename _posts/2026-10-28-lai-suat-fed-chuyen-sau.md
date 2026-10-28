@@ -2,7 +2,7 @@
 title: "Lãi suất FED: giải thích từ gốc đến ngọn, dễ hiểu"
 slug: "lai-suat-fed-chuyen-sau"
 date: 2026-10-28 09:00:00 +0700
-categories: [ai]
+categories: [finance]
 lang: vi
 ---
 
