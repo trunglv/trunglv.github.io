@@ -164,6 +164,8 @@ If you type the prompts yourself, the `UserPromptSubmit` hook gives you the gate
 - add context by printing to standard output, for example the result of a `grep` for the function named in the prompt, so the model does not spend two or three requests finding it;
 - call the classifier from step 3 and print a one-line suggestion, such as "this looks like a small edit; a lower effort would do."
 
+You do not have to write this hook yourself. [prompt-improver](https://github.com/severity1/claude-code-prompt-improver) is a community plugin, not part of Claude Code, that does this kind of thing: it uses hooks on prompt submit, tool use, and subagent start to add context, and includes a `prompt-improver` skill for vague prompts. It is a reasonable place to start if you type prompts by hand and want the gate without building it. Read its hooks before you install it, since they run on every prompt, and treat it as one option next to writing your own. A similar hook-based project, [prompt-improver-r2r](https://github.com/evgenygurin/prompt-improver-r2r), uses a skill-based design; its README claims a large token reduction, which we have not verified. Plugin hooks have had installation problems in some Claude Code versions, so copying the hook into `settings.json` by hand is the more reliable route.
+
 ### What the gate costs
 
 The rule checks are free, `count_tokens` is free, and the classifier is a few hundred tokens on a cheap model. A wasted loop on a vague prompt is five to twenty requests, each re-sending the whole context. The gate pays for itself the first time it sends a question back instead of a loop out.
