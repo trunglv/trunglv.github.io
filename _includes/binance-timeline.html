@@ -1,0 +1,43 @@
+<style>
+  .binance-timeline { position: relative; margin: 1.5rem 0; padding-left: 28px; }
+  .binance-timeline::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: #c9d1dc; }
+  .binance-timeline-item { position: relative; margin: 0 0 1.25rem; }
+  .binance-timeline-item::before { content: ""; position: absolute; left: -28px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: #ffffff; border: 3px solid #139e8c; box-sizing: border-box; }
+  .binance-timeline-item.is-alert::before { border-color: #d68910; }
+  .binance-timeline-time { display: inline-block; margin-bottom: 0.25rem; padding: 2px 10px; border-radius: 999px; background: #e8f7f4; color: #0e6b5e; font-size: 0.8rem; font-weight: 700; }
+  .binance-timeline-item.is-alert .binance-timeline-time { background: #fff8e6; color: #9a6206; }
+  .binance-timeline-text { margin: 0; line-height: 1.6; }
+  @media (prefers-color-scheme: dark) {
+    .binance-timeline::before { background: #3a4456; }
+    .binance-timeline-item::before { background: #1b2230; }
+    .binance-timeline-time { background: rgba(19, 158, 140, 0.18); color: #6fd6c6; }
+    .binance-timeline-item.is-alert .binance-timeline-time { background: rgba(214, 137, 16, 0.18); color: #f3b95a; }
+  }
+</style>
+
+<ol class="binance-timeline" style="list-style: none; counter-reset: none;">
+  <li class="binance-timeline-item">
+    <span class="binance-timeline-time">Trước đó trong ngày</span>
+    <p class="binance-timeline-text">Changpeng Zhao (CZ), người sáng lập Binance và hiện không còn điều hành sàn nhưng vẫn là cổ đông lớn nhất, đăng trên X rằng công ty có thể đã bị hack.</p>
+  </li>
+  <li class="binance-timeline-item">
+    <span class="binance-timeline-time">Thứ Năm, 29/10</span>
+    <p class="binance-timeline-text">Binance xác nhận với báo chí có sự cố bảo mật, sau khi người dùng báo cáo tiền bị rút khỏi ví của sàn.</p>
+  </li>
+  <li class="binance-timeline-item">
+    <span class="binance-timeline-time">Cùng ngày</span>
+    <p class="binance-timeline-text">Binance tạm dừng rút và nạp trên nhiều mạng lưới "như một biện pháp phòng ngừa". Sàn không nêu tên các mạng lưới cụ thể.</p>
+  </li>
+  <li class="binance-timeline-item is-alert">
+    <span class="binance-timeline-time">Cùng ngày</span>
+    <p class="binance-timeline-text">Tether và Circle lần lượt đóng băng USDT và USDC liên quan đến vụ việc. Theo công bố của các công ty: hơn 1,5 tỷ USDT và hơn 800 triệu USDC.</p>
+  </li>
+  <li class="binance-timeline-item is-alert">
+    <span class="binance-timeline-time">Cùng ngày</span>
+    <p class="binance-timeline-text">Aave tạm dừng các thị trường cho vay do cộng đồng quản lý (DAO). Theo báo cáo, ví của kẻ tấn công đã dùng USDT bị đánh cắp làm tài sản thế chấp để vay khoảng 20.000 WETH, tương đương khoảng 44 triệu USD.</p>
+  </li>
+  <li class="binance-timeline-item">
+    <span class="binance-timeline-time">Cùng ngày</span>
+    <p class="binance-timeline-text">Giá Bitcoin giảm xuống dưới 77.000 USD (khoảng 4,8%). BNB giảm khoảng 8%, AAVE giảm khoảng 11%.</p>
+  </li>
+</ol>
