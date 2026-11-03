@@ -4,6 +4,7 @@ slug: "phan-tich-co-phieu-fpt"
 date: 2026-11-03 09:00:00 +0700
 categories: [finance]
 lang: vi
+image: /assets/images/posts/phan-tich-co-phieu-fpt-banner.png
 ---
 
 FPT là một trong những cổ phiếu công nghệ lớn nhất trên thị trường Việt Nam. Doanh nghiệp làm nhiều mảng, từ gia công phần mềm, dịch vụ CNTT, viễn thông đến giáo dục và bán lẻ. Bài này đi qua kết quả kinh doanh gần nhất (quý 3/2026 và lũy kế 9 tháng), định giá hiện tại và những rủi ro cần theo dõi. Mục tiêu là cung cấp một khung đọc số liệu, không phải khuyến nghị mua hay bán.
