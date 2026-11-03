@@ -133,6 +133,22 @@ Với các số liệu này, có thể nói FPT đang đứng trước một vù
 | MACD | -2,838 | Nằm dưới đường tín hiệu (-2,305). Histogram -0,533 |
 | Khối lượng phiên cuối | 2,75 triệu cổ phiếu | Thấp hơn trung bình 20 phiên (7,52 triệu) |
 
+### MACD: đọc chi tiết
+
+MACD gồm ba con số, đều tính từ giá đóng cửa (công thức chuẩn 12, 26, 9):
+
+- **Đường MACD = -2,838.** Là hiệu của EMA12 trừ EMA26. EMA là đường trung bình giá có trọng số lớn hơn cho các phiên gần đây. EMA12 phản ánh giá 12 phiên gần nhất, EMA26 phản ánh 26 phiên. Khi đường này âm, giá ngắn hạn đang thấp hơn giá dài hạn, tức đà giảm đang chiếm ưu thế.
+- **Đường tín hiệu = -2,305.** Là EMA9 của chính đường MACD. Đường này làm mốc để so sánh và giảm bớt nhiễu từng phiên.
+- **Histogram = -0,533.** Là đường MACD trừ đường tín hiệu. Histogram âm nghĩa là MACD đang nằm dưới đường tín hiệu, tức đà giảm đang mạnh hơn mức trung bình gần đây.
+
+Ba điểm cần chú ý:
+
+1. **Đường MACD dưới 0 từ 29/09/2026.** Xu hướng ngắn hạn đã yếu hơn xu hướng dài hạn.
+2. **MACD cắt xuống dưới đường tín hiệu từ 18/09/2026.** Tín hiệu giảm đã kéo dài hơn một tháng.
+3. **Histogram đã yếu đi rồi lại mạnh lên.** Histogram đạt đáy -0,819 ngày 13/10, thu hẹp về -0,043 ngày 23/10, khi lực giảm yếu đi. Từ 26/10, histogram mở rộng liên tục đến -0,533. Đà giảm đang tăng trở lại trong hai tuần gần đây.
+
+Cách đọc: chưa có tín hiệu đảo chiều. Đảo chiều thường bắt đầu khi histogram thu hẹp qua nhiều phiên liên tiếp rồi MACD cắt lên đường tín hiệu. Hiện histogram vẫn đang mở rộng.
+
 Trong khoảng hai tuần, giá giảm từ 57.400 đồng (21/10) xuống 49.900 đồng (03/11), tức khoảng 13%. Đà giảm này rất mạnh, nên RSI xuống mức quá bán. Điều này có thể đi kèm một nhịp hồi kỹ thuật ngắn, nhưng RSI thấp không đảm bảo giá sẽ tăng. MACD vẫn âm và chưa có dấu hiệu đảo chiều. Khối lượng phiên cuối thấp hơn trung bình, cho thấy lực bán có thể đang giảm, nhưng chưa có lực mua rõ rệt.
 
 {% include fpt-technical-chart.html %}
