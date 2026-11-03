@@ -191,6 +191,21 @@ Nếu bạn đang theo dõi FPT, có thể đặt các mốc sau:
 - **P/B (giá trên giá trị sổ sách):** giá cổ phiếu chia cho vốn chủ sở hữu trên mỗi cổ phiếu. FPT khoảng 2,21 lần, nghĩa là giá đang cao hơn giá trị tài sản thuần ghi trên sổ sách.
 - **ROE (tỷ suất sinh lời trên vốn chủ sở hữu):** lợi nhuận sau thuế chia cho vốn chủ sở hữu. FPT khoảng 23,7%, nghĩa là cứ 100 đồng vốn của cổ đông tạo ra khoảng 23,7 đồng lợi nhuận mỗi năm. Chỉ số này giải thích phần nào vì sao P/B của FPT cao hơn mức trung bình ngành.
 
+## Đọc thêm
+
+- [Phần 2 - Đầu tư chứng khoán cơ bản](https://acbs.com.vn/acbsmedia/2026/04/Phan-2_Dau-tu-chung-khoan-co-ban.pdf), ACBS: giải thích P/E, P/B, EPS, ROE
+- [Chỉ số EPS](https://topi.vn/tag/chi-so-eps), Topi
+- [Chỉ số P/E](https://topi.vn/tag/chi-so-pe), Topi
+- [Chỉ số P/B](https://topi.vn/tag/chi-so-pb), Topi
+- [Phân tích cơ bản](https://vn.tradingview.com/chart/LCG/MfQ1rUjp/), TradingView
+- [Học chứng khoán từ cơ bản đến nâng cao](https://vn.tradingview.com/chart/HDFCBANK/RHODAEuT-Learn-stock-market-from-basic-to-advance), TradingView
+- [EPS](https://www.investopedia.com/terms/e/eps.asp), Investopedia
+- [P/E](https://www.investopedia.com/terms/p/price-earningsratio.asp), Investopedia
+- [P/B](https://www.investopedia.com/terms/p/price-to-bookratio.asp), Investopedia
+- [ROE](https://www.investopedia.com/terms/r/returnonequity.asp), Investopedia
+- [MACD](https://www.investopedia.com/terms/m/macd.asp), Investopedia
+- [RSI](https://www.investopedia.com/terms/r/rsi.asp), Investopedia
+
 ## Nguồn tham khảo
 
 - [FireAnt: thông tin cổ phiếu FPT](https://fireant.vn/ma-chung-khoan/FPT), FireAnt
