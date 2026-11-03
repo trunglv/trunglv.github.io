@@ -184,8 +184,9 @@ Nếu bạn đang theo dõi FPT, có thể đặt các mốc sau:
 
 > **Lưu ý:** Bài này chỉ phục vụ mục đích tham khảo và giáo dục. Đây không phải lời khuyên đầu tư. Số liệu lấy từ các nguồn công khai vào ngày 03/11/2026 và có thể đã thay đổi. Trước khi ra quyết định, hãy đối chiếu với báo cáo tài chính chính thức trên HOSE hoặc trang nhà đầu tư của FPT, và cân nhắc tình hình tài chính cá nhân.
 
-## Giải thích nhanh ba chỉ số
+## Giải thích nhanh các chỉ số
 
+- **EPS lũy kế 4 quý (lãi trên mỗi cổ phiếu):** tổng lợi nhuận sau thuế công ty mẹ của bốn quý gần nhất, chia cho số cổ phiếu đang lưu hành. Với FPT, bốn quý gần nhất có tổng lợi nhuận khoảng 10.281 tỷ đồng, tương đương khoảng 5.452 đồng cho mỗi cổ phiếu. EPS cập nhật mỗi khi có báo cáo quý mới, nên luôn phản ánh một năm gần nhất và làm mượt các quý lợi nhuận bất thường.
 - **P/E (giá trên lợi nhuận):** giá cổ phiếu chia cho lợi nhuận trên mỗi cổ phiếu. FPT khoảng 9,2 lần, nghĩa là giá hiện tại bằng khoảng 9 năm lợi nhuận hiện tại. Càng thấp thì càng rẻ so với lợi nhuận, nhưng thấp cũng có thể do thị trường lo ngại về tăng trưởng.
 - **P/B (giá trên giá trị sổ sách):** giá cổ phiếu chia cho vốn chủ sở hữu trên mỗi cổ phiếu. FPT khoảng 2,21 lần, nghĩa là giá đang cao hơn giá trị tài sản thuần ghi trên sổ sách.
 - **ROE (tỷ suất sinh lời trên vốn chủ sở hữu):** lợi nhuận sau thuế chia cho vốn chủ sở hữu. FPT khoảng 23,7%, nghĩa là cứ 100 đồng vốn của cổ đông tạo ra khoảng 23,7 đồng lợi nhuận mỗi năm. Chỉ số này giải thích phần nào vì sao P/B của FPT cao hơn mức trung bình ngành.
