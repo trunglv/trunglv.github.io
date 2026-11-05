@@ -166,6 +166,49 @@ Như vậy, kịch bản này bất lợi trong ngắn hạn vì biên lợi nhu
 - Đo chi phí AI theo từng dự án và từng tác vụ.
 - Dùng nhiều nhà cung cấp model, có model dự phòng, và duy trì quy trình làm việc được cả khi công cụ AI gặp sự cố.
 
+## Bonus: nguồn điện cho data center và cái giá của việc dời ra nước ngoài
+
+### Điện của data center Mỹ đến từ đâu?
+
+Khí tự nhiên hiện là nguồn điện lớn nhất. Theo [phân tích của Cơ quan Năng lượng Quốc tế (IEA)](https://www.iea.org/reports/energy-and-ai/energy-supply-for-ai) trong báo cáo năm 2025, cơ cấu điện mà data center Mỹ thực tế tiêu thụ như sau:
+
+| Nguồn điện | Tỷ trọng |
+|---|---|
+| Khí tự nhiên | Hơn 40% |
+| Năng lượng tái tạo, chủ yếu điện mặt trời và điện gió | 24% |
+| Hạt nhân | Khoảng 20% |
+| Than | Khoảng 15% |
+
+Theo kịch bản cơ sở của IEA, khí tự nhiên sẽ là nguồn bổ sung lớn nhất đến năm 2030, thêm hơn 130 TWh mỗi năm, so với 110 TWh từ năng lượng tái tạo. Đến năm 2035, các nguồn phát thải thấp có thể chiếm hơn một nửa. Các công ty công nghệ đã có kế hoạch tài trợ hơn 20 GW lò phản ứng mô-đun nhỏ, nhưng những lò đầu tiên chỉ dự kiến vận hành sau năm 2030. Vì đây là dự báo từ năm 2025, các con số có thể đã thay đổi.
+
+### Chính sách xanh của Đảng Dân chủ có ảnh hưởng không?
+
+Có, nhưng tác động trước mắt nhiều khả năng nằm ở cấp bang hơn là liên bang. [Latitude Media](https://www.latitudemedia.com/news/how-democrats-midterm-sweep-will-rewire-energy-and-data-center-policy/) cũng cho rằng tác động năng lượng tức thời nằm ở các thống đốc, ủy ban điện lực và cơ quan lập pháp bang. Michigan là một ví dụ, khi mục tiêu 100% điện sạch vào năm 2040 nhiều khả năng được giữ nguyên.
+
+Ở cấp liên bang, [Energy Bills Relief Act](https://seec.house.gov/media/in-the-news/house-democrats-want-clean-energy-tax-credits-back), dự luật do 122 hạ nghị sĩ Dân chủ đưa ra hồi tháng 3, là một chỉ dấu về định hướng. Dự luật muốn khôi phục các ưu đãi thuế cho năng lượng sạch, cấp phép 60 GW năng lượng tái tạo trên đất công đến năm 2030, và yêu cầu các bang cân nhắc tiêu chuẩn để hộ dân không phải trả chi phí nâng cấp lưới điện cho các cơ sở tiêu thụ lớn. Tuy nhiên, dự luật này vẫn phải qua cửa Nhà Trắng, và không giới hạn trực tiếp nguồn điện của data center.
+
+Từ đó có thể suy luận ba điều:
+
+- **Khí tự nhiên khó sớm bị thay thế:** Các nguồn được đọc cho bài này không nêu đề xuất nào của Đảng Dân chủ nhằm cấm data center dùng khí, và dự báo của IEA vẫn đặt khí ở vị trí dẫn đầu về nguồn bổ sung đến năm 2030.
+- **Năng lượng tái tạo có thể được lợi nếu ưu đãi trở lại**, nhưng khả năng này còn phụ thuộc vào đàm phán với Đảng Cộng hòa và Nhà Trắng.
+- **Hóa đơn điện đang là trọng tâm:** Quy định buộc data center tự trả chi phí điện có thể tác động đến ngành AI sớm hơn các mục tiêu khí hậu dài hạn, và làm tăng chi phí đầu tư của các hãng.
+
+### Dời data center ra nước ngoài được và mất gì?
+
+Xu hướng này đã bắt đầu từ các thỏa thuận với vùng Vịnh, và không phụ thuộc hoàn toàn vào kết quả bầu cử. Tháng 7/2026, Bộ Thương mại Mỹ [nới quy định xuất khẩu chip AI cho UAE](https://www.justsecurity.org/150631/the-trump-administration-throws-gulf-ai-a-lifeline/). Chưa có nguồn nào đo được mức độ mà các hạn chế trong nước đang đẩy dự án ra ngoài, nên phần dưới đây là phân tích định tính.
+
+**Vị thế dẫn đầu về chip của Mỹ** ít bị ảnh hưởng trong ngắn hạn, vì data center ở nước ngoài vẫn chủ yếu mua chip Mỹ. [Rest of World](https://restofworld.org/2026/gulf-ai-investment-nvidia-monopoly-blackwell/) cho biết giai đoạn đầu dự án Stargate của G42 sẽ dùng 400.000 chip Nvidia, chip tốt nhất của Trung Quốc còn kém Nvidia ít nhất một thế hệ, và chip của AMD hay Qualcomm cũng cần Mỹ chấp thuận. Về ngắn hạn, việc xây dựng ở nước ngoài thậm chí có thể mở rộng thị trường cho chip Mỹ. Rủi ro nằm ở dài hạn: mỗi lần nới kiểm soát, Mỹ có thể mất bớt đòn bẩy, và các nước có thêm động lực tìm nhà cung cấp khác khi có lựa chọn cạnh tranh.
+
+**Bảo mật công nghệ** là phần gây tranh luận nhiều nhất. Các nhà nghiên cứu của Carnegie viết trên [Just Security](https://www.justsecurity.org/150631/the-trump-administration-throws-gulf-ai-a-lifeline/) cho rằng quy định mới có thể khiến Trung Quốc dễ tiếp cận chip Mỹ qua data center ở Trung Đông hơn, kể cả truy cập từ xa, và khiến việc bảo vệ trọng số model khó hơn. Đây là quan điểm của các tác giả, chưa phải kết quả đã xảy ra. Ở chiều ngược lại, nếu các nước không mua được chip Mỹ, họ có thể tìm đến công nghệ Trung Quốc khi nguồn cung này đủ cạnh tranh, nên phổ biến chip Mỹ cũng có giá trị chiến lược. Ngoài ra còn có rủi ro vật lý: cũng theo Just Security, data center ở Bahrain và UAE nằm trong số các mục tiêu đầu tiên của drone và tên lửa Iran trong cuộc chiến năm nay.
+
+**Việc làm của Mỹ** có thể bị ảnh hưởng, nhưng chủ yếu là việc làm xây dựng. Các chuyên gia nói với [CBS](https://www.cbsnews.com/news/ai-data-center-jobs-construction-technician/) rằng phần lớn việc làm từ data center là việc xây dựng tạm thời, và các nhà kinh tế của Revelio Labs mô tả ngành này thâm dụng vốn hơn là lao động. American Edge Project, nhóm vận động do Meta lập, dự báo khoảng 4,7 triệu việc làm xây dựng tạm thời so với khoảng 697.000 việc làm cố định, nên con số này cần được đọc với góc nhìn đó. Nói chính xác hơn, dời dự án ra nước ngoài khiến nước Mỹ mất cơ hội tạo việc làm mới nhiều hơn là mất việc làm đang có. Tác động cũng tập trung ở địa phương: nguồn thu thuế, chi tiêu quanh dự án và thợ xây dựng lành nghề. Còn việc làm thiết kế chip và phát triển model không nhất thiết đi theo data center. Hiện chưa có nghiên cứu nào được tìm thấy đo trực tiếp số việc làm mất đi vì dời data center, và [Fortune](https://fortune.com/2026/02/07/us-construction-industry-employment-outlook-500000-new-workers-ai-boom-infrastructure-skilled-trades/) cho biết ngành xây dựng Mỹ vẫn đang thiếu lao động, nên một phần tác động có thể được hấp thụ.
+
+| Vấn đề | Tác động khi dời ra nước ngoài | Thời gian |
+|---|---|---|
+| Vị thế chip của Mỹ | Có thể có lợi về doanh số, nhưng giảm đòn bẩy nếu kiểm soát bị nới | Lợi trước mắt, rủi ro dài hạn |
+| Bảo mật công nghệ | Tăng rủi ro thất thoát chip, truy cập từ xa và lộ trọng số model | Phụ thuộc vào quy định từng nước |
+| Việc làm của Mỹ | Giảm việc làm xây dựng mới và lợi ích địa phương, ít ảnh hưởng đến việc làm cố định | Tập trung ở giai đoạn xây dựng |
+
 *Bài viết chỉ nhằm cung cấp thông tin, không phải khuyến nghị đầu tư. Số liệu cập nhật đến ngày 5/11/2026. Một số số liệu đến từ nguồn thứ cấp, gồm các blog phân tích và Trending Topics (bài có AI cùng sản xuất), nên cần đối chiếu với nguồn gốc.*
 
 ## Nguồn tham khảo
@@ -179,6 +222,13 @@ Như vậy, kịch bản này bất lợi trong ngắn hạn vì biên lợi nhu
 - [A.I. Data Centers and Labs Face a Setback After Democrats' Win](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/), Trending Topics
 - [New orders slow, AI continues to pressure Vietnam's leading tech firm FPT](https://theinvestor.vn/new-orders-slow-ai-continues-to-pressure-vietnams-leading-tech-firm-fpt-d20340.html), The Investor
 - [Vietnam data center boom draws billions of dollars as AI demand accelerates](https://e.vnexpress.net/news/tech/vietnam-innovation/vietnam-data-center-boom-draws-billions-dollars-as-ai-demand-accelerates-5113451.html), VnExpress
+- [Energy supply for AI](https://www.iea.org/reports/energy-and-ai/energy-supply-for-ai), IEA
+- [How Democrats' midterm sweep will rewire energy and data center policy](https://www.latitudemedia.com/news/how-democrats-midterm-sweep-will-rewire-energy-and-data-center-policy/), Latitude Media
+- [House Democrats want clean energy tax credits back](https://seec.house.gov/media/in-the-news/house-democrats-want-clean-energy-tax-credits-back), Inside Climate News, đăng lại trên SEEC
+- [The Trump Administration Throws Gulf AI a Lifeline](https://www.justsecurity.org/150631/the-trump-administration-throws-gulf-ai-a-lifeline/), Just Security
+- [Why the Gulf's billions can't buy a way out of Nvidia](https://restofworld.org/2026/gulf-ai-investment-nvidia-monopoly-blackwell/), Rest of World
+- [Data center frenzy is spurring a jobs boomlet for blue-collar workers](https://www.cbsnews.com/news/ai-data-center-jobs-construction-technician/), CBS News
+- [The U.S. construction industry will need half a million new workers next year](https://fortune.com/2026/02/07/us-construction-industry-employment-outlook-500000-new-workers-ai-boom-infrastructure-skilled-trades/), Fortune
 - [AI Price Hikes 2026: The 10 Nobody Warned You About](https://capitalandcompute.net/blog/ai-price-hikes-2026/), Capital & Compute
 - [The DRAM Shortage and HBM Bottleneck](https://www.buildmvpfast.com/blog/dram-shortage-hbm-bottleneck-ai-hardware-costs-2026), BuildMVPFast
 - [SK Hynix warns DRAM supply growth will lag demand through 2028](https://wccftech.com/sk-hynix-warns-dram-supply-growth-will-lag-demand-through-2028/), Wccftech
