@@ -140,6 +140,32 @@ Phần này là suy luận của mình, vì chưa có nguồn nào đo được 
 
 Có thể có một cơ hội ở mảng hạ tầng, dù đây không phải là outsource. Việt Nam đang thu hút [các dự án data center trị giá hàng tỷ USD](https://e.vnexpress.net/news/tech/vietnam-innovation/vietnam-data-center-boom-draws-billions-dollars-as-ai-demand-accelerates-5113451.html), như dự án 2 tỷ USD của G42 với nhóm FPT, VinaCapital và Viet Thai tại TP.HCM. Viettel IDC dự kiến công suất lắp đặt tăng từ khoảng 104MW lên gần 600MW vào năm 2030. Tuy vậy, mình chưa thấy nguồn nào cho thấy các hạn chế ở Mỹ đang đẩy dự án sang Việt Nam. Trong nước cũng có rào cản riêng, ví dụ một dự án 100MW có thể phải chờ 2–3 năm để có nguồn điện mới.
 
+### Kịch bản: giá token tăng và data center quá tải
+
+Đây là giả định, không phải dự báo. Nếu cả hai điều này xảy ra, công ty outsource có thể bị ảnh hưởng theo bốn hướng.
+
+**1. Biên lợi nhuận bị ép trước tiên.** Công ty đã ký hợp đồng với mức giá thấp vì tính đến năng suất từ AI thì khó tăng giá ngay khi chi phí token tăng. Phần chênh lệch sẽ do công ty tự chịu, nhất là với hợp đồng trọn gói. Để dễ hình dung, bảng dưới đây lấy biên lợi nhuận trước thuế khoảng [15,8% của mảng CNTT nước ngoài tại FPT](https://theinvestor.vn/new-orders-slow-ai-continues-to-pressure-vietnams-leading-tech-firm-fpt-d20340.html) làm mốc, rồi giả định giá token tăng gấp đôi, lượng dùng không đổi và công ty không chuyển được chi phí sang khách hàng:
+
+| Chi phí AI trên doanh thu (giả định) | Sau khi giá token tăng gấp đôi | Biên lợi nhuận còn lại |
+|---|---|---|
+| 2% | 4% | 13,8% |
+| 5% | 10% | 10,8% |
+| 10% | 20% | 5,8% |
+
+Đây chỉ là phép tính minh họa, không phải số liệu của FPT. Nó cho thấy công ty càng dùng nhiều AI mà không chuyển được chi phí thì càng dễ bị ảnh hưởng.
+
+**2. Rủi ro giao hàng tăng.** Khi data center quá tải, công cụ AI có thể chậm, lỗi hoặc bị giới hạn lượt dùng. Một đội đã quen làm việc với AI có thể trễ tiến độ trong lúc vẫn phải giữ cam kết với khách. Công ty nhỏ có thể khó xoay xở hơn nếu các hãng ưu tiên khách lớn hoặc gói giá cao.
+
+**3. Lợi thế về nhân công có thể phục hồi một phần.** Khi AI đắt và kém ổn định, khách hàng có thể bớt kỳ vọng thay người bằng AI, và khó đòi giảm giá mạnh hơn nữa. Với một số việc, đội ngũ kỹ sư Việt Nam có thể lại cạnh tranh hơn. Tuy vậy, đây là lợi thế tạm thời, vì model phổ thông vẫn có thể tiếp tục rẻ đi.
+
+**4. Xuất hiện nhu cầu dịch vụ mới.** Khách hàng cũng chịu chi phí AI cao, nên có thể cần người giúp tối ưu số token, dùng cache, chọn model phù hợp cho từng việc, hoặc tự vận hành model mở trọng số. Đây là những việc outsource có thể nhận làm.
+
+Tóm lại, mình cho rằng kịch bản này xấu trong ngắn hạn vì biên lợi nhuận và tiến độ bị ảnh hưởng trước. Về trung hạn, nó có thể làm chậm tốc độ AI thay thế gia công, nhưng khó đảo ngược xu hướng. Những việc công ty nên chuẩn bị gồm:
+
+- Thêm điều khoản điều chỉnh giá theo chi phí AI vào hợp đồng mới, và không giảm giá chỉ dựa trên giá token hiện tại.
+- Đo chi phí AI theo từng dự án và từng tác vụ.
+- Dùng nhiều nhà cung cấp model, có model dự phòng, và giữ quy trình làm việc được khi công cụ AI gặp sự cố.
+
 ### Ai chịu áp lực nhiều nhất?
 
 Theo mình, áp lực sẽ không chia đều:
