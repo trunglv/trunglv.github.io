@@ -175,14 +175,6 @@ Theo mình, áp lực sẽ không chia đều:
 - **Công ty làm sản phẩm:** nên tính chi phí AI theo từng tác vụ và thiết kế để dễ đổi model, vì chi phí này có thể ảnh hưởng trực tiếp đến biên lợi nhuận.
 - **Lập trình viên:** thị trường vẫn cần người, nhưng cần đúng kỹ năng. [TopDev ước tính]((https://genk.vn/ai-xoa-hang-chuc-nghin-viec-lam-o-phuong-tay-va-dang-bao-mon-mo-vang-ty-usd-cua-gia-cong-phan-mem-viet-nam-165260701195817027.chn)) nhu cầu năm 2026 có thể lên 750.000 người so với khoảng 560.000 người hiện có, và 53,7% công ty khó tìm được ứng viên có kỹ năng phù hợp.
 
-## Những gì cần theo dõi
-
-- Bà Hinojosa làm gì với lệnh tạm dừng ở Texas sau khi nhậm chức vào tháng 1.
-- Quốc hội có thông qua một luật AI hẹp hơn không. Shakeel Hashim của Transformer [dự báo](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/) một dự luật mạnh hơn FRONTIER Act, với yêu cầu kiểm thử model mạnh nhất và phạm vi cấm luật bang hẹp hơn.
-- Các quy định buộc data center tự trả tiền điện và đầu tư vào lưới điện.
-- Hợp đồng mới và tốc độ tăng của mảng AI tại FPT, để xem mảng mới có bù được sức ép ở gia công truyền thống không.
-- Giá DRAM và giá thuê GPU, vì đây vẫn là yếu tố tác động trực tiếp nhất lên chi phí sử dụng AI.
-
 *Bài viết chỉ nhằm cung cấp thông tin, không phải khuyến nghị đầu tư. Số liệu cập nhật đến ngày 5/11/2026.*
 
 ## Nguồn tham khảo
