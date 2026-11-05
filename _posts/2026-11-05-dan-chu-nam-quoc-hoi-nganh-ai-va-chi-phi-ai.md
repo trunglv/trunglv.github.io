@@ -23,11 +23,9 @@ Câu trả lời ngắn của mình: ảnh hưởng là có thật, nhưng nằm
 | Bầu cử có làm chi phí sử dụng AI tăng ngay không? | Khó, vì chi phí phần cứng đang là yếu tố lớn hơn |
 | Về dài hạn thì sao? | Nếu nhiều dự án bị chậm, nguồn cung có thể eo hẹp lâu hơn và chi phí dùng các model mạnh nhất khó giảm nhanh. Đây là suy luận của mình, chưa có số liệu đo được |
 
-## Kết quả bầu cử: thắng lớn nhưng chưa đủ 2/3
+## Kết quả bầu cử: thắng cả hai viện nhưng không đủ 2/3
 
-Dân chủ đã thắng cả hai viện, nhưng số ghế cuối cùng chưa chốt. [Các đài đưa ra con số khác nhau](https://www.cbsnews.com/live-updates/election-day-2026-midterms/) cho Thượng viện, từ ít nhất 51 đến ít nhất 54 ghế.
-
-Điểm quan trọng là đảng này không đạt 2/3 ở Hạ viện, tức 290 trên 435 ghế. Ngay cả ước tính cao được [Trending Topics dẫn lại](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/), tới 261 ghế Hạ viện và 56 ghế Thượng viện, vẫn thấp hơn mức 290 và 67 ghế cần có.
+Đảng Dân chủ [đã thắng cả Hạ viện lẫn Thượng viện](https://www.cbsnews.com/live-updates/election-day-2026-midterms/). Tuy nhiên, đảng này không đạt 2/3 ở Hạ viện, tức 290 trên 435 ghế. Ước tính được [Trending Topics dẫn lại](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/) cũng chỉ tới 261 ghế Hạ viện và 56 ghế Thượng viện, thấp hơn mức 290 và 67 ghế cần có.
 
 AI có vai trò rõ trong cuộc bầu cử này. [56% người được hỏi](https://www.cnbc.com/2026/11/04/midterm-election-blue-wave-trump-billionaires.html) trong thăm dò cử tri của CNBC coi data center là yếu tố quan trọng hoặc rất quan trọng khi bỏ phiếu. Dù vậy, đây không phải lý do duy nhất. CNBC cho biết cử tri còn nhắc đến giá cả và tham nhũng.
 
@@ -108,7 +106,7 @@ Giá API áp dụng toàn cầu, nên người dùng ở Việt Nam cũng chịu
 - Các quy định buộc data center tự trả tiền điện và đầu tư vào lưới điện.
 - Giá DRAM và giá thuê GPU, vì đây vẫn là yếu tố tác động trực tiếp nhất lên chi phí sử dụng AI.
 
-*Bài viết chỉ nhằm cung cấp thông tin, không phải khuyến nghị đầu tư. Kết quả bầu cử và số liệu cập nhật đến ngày 5/11/2026 và có thể thay đổi.*
+*Bài viết chỉ nhằm cung cấp thông tin, không phải khuyến nghị đầu tư. Số liệu cập nhật đến ngày 5/11/2026.*
 
 ## Nguồn tham khảo
 
