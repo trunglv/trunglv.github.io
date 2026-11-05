@@ -173,7 +173,7 @@ Theo mình, áp lực sẽ không chia đều:
 - **Chịu áp lực nhiều:** công ty gia công tính tiền theo giờ, làm các việc lập trình cơ bản, kiểm thử thủ công, hoặc phụ thuộc vào vài khách hàng lớn.
 - **Có lợi thế hơn:** công ty hiểu sâu một ngành, nhận trách nhiệm theo kết quả, hoặc có thể đưa AI vào hệ thống thật của khách hàng.
 - **Công ty làm sản phẩm:** nên tính chi phí AI theo từng tác vụ và thiết kế để dễ đổi model, vì chi phí này có thể ảnh hưởng trực tiếp đến biên lợi nhuận.
-- **Lập trình viên:** thị trường vẫn cần người, nhưng cần đúng kỹ năng. [TopDev ước tính]((https://genk.vn/ai-xoa-hang-chuc-nghin-viec-lam-o-phuong-tay-va-dang-bao-mon-mo-vang-ty-usd-cua-gia-cong-phan-mem-viet-nam-165260701195817027.chn)) nhu cầu năm 2026 có thể lên 750.000 người so với khoảng 560.000 người hiện có, và 53,7% công ty khó tìm được ứng viên có kỹ năng phù hợp.
+- **Lập trình viên:** thị trường vẫn cần người, nhưng cần đúng kỹ năng. [TopDev ước tính](https://genk.vn/ai-xoa-hang-chuc-nghin-viec-lam-o-phuong-tay-va-dang-bao-mon-mo-vang-ty-usd-cua-gia-cong-phan-mem-viet-nam-165260701195817027.chn) nhu cầu năm 2026 có thể lên 750.000 người so với khoảng 560.000 người hiện có, và 53,7% công ty khó tìm được ứng viên có kỹ năng phù hợp.
 
 *Bài viết chỉ nhằm cung cấp thông tin, không phải khuyến nghị đầu tư. Số liệu cập nhật đến ngày 5/11/2026.*
 
