@@ -11,7 +11,7 @@ image: /assets/images/posts/dan-chu-nam-quoc-hoi-nganh-ai-va-chi-phi-ai-banner.p
 
 Trong cuộc bầu cử giữa kỳ ngày 3/11/2026, Đảng Dân chủ đã giành cả Hạ viện lẫn Thượng viện Mỹ, nhưng không đạt đa số 2/3. AI và data center là một phần của chiến dịch tranh cử năm nay, nên câu hỏi tự nhiên là: ngành AI sẽ bị ảnh hưởng ra sao, và người dùng có phải trả nhiều tiền hơn không?
 
-Câu trả lời ngắn của mình: ảnh hưởng là có thật, nhưng nằm ở việc xây data center nhiều hơn ở luật AI liên bang. Còn chi phí sử dụng AI đang chịu sức ép từ thiếu chip nhớ và GPU, thứ đã diễn ra từ trước bầu cử.
+Nói ngắn gọn, kết quả bầu cử có ảnh hưởng đến ngành AI, nhưng chủ yếu qua việc xây data center hơn là luật AI liên bang. Còn chi phí sử dụng AI đang chịu sức ép từ tình trạng thiếu chip nhớ và GPU, vốn đã có từ trước bầu cử.
 
 {% include toc.html %}
 
@@ -108,20 +108,53 @@ Khi đọc các nhận định về chính sách, cũng nên nhớ rằng chính
 
 Với người dùng ở Việt Nam, ít nhất cho đến khi có luật lớn, điều dễ thấy nhất có lẽ là chi phí và giới hạn sử dụng, chứ không phải việc mất quyền dùng AI.
 
-## Nếu bạn đang dùng AI thì nên làm gì?
+## Ảnh hưởng đến ngành outsource và sản xuất phần mềm Việt Nam
 
-Giá API áp dụng toàn cầu, nên người dùng ở Việt Nam cũng chịu ảnh hưởng tương tự. Vài việc đáng làm, dù chính trị Mỹ đi theo hướng nào:
+Bầu cử Mỹ khó tác động mạnh và trực tiếp đến ngành phần mềm Việt Nam. Sức ép lớn hơn đến từ chính AI, vì nó đang thay đổi cách khách hàng mua dịch vụ phần mềm.
 
-- **Tính theo chi phí mỗi tác vụ**, không chỉ nhìn giá mỗi token.
-- **Thiết kế để dễ đổi model**, và dùng model rẻ cho việc đơn giản.
-- **Tận dụng cache** nhưng kiểm tra lại giá cache, vì đây là khoản có thể tăng âm thầm.
-- **Xem lại ngân sách trước tháng 1/2027** nếu đang dùng model có giá ưu đãi sắp hết hạn.
+### Sức ép đã có từ trước bầu cử
+
+FPT, doanh nghiệp xuất khẩu phần mềm lớn của Việt Nam, là một chỉ báo dễ theo dõi. Theo [The Investor](https://theinvestor.vn/new-orders-slow-ai-continues-to-pressure-vietnams-leading-tech-firm-fpt-d20340.html):
+
+| Chỉ số mảng CNTT nước ngoài của FPT | Giai đoạn trước | Quý 3/2026 hoặc 9 tháng |
+|---|---|---|
+| Tăng trưởng doanh thu | Nửa đầu 2026: +13,4% | Quý 3: +8,2% |
+| Tăng trưởng hợp đồng mới | Nửa đầu 2026: +32,3% | Quý 3: +3,6% |
+| Số hợp đồng trên 10 triệu USD | 9 tháng 2025: 19 | 9 tháng 2026: 16 |
+
+Vấn đề không chỉ là lượng việc, mà còn là giá. Cùng bài báo cho biết khách hàng muốn được chia phần năng suất mà AI tạo ra bằng giá hợp đồng thấp hơn. CEO Persistent Systems của Ấn Độ nói có khách đòi cùng khối lượng công việc với giá thấp hơn 25–30%. Quỹ Kenno ước tính hợp đồng tính theo thời gian và nhân công chiếm hơn 65% doanh thu CNTT nước ngoài của FPT. Theo mình, kiểu hợp đồng này dễ bị ép giá nhất, vì AI làm giảm số giờ cần cho cùng một công việc.
+
+Mảng mới đang tăng nhanh nhưng còn nhỏ. Doanh thu AI và phân tích dữ liệu của FPT tăng 55% trong 9 tháng, lên gần 2,92 nghìn tỷ đồng, nhưng chỉ bằng khoảng 10% doanh thu CNTT nước ngoài.
+
+Mỹ cũng không phải yếu tố duy nhất. Nhật Bản là thị trường nước ngoài lớn nhất của FPT, và HSC cho biết [một số công ty Nhật đã hoãn chi tiêu CNTT](https://theinvestor.vn/new-orders-slow-ai-continues-to-pressure-vietnams-leading-tech-firm-fpt-d20340.html). Vì vậy, chính trị Mỹ chỉ là một phần của bức tranh.
+
+### Bầu cử Mỹ có thể tác động qua đâu?
+
+Phần này là suy luận của mình, vì chưa có nguồn nào đo được tác động của cuộc bầu cử lên ngành phần mềm Việt Nam.
+
+| Đường tác động | Với outsource | Với công ty làm sản phẩm phần mềm | Mức độ |
+|---|---|---|---|
+| Chi phí sử dụng AI cao lâu hơn | Có hai mặt: tốn thêm tiền công cụ AI trong khi khách đòi giảm giá, nhưng thuê người có thể vẫn cạnh tranh hơn với một số việc | Biên lợi nhuận giảm nếu sản phẩm phụ thuộc vào model đắt tiền | Vừa |
+| Luật AI của các bang Mỹ | Thêm yêu cầu khi làm cho khách Mỹ, nhưng cũng có thể mở ra việc kiểm thử và tuân thủ | Phải đáp ứng luật khi bán sang Mỹ | Nhỏ, tùy mức phụ thuộc vào thị trường Mỹ |
+| Hạn chế data center ở Mỹ | Ít tác động trực tiếp | Có thể gặp giới hạn sử dụng ở model mạnh nhất | Nhỏ trong ngắn hạn |
+
+Có thể có một cơ hội ở mảng hạ tầng, dù đây không phải là outsource. Việt Nam đang thu hút [các dự án data center trị giá hàng tỷ USD](https://e.vnexpress.net/news/tech/vietnam-innovation/vietnam-data-center-boom-draws-billions-dollars-as-ai-demand-accelerates-5113451.html), như dự án 2 tỷ USD của G42 với nhóm FPT, VinaCapital và Viet Thai tại TP.HCM. Viettel IDC dự kiến công suất lắp đặt tăng từ khoảng 104MW lên gần 600MW vào năm 2030. Tuy vậy, mình chưa thấy nguồn nào cho thấy các hạn chế ở Mỹ đang đẩy dự án sang Việt Nam. Trong nước cũng có rào cản riêng, ví dụ một dự án 100MW có thể phải chờ 2–3 năm để có nguồn điện mới.
+
+### Ai chịu áp lực nhiều nhất?
+
+Theo mình, áp lực sẽ không chia đều:
+
+- **Chịu áp lực nhiều:** công ty gia công tính tiền theo giờ, làm các việc lập trình cơ bản, kiểm thử thủ công, hoặc phụ thuộc vào vài khách hàng lớn.
+- **Có lợi thế hơn:** công ty hiểu sâu một ngành, nhận trách nhiệm theo kết quả, hoặc có thể đưa AI vào hệ thống thật của khách hàng.
+- **Công ty làm sản phẩm:** nên tính chi phí AI theo từng tác vụ và thiết kế để dễ đổi model, vì chi phí này có thể ảnh hưởng trực tiếp đến biên lợi nhuận.
+- **Lập trình viên:** thị trường vẫn cần người, nhưng cần đúng kỹ năng. [TopDev ước tính]((https://genk.vn/ai-xoa-hang-chuc-nghin-viec-lam-o-phuong-tay-va-dang-bao-mon-mo-vang-ty-usd-cua-gia-cong-phan-mem-viet-nam-165260701195817027.chn)) nhu cầu năm 2026 có thể lên 750.000 người so với khoảng 560.000 người hiện có, và 53,7% công ty khó tìm được ứng viên có kỹ năng phù hợp.
 
 ## Những gì cần theo dõi
 
 - Bà Hinojosa làm gì với lệnh tạm dừng ở Texas sau khi nhậm chức vào tháng 1.
 - Quốc hội có thông qua một luật AI hẹp hơn không. Shakeel Hashim của Transformer [dự báo](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/) một dự luật mạnh hơn FRONTIER Act, với yêu cầu kiểm thử model mạnh nhất và phạm vi cấm luật bang hẹp hơn.
 - Các quy định buộc data center tự trả tiền điện và đầu tư vào lưới điện.
+- Hợp đồng mới và tốc độ tăng của mảng AI tại FPT, để xem mảng mới có bù được sức ép ở gia công truyền thống không.
 - Giá DRAM và giá thuê GPU, vì đây vẫn là yếu tố tác động trực tiếp nhất lên chi phí sử dụng AI.
 
 *Bài viết chỉ nhằm cung cấp thông tin, không phải khuyến nghị đầu tư. Số liệu cập nhật đến ngày 5/11/2026.*
@@ -135,6 +168,9 @@ Giá API áp dụng toàn cầu, nên người dùng ở Việt Nam cũng chịu
 - [US midterms: Data centre backlash helps Democrats win in Texas, Georgia and Ohio](https://www.euronews.com/2026/11/04/us-midterm-elections-backlash-to-ai-data-centres-reaches-ballot-boxes), Euronews
 - [AI is on the ballot in today's midterm elections](https://fortune.com/2026/11/03/ai-is-on-the-ballot-data-centers-are-a-major-political-issue-in-the-midterms-but-the-implications-of-todays-vote-for-ai-go-much-further/), Fortune
 - [A.I. Data Centers and Labs Face a Setback After Democrats' Win](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/), Trending Topics
+- [New orders slow, AI continues to pressure Vietnam's leading tech firm FPT](https://theinvestor.vn/new-orders-slow-ai-continues-to-pressure-vietnams-leading-tech-firm-fpt-d20340.html), The Investor
+- [AI xóa hàng chục nghìn việc làm ở phương Tây và đang bào mòn mỏ vàng tỷ USD của gia công phần mềm Việt Nam](https://genk.vn/ai-xoa-hang-chuc-nghin-viec-lam-o-phuong-tay-va-dang-bao-mon-mo-vang-ty-usd-cua-gia-cong-phan-mem-viet-nam-165260701195817027.chn), GenK
+- [Vietnam data center boom draws billions of dollars as AI demand accelerates](https://e.vnexpress.net/news/tech/vietnam-innovation/vietnam-data-center-boom-draws-billions-dollars-as-ai-demand-accelerates-5113451.html), VnExpress
 - [AI Price Hikes 2026: The 10 Nobody Warned You About](https://capitalandcompute.net/blog/ai-price-hikes-2026/), Capital & Compute
 - [The DRAM Shortage and HBM Bottleneck](https://www.buildmvpfast.com/blog/dram-shortage-hbm-bottleneck-ai-hardware-costs-2026), BuildMVPFast
 - [SK Hynix warns DRAM supply growth will lag demand through 2028](https://wccftech.com/sk-hynix-warns-dram-supply-growth-will-lag-demand-through-2028/), Wccftech
