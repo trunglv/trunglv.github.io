@@ -11,7 +11,7 @@ image: /assets/images/posts/dan-chu-nam-quoc-hoi-nganh-ai-va-chi-phi-ai-banner.p
 
 Lần đầu tiên, AI trở thành một lá phiếu. Trong cuộc bầu cử giữa kỳ ngày 3/11/2026, [56% cử tri được CNBC thăm dò](https://www.cnbc.com/2026/11/04/midterm-election-blue-wave-trump-billionaires.html) nói data center là yếu tố quan trọng hoặc rất quan trọng khi họ bỏ phiếu. Cùng ngày, [38 đề xuất hạn chế data center](https://www.cbsnews.com/news/midterm-election-results-data-center-buildout-artificial-intelligence-texas/) được thông qua trên khắp nước Mỹ. Đảng Dân chủ giành cả Hạ viện lẫn Thượng viện.
 
-Phản ứng đầu tiên của nhiều người là: Washington sắp siết AI. Bài này cho rằng đó chưa phải thay đổi quan trọng nhất, vì ba lý do:
+Phản ứng đầu tiên của nhiều người là: Washington sắp siết AI. Nhưng theo một góc nhìn riêng thì đó chưa phải thay đổi quan trọng nhất, vì ba lý do:
 
 - Ở Washington, Đảng Dân chủ thắng nhưng không đủ phiếu vượt phủ quyết, nên luật lớn khó ra đời. Thay đổi thật đang diễn ra ở các bang và địa phương, nơi data center gắn với hóa đơn tiền điện.
 - Chi phí sử dụng AI đang chịu sức ép trước hết từ thiếu chip nhớ và GPU, vốn có từ trước bầu cử. Lá phiếu chỉ góp thêm một phần, và phải vài năm mới thấy rõ.
