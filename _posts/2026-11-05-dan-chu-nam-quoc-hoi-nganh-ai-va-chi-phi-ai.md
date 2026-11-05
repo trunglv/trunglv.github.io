@@ -166,15 +166,6 @@ Tóm lại, mình cho rằng kịch bản này xấu trong ngắn hạn vì biê
 - Đo chi phí AI theo từng dự án và từng tác vụ.
 - Dùng nhiều nhà cung cấp model, có model dự phòng, và giữ quy trình làm việc được khi công cụ AI gặp sự cố.
 
-### Ai chịu áp lực nhiều nhất?
-
-Theo mình, áp lực sẽ không chia đều:
-
-- **Chịu áp lực nhiều:** công ty gia công tính tiền theo giờ, làm các việc lập trình cơ bản, kiểm thử thủ công, hoặc phụ thuộc vào vài khách hàng lớn.
-- **Có lợi thế hơn:** công ty hiểu sâu một ngành, nhận trách nhiệm theo kết quả, hoặc có thể đưa AI vào hệ thống thật của khách hàng.
-- **Công ty làm sản phẩm:** nên tính chi phí AI theo từng tác vụ và thiết kế để dễ đổi model, vì chi phí này có thể ảnh hưởng trực tiếp đến biên lợi nhuận.
-- **Lập trình viên:** thị trường vẫn cần người, nhưng cần đúng kỹ năng. [TopDev ước tính](https://genk.vn/ai-xoa-hang-chuc-nghin-viec-lam-o-phuong-tay-va-dang-bao-mon-mo-vang-ty-usd-cua-gia-cong-phan-mem-viet-nam-165260701195817027.chn) nhu cầu năm 2026 có thể lên 750.000 người so với khoảng 560.000 người hiện có, và 53,7% công ty khó tìm được ứng viên có kỹ năng phù hợp.
-
 *Bài viết chỉ nhằm cung cấp thông tin, không phải khuyến nghị đầu tư. Số liệu cập nhật đến ngày 5/11/2026.*
 
 ## Nguồn tham khảo
@@ -187,7 +178,6 @@ Theo mình, áp lực sẽ không chia đều:
 - [AI is on the ballot in today's midterm elections](https://fortune.com/2026/11/03/ai-is-on-the-ballot-data-centers-are-a-major-political-issue-in-the-midterms-but-the-implications-of-todays-vote-for-ai-go-much-further/), Fortune
 - [A.I. Data Centers and Labs Face a Setback After Democrats' Win](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/), Trending Topics
 - [New orders slow, AI continues to pressure Vietnam's leading tech firm FPT](https://theinvestor.vn/new-orders-slow-ai-continues-to-pressure-vietnams-leading-tech-firm-fpt-d20340.html), The Investor
-- [AI xóa hàng chục nghìn việc làm ở phương Tây và đang bào mòn mỏ vàng tỷ USD của gia công phần mềm Việt Nam](https://genk.vn/ai-xoa-hang-chuc-nghin-viec-lam-o-phuong-tay-va-dang-bao-mon-mo-vang-ty-usd-cua-gia-cong-phan-mem-viet-nam-165260701195817027.chn), GenK
 - [Vietnam data center boom draws billions of dollars as AI demand accelerates](https://e.vnexpress.net/news/tech/vietnam-innovation/vietnam-data-center-boom-draws-billions-dollars-as-ai-demand-accelerates-5113451.html), VnExpress
 - [AI Price Hikes 2026: The 10 Nobody Warned You About](https://capitalandcompute.net/blog/ai-price-hikes-2026/), Capital & Compute
 - [The DRAM Shortage and HBM Bottleneck](https://www.buildmvpfast.com/blog/dram-shortage-hbm-bottleneck-ai-hardware-costs-2026), BuildMVPFast
