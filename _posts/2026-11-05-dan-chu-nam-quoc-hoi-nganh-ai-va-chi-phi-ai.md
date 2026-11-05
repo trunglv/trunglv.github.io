@@ -23,7 +23,7 @@ Dễ thấy nhất là khả năng Washington siết luật AI, nhưng đó chư
 
 Đảng Dân chủ [đã thắng cả hai viện](https://www.cbsnews.com/live-updates/election-day-2026-midterms/), nhưng không đạt mức 2/3 ở Hạ viện, tức 290 trên 435 ghế. Ước tính được [Trending Topics dẫn lại](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/) cũng chỉ tới 261 ghế Hạ viện và 56 ghế Thượng viện, thấp hơn mức 290 và 67 ghế cần có.
 
-Con số này quan trọng vì Tổng thống Trump phản đối quản lý AI, còn Quốc hội cần [2/3 số phiếu ở cả hai viện](https://fortune.com/2026/11/03/ai-is-on-the-ballot-data-centers-are-a-major-political-issue-in-the-midterms-but-the-implications-of-todays-vote-for-ai-go-much-further/) để vượt phủ quyết. Nói cách khác, Đảng Dân chủ có thể đặt ra chương trình nghị sự, nhưng khó tự mình biến nó thành luật. AI cũng không phải lý do duy nhất của kết quả này, vì cử tri còn nhắc đến giá cả và tham nhũng.
+Con số này quan trọng vì Tổng thống Trump phản đối quản lý AI, còn Quốc hội cần [2/3 số phiếu ở cả hai viện](https://fortune.com/2026/11/03/ai-is-on-the-ballot-data-centers-are-a-major-political-issue-in-the-midterms-but-the-implications-of-todays-vote-for-ai-go-much-further/) để vượt phủ quyết. Nói cách khác, Đảng Dân chủ có thể đặt ra chương trình nghị sự, nhưng khó tự biến nó thành luật. AI cũng không phải lý do duy nhất của kết quả này, vì cử tri còn nhắc đến giá cả và tham nhũng.
 
 ## Washington sẽ ồn ào hơn, nhưng luật lớn khó ra đời
 
