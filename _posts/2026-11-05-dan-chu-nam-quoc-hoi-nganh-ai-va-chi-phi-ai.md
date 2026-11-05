@@ -7,23 +7,19 @@ lang: vi
 image: /assets/images/posts/dan-chu-nam-quoc-hoi-nganh-ai-va-chi-phi-ai-banner.png
 ---
 
+![Dân chủ nắm Quốc hội Mỹ: ngành AI thay đổi gì, chi phí sử dụng AI có tăng không?]({{ "/assets/images/posts/dan-chu-nam-quoc-hoi-nganh-ai-va-chi-phi-ai-banner.png" | relative_url }})
+
 Trong cuộc bầu cử giữa kỳ ngày 3/11/2026, Đảng Dân chủ đã giành cả Hạ viện lẫn Thượng viện Mỹ, nhưng không đạt đa số 2/3. AI và data center là một phần của chiến dịch tranh cử năm nay, nên câu hỏi tự nhiên là: ngành AI sẽ bị ảnh hưởng ra sao, và người dùng có phải trả nhiều tiền hơn không?
 
 Câu trả lời ngắn của mình: ảnh hưởng là có thật, nhưng nằm ở việc xây data center nhiều hơn ở luật AI liên bang. Còn chi phí sử dụng AI đang chịu sức ép từ thiếu chip nhớ và GPU, thứ đã diễn ra từ trước bầu cử.
 
 {% include toc.html %}
 
-## Tóm tắt nhanh
+## Toàn cảnh trong một sơ đồ
 
-| Câu hỏi | Trả lời ngắn |
-|---|---|
-| Quốc hội mới có ra được luật AI lớn không? | Khó trong ngắn hạn, vì Dân chủ không đủ 2/3 để vượt phủ quyết của Tổng thống Trump |
-| Thay đổi rõ nhất ở đâu? | Việc xây data center: lệnh tạm dừng và hạn chế ở cấp bang, địa phương |
-| Các công ty AI sẽ gặp gì ở Washington? | Nhiều điều trần và điều tra hơn |
-| Bầu cử có làm chi phí sử dụng AI tăng ngay không? | Khó, vì chi phí phần cứng đang là yếu tố lớn hơn |
-| Về dài hạn thì sao? | Nếu nhiều dự án bị chậm, nguồn cung có thể eo hẹp lâu hơn và chi phí dùng các model mạnh nhất khó giảm nhanh. Đây là suy luận của mình, chưa có số liệu đo được |
+{% include dan-chu-ai-chi-phi-flow.html %}
 
-## Kết quả bầu cử: thắng cả hai viện nhưng không đủ 2/3
+## Kết quả bầu cử: thắng cả hai viện nhưng không đủ 2/3, nên Nhà Trắng vẫn có quyền phủ quyết
 
 Đảng Dân chủ [đã thắng cả Hạ viện lẫn Thượng viện](https://www.cbsnews.com/live-updates/election-day-2026-midterms/). Tuy nhiên, đảng này không đạt 2/3 ở Hạ viện, tức 290 trên 435 ghế. Ước tính được [Trending Topics dẫn lại](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/) cũng chỉ tới 261 ghế Hạ viện và 56 ghế Thượng viện, thấp hơn mức 290 và 67 ghế cần có.
 
@@ -89,6 +85,28 @@ Vì vậy, mình kỳ vọng như sau:
 | Từ 2028 | Vừa phải, nếu các lệnh hạn chế kéo dài | Lúc đó các dự án bị chậm mới thể hiện qua nguồn cung |
 
 Về người dùng, mình đoán chi phí sẽ phân hóa: model phổ thông tiếp tục rẻ đi, còn model mạnh nhất giữ giá cao hoặc bị giới hạn sử dụng chặt hơn.
+
+## Chính sách hạn chế AI ảnh hưởng đến đâu?
+
+Câu hỏi này nên được tách theo từng loại chính sách, vì mức tác động của chúng rất khác nhau. Phần đánh giá trong bảng dưới đây là nhận định của mình, chưa có số liệu đo được.
+
+| Loại chính sách | Tình hình hiện tại | Tác động đến phát triển AI | Tác động đến chi phí sử dụng |
+|---|---|---|---|
+| Hạn chế xây data center | Đã có hiệu lực ở nhiều nơi. Goldman Sachs ước tính các lệnh tạm dừng ngắn hạn có thể ảnh hưởng [khoảng 45% mức mở rộng dự kiến](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/) | Lớn, vì thiếu năng lực tính toán để huấn luyện và chạy model | Lớn nhất, nhưng phải vài năm mới thấy rõ |
+| Bắt buộc kiểm thử model mạnh nhất | Mới là [dự báo về một dự luật](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/) | Vừa phải, có thể làm chậm việc ra mắt ở vài hãng lớn | Nhỏ |
+| Luật AI cấp bang | California có thể [có sức nặng lớn nhất](https://time.com/article/2026/11/04/midterm-elections-results-ai-industry-data-centers/) | Vừa phải, các hãng phải tuân thủ nhiều bộ luật | Nhỏ, nhưng công ty nhỏ chịu áp lực nhiều hơn hãng lớn |
+| Tạm dừng data center trên toàn nước Mỹ | [Dự luật của Sanders và Ocasio-Cortez](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/), khó được thông qua | Rất lớn nếu thành luật | Rất lớn nếu thành luật |
+
+Tác động này có giới hạn vì hai lý do:
+
+- **Rào cản chính trị:** Tổng thống Trump phản đối quản lý AI, và từ tháng 12/2025 đã [chỉ đạo Bộ Tư pháp phản đối luật AI của các bang](https://www.trendingtopics.eu/midterms-democrats-ai-data-centers-labs-setback/). Ngay trong Đảng Dân chủ, Hạ nghị sĩ Frank Pallone cũng không ủng hộ lệnh tạm dừng toàn diện.
+- **Luật Mỹ chỉ có hiệu lực ở Mỹ:** các hãng có thể xây ở nước khác, và model từ nước ngoài vẫn phát triển. Model mở trọng số cũng khó kiểm soát hơn sau khi đã phát hành.
+
+Về được và mất, quy định có thể giảm rủi ro và tăng niềm tin, nhưng đổi lại có thể làm chậm tiến độ và tạo lợi thế cho hãng lớn, vì họ có nhiều tiền tuân thủ hơn. Hạn chế data center thì giải quyết chủ yếu các vấn đề địa phương như [tiền điện và tiếng ồn](https://time.com/article/2026/11/04/midterm-elections-results-ai-industry-data-centers/), chứ không trực tiếp làm model an toàn hơn.
+
+Khi đọc các nhận định về chính sách, cũng nên nhớ rằng chính các công ty AI có lợi ích trong cuộc tranh luận này. Ví dụ, Time cho biết Anthropic đã [góp hơn 40 triệu USD cho Public First Action](https://time.com/article/2026/11/04/midterm-elections-results-ai-industry-data-centers/).
+
+Với người dùng ở Việt Nam, ít nhất cho đến khi có luật lớn, điều dễ thấy nhất có lẽ là chi phí và giới hạn sử dụng, chứ không phải việc mất quyền dùng AI.
 
 ## Nếu bạn đang dùng AI thì nên làm gì?
 
