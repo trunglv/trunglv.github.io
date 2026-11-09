@@ -1,5 +1,5 @@
 ---
-title: "AI tự thiết kế chip: ngành gia công thiết kế vi mạch và bán dẫn, cùng kế hoạch phát triển bán dẫn Việt Nam chịu ảnh hưởng gì?"
+title: "AI trở thành công cụ đắc lực trong thiết kế chip: ngành gia công thiết kế vi mạch và bán dẫn, cùng kế hoạch phát triển bán dẫn Việt Nam chịu ảnh hưởng gì?"
 slug: "ai-thiet-ke-chip-va-nganh-ban-dan-viet-nam"
 date: 2026-11-09 07:00:00 +0700
 categories: [ai]
@@ -7,7 +7,7 @@ lang: vi
 image: /assets/images/posts/ai-thiet-ke-chip-va-nganh-ban-dan-viet-nam-banner.png
 ---
 
-![AI tự thiết kế chip: ngành gia công thiết kế vi mạch và bán dẫn, cùng kế hoạch phát triển bán dẫn Việt Nam chịu ảnh hưởng gì?]({{ "/assets/images/posts/ai-thiet-ke-chip-va-nganh-ban-dan-viet-nam-banner.png" | relative_url }})
+![AI trở thành công cụ đắc lực trong thiết kế chip: ngành gia công thiết kế vi mạch và bán dẫn, cùng kế hoạch phát triển bán dẫn Việt Nam chịu ảnh hưởng gì?]({{ "/assets/images/posts/ai-thiet-ke-chip-va-nganh-ban-dan-viet-nam-banner.png" | relative_url }})
 
 Đầu tháng 11/2026, Anthropic nói với các nhà đầu tư trước IPO rằng đội thiết kế chip của hãng [chỉ có 15 người và đang dùng Claude](https://aiweekly.co/alerts/anthropic-tells-ipo-investors-claude-helps-design-its-chips) để thiết kế chip riêng cho việc huấn luyện và chạy model. Trước đó, OpenAI công bố chip suy luận Jalapeño cùng Broadcom, với [thời gian tape-out 9 tháng](https://openai.com/index/openai-broadcom-jalapeno-inference-chip/) mà hãng cho là nhờ model của chính mình đẩy nhanh. Ngày 3/11, cổ phiếu hai hãng công cụ thiết kế chip Synopsys và Cadence [giảm gần 4%](https://www.kucoin.com/news/flash/anthropic-uses-claude-ai-to-accelerate-custom-chip-design-challenges-nvidia-and-amd).
 
