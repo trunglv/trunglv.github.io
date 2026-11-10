@@ -9,6 +9,8 @@ image: /assets/images/posts/ly-thuyet-tro-choi-co-ban-cho-ai-trading-bot-banner.
 
 ![Lý thuyết trò chơi cơ bản cho trading và vai trò của harness cho AI bot]({{ "/assets/images/posts/ly-thuyet-tro-choi-co-ban-cho-ai-trading-bot-banner.png" | relative_url }})
 
+> **Lưu ý rủi ro trước khi đọc.** Dùng AI để trading không có nghĩa là chắc thắng. Model ngôn ngữ lớn không biết trước giá, không có thông tin gì mà thị trường chưa có, và hàng trăm nghìn bot khác cũng đang dùng model tương tự với cùng dữ liệu. Một bot chạy bằng AI vẫn có thể thua lỗ đều đặn, thậm chí mất sạch vốn trong vài phút nếu lỗi và không có nút dừng. Bài này không chỉ cách kiếm lời bằng bot. Nó giải thích vì sao thị trường là một trò chơi với đối thủ, và harness, tức lớp giới hạn và kiểm tra bao quanh model, là thứ giữ cho bot không tự giết mình. Chỉ giao dịch bằng số tiền bạn chấp nhận mất.
+
 Ngày càng nhiều nhà đầu tư cá nhân để một con bot chạy bằng AI đặt lệnh thay mình. Cách làm phổ biến là lấy một model ngôn ngữ lớn, cho nó đọc giá, tin tức, chỉ báo, rồi hỏi "mua hay bán?". Phần lớn công sức đổ vào việc chọn model và viết prompt. Phần ít được để ý hơn, nhưng quyết định bot sống hay chết, là **harness**: lớp vỏ bao quanh model, gồm các giới hạn, kiểm tra và nút dừng, quyết định một đề xuất của model có được biến thành lệnh thật hay không.
 
 Để viết harness tốt, cần hiểu một điều mà nhiều người mới bỏ qua: thị trường không phải một bài toán có đáp án đúng, mà là một **trò chơi**. Kết quả của bạn phụ thuộc vào lựa chọn của người khác, và những người khác cũng đang đoán bạn. Nhánh toán học nghiên cứu chuyện này gọi là lý thuyết trò chơi. Bài này đi qua các ý cơ bản nhất, bằng ví dụ đời thường, rồi dịch từng ý thành một quy tắc cụ thể cho harness. Theo góc nhìn riêng:
