@@ -1,5 +1,5 @@
 ---
-title: "Lý thuyết trò chơi cơ bản: vì sao ai viết harness cho AI trading bot cũng cần hiểu"
+title: "Lý thuyết trò chơi cơ bản cho trading và vai trò của harness cho AI bot"
 slug: "ly-thuyet-tro-choi-co-ban-cho-ai-trading-bot"
 date: 2026-11-10 09:00:00 +0700
 categories: [finance, ai]
@@ -7,7 +7,7 @@ lang: vi
 image: /assets/images/posts/ly-thuyet-tro-choi-co-ban-cho-ai-trading-bot-banner.png
 ---
 
-![Lý thuyết trò chơi cơ bản: vì sao ai viết harness cho AI trading bot cũng cần hiểu]({{ "/assets/images/posts/ly-thuyet-tro-choi-co-ban-cho-ai-trading-bot-banner.png" | relative_url }})
+![Lý thuyết trò chơi cơ bản cho trading và vai trò của harness cho AI bot]({{ "/assets/images/posts/ly-thuyet-tro-choi-co-ban-cho-ai-trading-bot-banner.png" | relative_url }})
 
 Ngày càng nhiều nhà đầu tư cá nhân để một con bot chạy bằng AI đặt lệnh thay mình. Cách làm phổ biến là lấy một model ngôn ngữ lớn, cho nó đọc giá, tin tức, chỉ báo, rồi hỏi "mua hay bán?". Phần lớn công sức đổ vào việc chọn model và viết prompt. Phần ít được để ý hơn, nhưng quyết định bot sống hay chết, là **harness**: lớp vỏ bao quanh model, gồm các giới hạn, kiểm tra và nút dừng, quyết định một đề xuất của model có được biến thành lệnh thật hay không.
 
