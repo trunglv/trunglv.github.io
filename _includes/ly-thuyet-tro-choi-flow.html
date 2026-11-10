@@ -1,0 +1,90 @@
+<figure class="rag-figure">
+  <div style="overflow-x:auto;">
+  <svg viewBox="0 0 960 720" role="img" aria-labelledby="gt-title gt-desc" xmlns="http://www.w3.org/2000/svg" style="width:100%;min-width:640px;height:auto;">
+    <title id="gt-title">Lý thuyết trò chơi cơ bản và cách áp dụng vào harness cho AI trading bot</title>
+    <desc id="gt-desc">Thị trường là một trò chơi nhiều người chơi, trong đó kết quả của bạn phụ thuộc vào lựa chọn của người khác. Bốn ý cơ bản: tổng bằng không và tổng âm, cân bằng Nash, chiến lược hỗn hợp, trò chơi lặp lại và thông tin không đầy đủ. Mỗi ý dẫn đến một quy tắc trong harness cho bot: phải thắng chi phí, không chen vào đám đông, không để bị đọc bài, và luôn hỏi vì sao người kia chịu khớp lệnh với mình. Tất cả gói lại thành harness: giới hạn, kiểm tra và nút dừng bao quanh model.</desc>
+    <defs><marker id="gt-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6577"/></marker></defs>
+
+    <rect x="180" y="16" width="600" height="70" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="480" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#0e1b3d">Thị trường là một trò chơi, không phải một bài toán</text>
+    <text x="480" y="67" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#5b6577">Kết quả của bạn phụ thuộc vào lựa chọn của người khác, và ngày càng nhiều "người khác" là bot</text>
+
+    <path d="M480 86 V104 H140 V124" fill="none" stroke="#5b6577" stroke-width="2" marker-end="url(#gt-c)"/>
+    <path d="M480 86 V104 H367 V124" fill="none" stroke="#5b6577" stroke-width="2" marker-end="url(#gt-c)"/>
+    <path d="M480 86 V104 H593 V124" fill="none" stroke="#5b6577" stroke-width="2" marker-end="url(#gt-c)"/>
+    <path d="M480 86 V104 H820 V124" fill="none" stroke="#5b6577" stroke-width="2" marker-end="url(#gt-c)"/>
+
+    <rect x="30" y="128" width="220" height="110" rx="10" fill="#e8f7f4" stroke="#139e8c" stroke-width="2"/>
+    <text x="140" y="156" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">Tổng bằng không</text>
+    <text x="140" y="178" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Ngắn hạn: bạn lời thì</text>
+    <text x="140" y="196" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">người kia lỗ. Trừ phí</text>
+    <text x="140" y="214" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">thì cả hai cùng mất một ít</text>
+
+    <rect x="257" y="128" width="220" height="110" rx="10" fill="#e8f7f4" stroke="#139e8c" stroke-width="2"/>
+    <text x="367" y="156" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">Cân bằng Nash</text>
+    <text x="367" y="178" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Khi ai cũng dùng một</text>
+    <text x="367" y="196" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">tín hiệu, tín hiệu đó</text>
+    <text x="367" y="214" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">không còn ăn được nữa</text>
+
+    <rect x="483" y="128" width="220" height="110" rx="10" fill="#e8f7f4" stroke="#139e8c" stroke-width="2"/>
+    <text x="593" y="156" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">Chiến lược hỗn hợp</text>
+    <text x="593" y="178" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Đoán được là bị ăn.</text>
+    <text x="593" y="196" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Oẳn tù tì luôn ra búa</text>
+    <text x="593" y="214" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">thì thua chắc</text>
+
+    <rect x="710" y="128" width="220" height="110" rx="10" fill="#e8f7f4" stroke="#139e8c" stroke-width="2"/>
+    <text x="820" y="156" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">Thông tin không đều</text>
+    <text x="820" y="178" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Người chịu khớp lệnh</text>
+    <text x="820" y="196" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">với bạn có thể biết</text>
+    <text x="820" y="214" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">điều bạn chưa biết</text>
+
+    <path d="M140 238 V266" fill="none" stroke="#5b6577" stroke-width="2" marker-end="url(#gt-c)"/>
+    <path d="M367 238 V266" fill="none" stroke="#5b6577" stroke-width="2" marker-end="url(#gt-c)"/>
+    <path d="M593 238 V266" fill="none" stroke="#5b6577" stroke-width="2" marker-end="url(#gt-c)"/>
+    <path d="M820 238 V266" fill="none" stroke="#5b6577" stroke-width="2" marker-end="url(#gt-c)"/>
+
+    <rect x="30" y="270" width="220" height="110" rx="10" fill="#fdf3e3" stroke="#d68910" stroke-width="2"/>
+    <text x="140" y="298" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">Quy tắc 1: thắng chi phí</text>
+    <text x="140" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Harness tính phí và trượt giá</text>
+    <text x="140" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">trước khi cho bot vào lệnh.</text>
+    <text x="140" y="356" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Lợi nhuận kỳ vọng nhỏ hơn phí: chặn</text>
+
+    <rect x="257" y="270" width="220" height="110" rx="10" fill="#fdf3e3" stroke="#d68910" stroke-width="2"/>
+    <text x="367" y="298" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">Quy tắc 2: tránh đám đông</text>
+    <text x="367" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Đo xem lệnh có đi cùng</text>
+    <text x="367" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">chiều với số đông không.</text>
+    <text x="367" y="356" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Giới hạn vị thế, nút dừng khẩn</text>
+
+    <rect x="483" y="270" width="220" height="110" rx="10" fill="#fdf3e3" stroke="#d68910" stroke-width="2"/>
+    <text x="593" y="298" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">Quy tắc 3: khó đoán</text>
+    <text x="593" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Chia nhỏ lệnh, lệch giờ,</text>
+    <text x="593" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">không đặt stop ở số tròn,</text>
+    <text x="593" y="356" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">không lặp một nhịp cố định</text>
+
+    <rect x="710" y="270" width="220" height="110" rx="10" fill="#fdf3e3" stroke="#d68910" stroke-width="2"/>
+    <text x="820" y="298" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0e1b3d">Quy tắc 4: hỏi "vì sao?"</text>
+    <text x="820" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">Giá tốt bất thường là</text>
+    <text x="820" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">tín hiệu cảnh báo. Theo dõi</text>
+    <text x="820" y="356" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b6577">giá đi đâu sau mỗi lần khớp</text>
+
+    <path d="M140 380 V408 H480 V428" fill="none" stroke="#5b6577" stroke-width="2" marker-end="url(#gt-c)"/>
+    <path d="M367 380 V408" fill="none" stroke="#5b6577" stroke-width="2"/>
+    <path d="M593 380 V408" fill="none" stroke="#5b6577" stroke-width="2"/>
+    <path d="M820 380 V408 H480" fill="none" stroke="#5b6577" stroke-width="2"/>
+
+    <rect x="130" y="432" width="700" height="120" rx="10" fill="#ffffff" stroke="#0e1b3d" stroke-width="2"/>
+    <text x="480" y="460" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#0e1b3d">Harness: lớp vỏ bao quanh model</text>
+    <text x="480" y="484" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#5b6577">Model đề xuất, harness quyết định có cho thực hiện hay không.</text>
+    <text x="480" y="504" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#5b6577">Giới hạn vị thế và lỗ trong ngày, kiểm tra chi phí, kiểm tra đám đông, ngẫu nhiên hóa thực thi,</text>
+    <text x="480" y="524" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#5b6577">đo chất lượng khớp lệnh, giới hạn tần suất gửi và hủy lệnh, nút dừng toàn bộ.</text>
+
+    <path d="M480 552 V580" fill="none" stroke="#5b6577" stroke-width="2" marker-end="url(#gt-c)"/>
+
+    <rect x="130" y="584" width="700" height="110" rx="10" fill="#f4f6f8" stroke="#8a94a6" stroke-width="2"/>
+    <text x="480" y="612" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#0e1b3d">Điều lý thuyết trò chơi không làm được</text>
+    <text x="480" y="636" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#5b6577">Không dự đoán giá. Không thay thế quản trị rủi ro. Giả định người chơi hợp lý, còn thị trường thật có cả người</text>
+    <text x="480" y="656" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#5b6577">hoảng loạn lẫn bot lỗi. Nó cho bạn cách đặt câu hỏi đúng: "đối thủ của tôi là ai, và họ đang nghĩ gì về tôi?"</text>
+    <text x="480" y="678" text-anchor="middle" font-family="Arial, sans-serif" font-size="13.5" fill="#5b6577">Flash crash 2010 và Knight Capital 2012 là hai ví dụ về bot thiếu harness.</text>
+  </svg>
+  </div>
+</figure>
