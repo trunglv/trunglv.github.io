@@ -6,7 +6,7 @@ categories: [ai]
 lang: vi
 ---
 
-Ba giờ chiều. Con bug đang sửa dở, bạn gõ thêm một câu, và Claude Code đáp lại bằng một dòng lạnh tanh: bạn đã dùng hết hạn mức.
+Ba giờ chiều. Công việc đang vào guồng, bạn gõ thêm một câu, và Claude Code đáp lại bằng một dòng lạnh tanh: bạn đã dùng hết hạn mức.
 
 Khoan đã. Từ sáng tới giờ bạn gõ được mấy chục câu, câu nào cũng chỉ một hai dòng. Hạn mức đi đâu hết? Ai trả tiền theo API key thì gặp câu hỏi này muộn hơn một chút: cuối tháng, lúc mở hóa đơn ra.
 
@@ -137,7 +137,7 @@ Bản rút gọn để dán cạnh màn hình:
 
 ## Một ngày làm việc tiết kiệm
 
-Nói thật, lúc đang đuổi theo một con bug thì chẳng ai nhớ nổi mẹo tiết kiệm token. Cách chắc ăn hơn: xếp ngày làm việc sao cho việc tiết kiệm tự nó xảy ra.
+Nói thật, lúc đang ngập trong việc thì chẳng ai nhớ nổi mẹo tiết kiệm token. Cách chắc ăn hơn: xếp ngày làm việc sao cho việc tiết kiệm tự nó xảy ra.
 
 {% include cc-vi-mot-ngay.html %}
 
