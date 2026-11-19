@@ -4,10 +4,8 @@ layout: default
 {% assign lang = page.lang | default: "en" %}
 {% assign t = site.data.i18n[lang] %}
 {% if lang == "vi" %}
-{% assign extensions_url = "/vi/extensions/" %}
 {% assign blog_url = "/vi/blog/" %}
 {% else %}
-{% assign extensions_url = "/extensions/" %}
 {% assign blog_url = "/blog/" %}
 {% endif %}
 
@@ -30,30 +28,6 @@ layout: default
       {% endif %}
     </div>
   </section>
-
-  {% if lang != "vi" %}
-  <section class="section" id="extensions">
-    <div class="section-header">
-      <h2 class="section-title">{{ t.section_extensions }}</h2>
-      <a class="section-link" href="{{ extensions_url | relative_url }}">{{ t.view_all }}</a>
-    </div>
-    <div class="card-grid">
-      {% assign exts = site.extensions | where: "featured", true | sort: "order" %}
-      {% for ext in exts %}
-      <a class="ext-card" href="{{ ext.url | relative_url }}">
-        <div class="ext-card-top">
-          <span class="ext-card-badge">{{ t.open_source }}</span>
-        </div>
-        <div class="ext-card-body">
-          <p class="ext-card-category">{{ ext.category }}</p>
-          <h3 class="ext-card-name">{{ ext.title }}</h3>
-          <p class="ext-card-summary">{{ ext.summary }}</p>
-        </div>
-      </a>
-      {% endfor %}
-    </div>
-  </section>
-  {% endif %}
 
   <section class="section">
     <div class="section-header">
